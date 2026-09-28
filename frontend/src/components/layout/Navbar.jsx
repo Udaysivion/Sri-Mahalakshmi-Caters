@@ -50,22 +50,24 @@ const Navbar = () => {
             <Link
               to="/"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="flex items-center gap-2.5 z-50 group"
+              className="flex items-center gap-3 z-50 group transition-transform duration-300 hover:scale-105"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
-                style={{ background: 'rgba(212,115,26,0.15)', border: `1px solid ${goldAccent}` }}>
-                <span style={{ fontSize: '1.4rem' }}>🪔</span>
-              </div>
-              <div>
+              <img 
+                src="/logo-icon.jpg" 
+                alt="Logo" 
+                className="h-10 md:h-12 w-auto object-contain rounded-md" 
+                style={{ mixBlendMode: 'screen' }} 
+              />
+              <div className="flex flex-col">
                 <div
-                  className="font-extrabold leading-none mb-0.5 transition-colors duration-300"
-                  style={{ fontFamily: "'Playfair Display', serif", color: textColor, fontSize: '1.15rem', letterSpacing: '0.02em' }}
+                  className="font-extrabold leading-none mb-1 transition-colors duration-300"
+                  style={{ fontFamily: "'Playfair Display', serif", color: textColor, fontSize: '1.25rem', letterSpacing: '0.02em' }}
                 >
                   Sri Mahalakshmi
                 </div>
                 <div
                   className="leading-none transition-colors duration-300"
-                  style={{ color: goldAccent, fontSize: '0.6rem', letterSpacing: '0.2em', fontFamily: "'Inter', sans-serif", fontWeight: 600, textTransform: 'uppercase' }}
+                  style={{ color: '#D4731A', fontSize: '0.65rem', letterSpacing: '0.15em', fontFamily: "'Inter', sans-serif", fontWeight: 700, textTransform: 'uppercase' }}
                 >
                   Kitchen & Caterers
                 </div>

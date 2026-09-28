@@ -64,8 +64,28 @@ const allItems = [
 ];
 
 /* ─── Premium Food Card ─── */
-const FoodCard = ({ item, addItem, addedItems }) => {
-  const isAdded = addedItems.includes(item.id);
+const FoodCard = ({ item }) => {
+  const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
+  const cartItem = cartItems.find(i => i.id === item.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
+
+  const handleAdd = (e) => {
+    e.stopPropagation();
+    addToCart(item);
+    toast.success(`${item.name} added!`, {
+      style:{ background:'#1B4332', color:'#FFF8EC', borderRadius:'2px', fontFamily:"'Inter',sans-serif", fontSize:'13px', fontWeight:600 },
+      iconTheme: { primary: '#D4731A', secondary: '#FFF8EC' }
+    });
+  };
+
+  const handleUpdate = (e, delta) => {
+    e.stopPropagation();
+    if (quantity === 1 && delta === -1) {
+      removeFromCart(item.id);
+    } else {
+      updateQuantity(item.id, delta);
+    }
+  };
 
   return (
     <motion.div layout
@@ -104,18 +124,21 @@ const FoodCard = ({ item, addItem, addedItems }) => {
           {item.desc}
         </p>
         
-        <button 
-          onClick={() => addItem(item)}
-          disabled={isAdded}
-          className={`w-full flex items-center justify-center gap-2 py-3 text-xs font-bold uppercase tracking-widest transition-all ${isAdded ? 'bg-[#1B4332] text-white' : 'bg-transparent text-[#1B4332] border border-[#1B4332] hover:bg-[#1B4332] hover:text-white'}`}
-          style={{ fontFamily:"'Inter',sans-serif" }}
-        >
-          {isAdded ? (
-            <><Check size={14} /> Added</>
-          ) : (
-            <><ShoppingCart size={14} /> Add to Order</>
-          )}
-        </button>
+        {quantity > 0 ? (
+          <div className="w-full flex items-center justify-between border border-[#1B4332] py-2.5 px-4 bg-[#1B4332] text-white transition-all shadow-sm">
+            <button onClick={(e) => handleUpdate(e, -1)} className="text-xl font-bold px-3 hover:text-[#D4731A] transition-colors leading-none pb-1">-</button>
+            <span className="font-bold text-sm tracking-widest">{quantity}</span>
+            <button onClick={(e) => handleUpdate(e, 1)} className="text-xl font-bold px-3 hover:text-[#D4731A] transition-colors leading-none pb-1">+</button>
+          </div>
+        ) : (
+          <button 
+            onClick={handleAdd}
+            className="w-full flex items-center justify-center gap-2 py-3 text-xs font-bold uppercase tracking-widest transition-all bg-transparent text-[#1B4332] border border-[#1B4332] hover:bg-[#1B4332] hover:text-white"
+            style={{ fontFamily:"'Inter',sans-serif" }}
+          >
+            <ShoppingCart size={14} /> Add to Order
+          </button>
+        )}
       </div>
     </motion.div>
   );
