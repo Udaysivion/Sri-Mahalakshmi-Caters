@@ -44,7 +44,7 @@ const Contact = () => {
             ~ Connect With Us ~
           </motion.p>
           <motion.h1 initial={{opacity:0,y:18}} animate={{opacity:1,y:0}} transition={{delay:0.35}}
-            style={{ fontFamily:"'Baloo 2',sans-serif",fontSize:'clamp(2rem,5vw,3rem)',fontWeight:900,color:'white',marginBottom:'0.3rem' }}>
+            style={{ fontFamily:"'Playfair Display',sans-serif",fontSize:'clamp(2rem,5vw,3rem)',fontWeight:900,color:'white',marginBottom:'0.3rem' }}>
             Get in Touch 📞
           </motion.h1>
           <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.5}}
@@ -67,8 +67,8 @@ const Contact = () => {
             <div key={i} className="flex items-center gap-2.5 py-1">
               <span style={{ color:'#E0B030' }}>{info.icon}</span>
               <div>
-                <p className="text-xs" style={{ color:'rgba(255,255,255,0.5)',fontFamily:"'Hind',sans-serif" }}>{info.label}</p>
-                <p className="text-xs font-bold text-white" style={{ fontFamily:"'Baloo 2',sans-serif" }}>{info.val}</p>
+                <p className="text-xs" style={{ color:'rgba(255,255,255,0.5)',fontFamily:"'Inter',sans-serif" }}>{info.label}</p>
+                <p className="text-xs font-bold text-white" style={{ fontFamily:"'Playfair Display',sans-serif" }}>{info.val}</p>
               </div>
             </div>
           ))}
@@ -91,7 +91,7 @@ const Contact = () => {
                 style={{ 
                   background: activeTab === 'restaurant' ? '#1B4332' : 'white', 
                   color: activeTab === 'restaurant' ? 'white' : '#6B4423',
-                  fontFamily:"'Baloo 2',sans-serif"
+                  fontFamily:"'Playfair Display',sans-serif"
                 }}>
                 <UtensilsCrossed size={16} /> Restaurant Dining
               </button>
@@ -101,7 +101,7 @@ const Contact = () => {
                 style={{ 
                   background: activeTab === 'catering' ? '#1B4332' : 'white', 
                   color: activeTab === 'catering' ? 'white' : '#6B4423',
-                  fontFamily:"'Baloo 2',sans-serif"
+                  fontFamily:"'Playfair Display',sans-serif"
                 }}>
                 <PartyPopper size={16} /> Catering & Events
               </button>
@@ -119,7 +119,7 @@ const Contact = () => {
                     
                     <div className="flex items-center gap-3 mb-5">
                       <div style={{ height:'2px',width:'35px',background:'#D4731A' }}/>
-                      <h2 style={{ fontFamily:"'Baloo 2',sans-serif",color:'#1B4332',fontSize:'1.3rem',fontWeight:800 }}>
+                      <h2 style={{ fontFamily:"'Playfair Display',sans-serif",color:'#1B4332',fontSize:'1.3rem',fontWeight:800 }}>
                         Table Reservation & Queries
                       </h2>
                     </div>
@@ -175,7 +175,7 @@ const Contact = () => {
 
                     <button type="submit"
                       className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
-                      style={{ background:'#D4731A',color:'white',fontFamily:"'Baloo 2',sans-serif",boxShadow:'0 4px 14px rgba(212,115,26,0.35)' }}>
+                      style={{ background:'#D4731A',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 4px 14px rgba(212,115,26,0.35)' }}>
                       <Send size={15}/> Request Reservation
                     </button>
                   </motion.form>
@@ -190,7 +190,7 @@ const Contact = () => {
                     
                     <div className="flex items-center gap-3 mb-5">
                       <div style={{ height:'2px',width:'35px',background:'#D4731A' }}/>
-                      <h2 style={{ fontFamily:"'Baloo 2',sans-serif",color:'#1B4332',fontSize:'1.3rem',fontWeight:800 }}>
+                      <h2 style={{ fontFamily:"'Playfair Display',sans-serif",color:'#1B4332',fontSize:'1.3rem',fontWeight:800 }}>
                         Catering & Bulk Order Inquiry
                       </h2>
                     </div>
@@ -247,7 +247,7 @@ const Contact = () => {
 
                     <button type="submit"
                       className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
-                      style={{ background:'#1B4332',color:'white',fontFamily:"'Baloo 2',sans-serif",boxShadow:'0 4px 14px rgba(27,67,50,0.35)' }}>
+                      style={{ background:'#1B4332',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 4px 14px rgba(27,67,50,0.35)' }}>
                       <Send size={15}/> Send Catering Inquiry
                     </button>
                   </motion.form>
@@ -263,7 +263,7 @@ const Contact = () => {
             {/* Contact Info Card */}
             <div className="rounded-2xl p-6"
               style={{ background:'white',border:'1.5px solid rgba(196,150,10,0.3)' }}>
-              <h3 style={{ fontFamily:"'Baloo 2',sans-serif",color:'#1B4332',fontSize:'1.2rem',fontWeight:800,marginBottom:'1rem' }}>
+              <h3 style={{ fontFamily:"'Playfair Display',sans-serif",color:'#1B4332',fontSize:'1.2rem',fontWeight:800,marginBottom:'1rem' }}>
                 📍 Contact Details
               </h3>
               <ul className="space-y-4">
@@ -277,8 +277,8 @@ const Contact = () => {
                   <li key={i} className="flex items-start gap-3">
                     <span style={{ color:'#D4731A',marginTop:2 }}>{item.icon}</span>
                     <div>
-                      <p className="text-xs font-bold uppercase mb-0.5" style={{ color:'#1B4332',fontFamily:"'Baloo 2',sans-serif",letterSpacing:'0.05em' }}>{item.title}</p>
-                      <p className="text-sm" style={{ color:'#6B4423',fontFamily:"'Hind',sans-serif" }}>{item.val}</p>
+                      <p className="text-xs font-bold uppercase mb-0.5" style={{ color:'#1B4332',fontFamily:"'Playfair Display',sans-serif",letterSpacing:'0.05em' }}>{item.title}</p>
+                      <p className="text-sm" style={{ color:'#6B4423',fontFamily:"'Inter',sans-serif" }}>{item.val}</p>
                     </div>
                   </li>
                 ))}
@@ -288,12 +288,12 @@ const Contact = () => {
               <div className="mt-5 flex gap-3">
                 <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"
                   className="flex-1 text-center py-2.5 rounded-xl font-bold text-sm"
-                  style={{ background:'#25D366',color:'white',fontFamily:"'Baloo 2',sans-serif",boxShadow:'0 3px 10px rgba(37,211,102,0.35)' }}>
+                  style={{ background:'#25D366',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 3px 10px rgba(37,211,102,0.35)' }}>
                   💬 WhatsApp
                 </a>
                 <a href="tel:+919876543210"
                   className="flex-1 text-center py-2.5 rounded-xl font-bold text-sm"
-                  style={{ background:'#D4731A',color:'white',fontFamily:"'Baloo 2',sans-serif",boxShadow:'0 3px 10px rgba(212,115,26,0.35)' }}>
+                  style={{ background:'#D4731A',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 3px 10px rgba(212,115,26,0.35)' }}>
                   📞 Call Now
                 </a>
               </div>

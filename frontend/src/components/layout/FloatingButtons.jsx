@@ -17,7 +17,7 @@ const FloatingButtons = () => {
       <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"
         className="group flex items-center gap-2" aria-label="Chat on WhatsApp">
         <span className="text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 whitespace-nowrap"
-          style={{ background:'#1A3A1C',color:'#E0B030',border:'1px solid rgba(224,176,48,0.4)',fontFamily:"'Baloo 2',sans-serif" }}>
+          style={{ background:'#1A3A1C',color:'#E0B030',border:'1px solid rgba(224,176,48,0.4)',fontFamily:"'Playfair Display',sans-serif" }}>
           Chat on WhatsApp
         </span>
         <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
@@ -29,7 +29,7 @@ const FloatingButtons = () => {
       {/* Call */}
       <a href="tel:+919876543210" className="group flex items-center gap-2" aria-label="Call us">
         <span className="text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 whitespace-nowrap"
-          style={{ background:'#1A3A1C',color:'#E0B030',border:'1px solid rgba(224,176,48,0.4)',fontFamily:"'Baloo 2',sans-serif" }}>
+          style={{ background:'#1A3A1C',color:'#E0B030',border:'1px solid rgba(224,176,48,0.4)',fontFamily:"'Playfair Display',sans-serif" }}>
           Call Now
         </span>
         <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"

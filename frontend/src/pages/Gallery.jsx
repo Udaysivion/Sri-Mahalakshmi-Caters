@@ -7,21 +7,18 @@ const Gallery = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const tabs = ['All', 'Interior', 'Culinary', 'Events'];
+  const tabs = ['All', 'Kitchen', 'Events', 'Catering'];
 
   const images = [
-    { id: 1, src: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=800', category: 'Interior', title: 'Main Dining Hall' },
-    { id: 2, src: 'https://images.unsplash.com/photo-1526315274106-ee192b028682?auto=format&fit=crop&q=80&w=800', category: 'Culinary', title: 'Aromatic Biryani' },
-    { id: 3, src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800', category: 'Interior', title: 'Family Dining Area' },
-    { id: 4, src: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&q=80&w=800', category: 'Culinary', title: 'Spicy Biryani Feast' },
-    { id: 5, src: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=800', category: 'Culinary', title: 'Traditional Thali' },
-    { id: 6, src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Family Celebrations' },
-    { id: 7, src: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Event Gathering' },
-    { id: 8, src: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&q=80&w=800', category: 'Culinary', title: 'Paneer Butter Masala' },
-    { id: 9, src: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&q=80&w=800', category: 'Culinary', title: 'Chicken Dum Biryani' },
-    { id: 10, src: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=800', category: 'Interior', title: 'Outdoor Seating' },
-    { id: 11, src: 'https://images.unsplash.com/photo-1588168333986-5078d3ae3976?auto=format&fit=crop&q=80&w=800', category: 'Culinary', title: 'Tandoori Specialties' },
-    { id: 12, src: 'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=800', category: 'Interior', title: 'Ambient Dining Setting' },
+    { id: 1, src: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Morning Prep' },
+    { id: 2, src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Grand Wedding Setup' },
+    { id: 3, src: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Live Counter Service' },
+    { id: 4, src: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Traditional Cooking' },
+    { id: 5, src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Corporate Banquet' },
+    { id: 6, src: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Food Distribution' },
+    { id: 7, src: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Intimate Gathering' },
+    { id: 8, src: 'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Master Chef at Work' },
+    { id: 9, src: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Serving Hot Dosas' },
   ];
 
   const filteredImages = activeTab === 'All' ? images : images.filter(img => img.category === activeTab);

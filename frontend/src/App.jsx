@@ -19,6 +19,7 @@ const ChefsSpecial = lazy(() => import('./pages/ChefsSpecial'));
 const Menu = lazy(() => import('./pages/Menu'));
 const Gallery = lazy(() => import('./pages/Gallery'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Catering = lazy(() => import('./pages/Catering'));
 
 const Testimonials = lazy(() => import('./pages/Testimonials'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
@@ -30,7 +31,7 @@ const Loader = () => (
     <div className="flex flex-col items-center gap-4">
       <div className="w-16 h-16 border-4 rounded-full animate-spin"
         style={{ borderColor:'#1B4332',borderTopColor:'#D4731A' }}/>
-      <p className="font-bold text-lg tracking-widest" style={{ color:'#1B4332',fontFamily:"'Baloo 2',sans-serif" }}>
+      <p className="font-bold text-lg tracking-widest" style={{ color:'#1B4332',fontFamily:"'Playfair Display',sans-serif" }}>
         🪔 Sri Mahalakshmi
       </p>
     </div>
@@ -47,6 +48,7 @@ const AnimatedRoutes = () => {
         <Route path="/about" element={<About />} />
         <Route path="/chefs-special" element={<ChefsSpecial />} />
         <Route path="/menu" element={<Menu />} />
+        <Route path="/catering" element={<Catering />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/contact" element={<Contact />} />

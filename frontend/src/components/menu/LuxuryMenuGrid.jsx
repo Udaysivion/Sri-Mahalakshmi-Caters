@@ -6,9 +6,9 @@ import toast from 'react-hot-toast';
 
 export const menuData = [
   // Tiffins
-  { id: 1, name: "Plain Pesarattu", category: "Tiffins", img: "https://images.unsplash.com/photo-1627308595229-7830f5c90663?auto=format&fit=crop&q=80&w=800", type: "Veg", spice: "Low", desc: "Crispy crepe made from green gram batter, served with ginger chutney.", chefSpecial: false, bestSeller: true, price: 50 },
+  { id: 1, name: "Plain Pesarattu", category: "Tiffins", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&q=80&w=800", type: "Veg", spice: "Low", desc: "Crispy crepe made from green gram batter, served with ginger chutney.", chefSpecial: false, bestSeller: true, price: 50 },
   { id: 2, name: "Onion Pesarattu", category: "Tiffins", img: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=800", type: "Veg", spice: "Medium", desc: "Green gram crepe topped with finely chopped onions and chillies.", chefSpecial: true, bestSeller: true, price: 60 },
-  { id: 3, name: "Paneer Dosa", category: "Tiffins", img: "https://images.unsplash.com/photo-1551239841-f7e9f3b14bb2?auto=format&fit=crop&q=80&w=800", type: "Veg", spice: "Medium", desc: "Golden dosa stuffed with spiced paneer filling.", chefSpecial: false, bestSeller: false, price: 80 },
+  { id: 3, name: "Paneer Dosa", category: "Tiffins", img: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=800", type: "Veg", spice: "Medium", desc: "Golden dosa stuffed with spiced paneer filling.", chefSpecial: false, bestSeller: false, price: 80 },
   { id: 4, name: "Chapathi (2)", category: "Tiffins", img: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&q=80&w=800", type: "Veg", spice: "None", desc: "Soft, whole wheat flatbreads cooked on a tawa.", chefSpecial: false, bestSeller: true, price: 50 },
   
   // Chinese & Fast Food

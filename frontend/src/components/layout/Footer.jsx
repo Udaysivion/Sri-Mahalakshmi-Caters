@@ -22,7 +22,7 @@ const Footer = () => (
               <span style={{ fontSize:'1.4rem' }}>🪔</span>
             </div>
             <div>
-              <div style={{ fontFamily:"'Baloo 2',sans-serif",color:'white',fontSize:'1.05rem',fontWeight:800 }}>
+              <div style={{ fontFamily:"'Playfair Display',sans-serif",color:'white',fontSize:'1.05rem',fontWeight:800 }}>
                 Sri Mahalakshmi
               </div>
               <div style={{ color:'#E0B030',fontSize:'0.55rem',letterSpacing:'0.15em',fontWeight:600 }}>
@@ -31,7 +31,7 @@ const Footer = () => (
             </div>
           </Link>
 
-          <p className="text-sm leading-relaxed" style={{ color:'rgba(255,255,255,0.65)',fontFamily:"'Hind',sans-serif" }}>
+          <p className="text-sm leading-relaxed" style={{ color:'rgba(255,255,255,0.65)',fontFamily:"'Inter',sans-serif" }}>
             Authentic authentic style cooking with traditional recipes, fresh ingredients, and warm family hospitality since 2010.
           </p>
 
@@ -45,12 +45,12 @@ const Footer = () => (
           <div className="flex gap-2">
             <a href="https://www.swiggy.com/" target="_blank" rel="noreferrer"
               className="flex-1 flex justify-center items-center py-2 rounded-lg text-xs font-bold"
-              style={{ background:'rgba(252,128,25,0.15)',border:'1.5px solid rgba(252,128,25,0.45)',color:'#fc8019',fontFamily:"'Baloo 2',sans-serif" }}>
+              style={{ background:'rgba(252,128,25,0.15)',border:'1.5px solid rgba(252,128,25,0.45)',color:'#fc8019',fontFamily:"'Playfair Display',sans-serif" }}>
               SWIGGY
             </a>
             <a href="https://www.zomato.com/" target="_blank" rel="noreferrer"
               className="flex-1 flex justify-center items-center py-2 rounded-lg text-xs font-bold"
-              style={{ background:'rgba(203,32,45,0.15)',border:'1.5px solid rgba(203,32,45,0.4)',color:'#cb202d',fontFamily:"'Baloo 2',sans-serif" }}>
+              style={{ background:'rgba(203,32,45,0.15)',border:'1.5px solid rgba(203,32,45,0.4)',color:'#cb202d',fontFamily:"'Playfair Display',sans-serif" }}>
               zomato
             </a>
           </div>
@@ -59,7 +59,7 @@ const Footer = () => (
         {/* Quick Links */}
         <div>
           <h3 className="text-xs font-bold mb-5 uppercase"
-            style={{ color:'#E0B030',letterSpacing:'0.18em',fontFamily:"'Baloo 2',sans-serif" }}>
+            style={{ color:'#E0B030',letterSpacing:'0.18em',fontFamily:"'Playfair Display',sans-serif" }}>
             Quick Links
           </h3>
           <ul className="space-y-2.5">
@@ -67,7 +67,7 @@ const Footer = () => (
               <li key={l.label}>
                 <Link to={l.path} onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}
                   className="text-sm inline-flex items-center gap-1 hover:translate-x-1 transition-all"
-                  style={{ color:'rgba(255,255,255,0.7)',fontFamily:"'Hind',sans-serif" }}>
+                  style={{ color:'rgba(255,255,255,0.7)',fontFamily:"'Inter',sans-serif" }}>
                   <span style={{ color:'#D4731A' }}>›</span> {l.label}
                 </Link>
               </li>
@@ -78,7 +78,7 @@ const Footer = () => (
         {/* Contact */}
         <div>
           <h3 className="text-xs font-bold mb-5 uppercase"
-            style={{ color:'#E0B030',letterSpacing:'0.18em',fontFamily:"'Baloo 2',sans-serif" }}>
+            style={{ color:'#E0B030',letterSpacing:'0.18em',fontFamily:"'Playfair Display',sans-serif" }}>
             Contact Us
           </h3>
           <ul className="space-y-3 text-sm" style={{ color:'rgba(255,255,255,0.7)' }}>
@@ -106,18 +106,18 @@ const Footer = () => (
         {/* Hours */}
         <div>
           <h3 className="text-xs font-bold mb-5 uppercase"
-            style={{ color:'#E0B030',letterSpacing:'0.18em',fontFamily:"'Baloo 2',sans-serif" }}>
+            style={{ color:'#E0B030',letterSpacing:'0.18em',fontFamily:"'Playfair Display',sans-serif" }}>
             Opening Hours
           </h3>
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-3" style={{ color:'#E0B030' }}>
-              <Clock size={15}/> <span className="font-bold text-sm" style={{ fontFamily:"'Baloo 2',sans-serif" }}>All Days</span>
+              <Clock size={15}/> <span className="font-bold text-sm" style={{ fontFamily:"'Playfair Display',sans-serif" }}>All Days</span>
             </div>
             <div className="rounded-xl p-4" style={{ background:'rgba(212,115,26,0.12)',border:'1.5px solid rgba(224,176,48,0.25)' }}>
-              <p className="font-bold text-white text-lg" style={{ fontFamily:"'Baloo 2',sans-serif" }}>11:00 AM – 11:00 PM</p>
+              <p className="font-bold text-white text-lg" style={{ fontFamily:"'Playfair Display',sans-serif" }}>11:00 AM – 11:00 PM</p>
               <p className="text-xs mt-1" style={{ color:'rgba(255,255,255,0.5)' }}>Monday – Sunday (All Days)</p>
             </div>
-            <p className="text-xs leading-relaxed" style={{ color:'rgba(255,255,255,0.5)',fontFamily:"'Hind',sans-serif" }}>
+            <p className="text-xs leading-relaxed" style={{ color:'rgba(255,255,255,0.5)',fontFamily:"'Inter',sans-serif" }}>
               Dine-in, Takeaway & Home Delivery. Catering for events & functions.
             </p>
           </div>

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Tiro+Telugu&family=Hind:wght@400;500;600;700&family=Baloo+2:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tiro+Telugu&family=Inter:wght@400;500;600;700&family=Baloo+2:wght@400;500;600;700;800&display=swap');
 
 /* ============================================================
    SRI MAHALAKSHMI — WARM authentic restaurant DESIGN SYSTEM
@@ -26,7 +26,7 @@
   --color-red:           #C0392B;   /* Non-veg red */
 
   --font-heading:  "Baloo 2", "Arial", sans-serif;
-  --font-body:     "Hind", "Arial", sans-serif;
+  --font-body:     "Inter", "Arial", sans-serif;
   --font-telugu:   "Tiro Telugu", serif;
 }
 
@@ -39,7 +39,7 @@
   body {
     background-color: #FFF8EC;
     color: #2C1A00;
-    font-family: "Hind", "Arial", sans-serif;
+    font-family: "Inter", "Arial", sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
