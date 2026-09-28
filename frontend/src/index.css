@@ -1,0 +1,228 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Tiro+Telugu&family=Hind:wght@400;500;600;700&family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+/* ============================================================
+   SRI MAHALAKSHMI — WARM authentic restaurant DESIGN SYSTEM
+   "Homely, Earthy, Approachable — Like a beloved dhaba"
+   ============================================================ */
+
+@theme {
+  /* Core Palette — Warm, Earthy, Village */
+  --color-primary:       #D4731A;   /* Warm Saffron/Turmeric Orange */
+  --color-primary-dark:  #B05D10;   /* Darker Saffron */
+  --color-primary-light: #F08C30;   /* Lighter Saffron */
+  --color-green:         #1B4332;   /* Banana Leaf Green */
+  --color-green-dark:    #0D2219;   /* Deep Green */
+  --color-green-light:   #4A8C4C;   /* Lighter Green */
+  --color-gold:          #C4960A;   /* Earthy Gold */
+  --color-gold-light:    #E0B030;   /* Warm Gold */
+  --color-cream:         #FFF8EC;   /* Warm Buttermilk Cream */
+  --color-cream-dark:    #F5EBCF;   /* Darker Cream */
+  --color-brown:         #5C2D0E;   /* Earthy Brown */
+  --color-brown-light:   #8B4513;   /* Sienna Brown */
+  --color-text:          #2C1A00;   /* Deep Warm Black */
+  --color-text-soft:     #6B4423;   /* Warm Muted Brown */
+  --color-bg:            #FFF8EC;   /* Warm Cream Background */
+  --color-red:           #C0392B;   /* Non-veg red */
+
+  --font-heading:  "Baloo 2", "Arial", sans-serif;
+  --font-body:     "Hind", "Arial", sans-serif;
+  --font-telugu:   "Tiro Telugu", serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: #FFF8EC;
+  }
+
+  body {
+    background-color: #FFF8EC;
+    color: #2C1A00;
+    font-family: "Hind", "Arial", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Baloo 2", sans-serif;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #F5EBCF; }
+  ::-webkit-scrollbar-thumb { background: #D4731A; border-radius: 3px; }
+}
+
+@layer utilities {
+  /* === EARTHY SECTION HEADER === */
+  .earthy-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  /* === DHABA-STYLE CARD === */
+  .dhaba-card {
+    background: #FFFFFF;
+    border: 1.5px solid rgba(196, 150, 10, 0.35);
+    border-radius: 10px;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 10px rgba(92, 45, 14, 0.08);
+  }
+
+  .dhaba-card:hover {
+    border-color: #D4731A;
+    box-shadow: 0 6px 20px rgba(212, 115, 26, 0.15);
+    transform: translateY(-3px);
+  }
+
+  /* === SAFFRON BUTTON === */
+  .btn-saffron {
+    background: #D4731A;
+    color: white;
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 700;
+    padding: 0.65rem 1.6rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.25s;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+  .btn-saffron:hover {
+    background: #B05D10;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(212,115,26,0.4);
+  }
+
+  /* === GREEN BUTTON === */
+  .btn-leaf {
+    background: #1B4332;
+    color: white;
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 700;
+    padding: 0.65rem 1.6rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.25s;
+    font-size: 0.9rem;
+  }
+  .btn-leaf:hover {
+    background: #0D2219;
+    transform: translateY(-2px);
+  }
+
+  /* === VEG / NON-VEG DOTS === */
+  .veg-box {
+    width: 14px; height: 14px;
+    border: 1.5px solid #1B4332;
+    border-radius: 2px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .veg-box::after {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #1B4332;
+  }
+  .nonveg-box {
+    width: 14px; height: 14px;
+    border: 1.5px solid #C0392B;
+    border-radius: 2px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .nonveg-box::after {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #C0392B;
+  }
+
+  /* === WARM DIVIDER LINE === */
+  .warm-divider {
+    height: 2px;
+    background: linear-gradient(to right, transparent, #D4731A, #C4960A, #D4731A, transparent);
+    margin: 1.5rem 0;
+  }
+
+  /* === PRICE TAG === */
+  .price-bold {
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 800;
+    color: #1B4332;
+    font-size: 1.1rem;
+  }
+
+  /* === MENU ROW — READABLE FOR EVERYONE === */
+  .menu-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0;
+    border-bottom: 1px dashed rgba(196,150,10,0.25);
+    font-size: 0.88rem;
+    gap: 0.5rem;
+  }
+  .menu-row:last-child { border-bottom: none; }
+
+  /* === HIGHLIGHT BAR ITEM === */
+  .bar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 90px;
+  }
+
+  /* === FLOAT ANIMATION === */
+  @keyframes gentleFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-6px); }
+  }
+  .float { animation: gentleFloat 2.8s ease-in-out infinite; }
+
+  /* === FADE IN === */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in-up { animation: fadeInUp 0.55s ease-out forwards; }
+
+  /* === SAFFRON SHIMMER FOR PRICES === */
+  @keyframes priceGlow {
+    0%, 100% { color: #1B4332; }
+    50%       { color: #4A8C4C; }
+  }
+
+  /* === BANANA LEAF PATTERN === */
+  .banana-bg {
+    background-color: #1B4332;
+    background-image:
+      radial-gradient(ellipse at 10% 30%, rgba(212,115,26,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 70%, rgba(196,150,10,0.08) 0%, transparent 60%);
+  }
+
+  /* === RUSTIC PAPER TEXTURE === */
+  .paper-texture {
+    background-color: #FFF8EC;
+    background-image:
+      radial-gradient(#D4731A 0.5px, transparent 0.5px),
+      radial-gradient(#D4731A 0.5px, transparent 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    background-attachment: fixed;
+    opacity: 0.03;
+  }
+
+  /* TOASTER override */
+  .toast-village {
+    background: #1B4332 !important;
+    color: #FFF8EC !important;
+    border-radius: 8px !important;
+  }
+}
