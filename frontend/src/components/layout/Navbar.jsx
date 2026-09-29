@@ -53,10 +53,9 @@ const Navbar = () => {
               className="flex items-center gap-3 z-50 group transition-transform duration-300 hover:scale-105"
             >
               <img 
-                src="/logo-icon.jpg" 
+                src="/logo-sm.svg" 
                 alt="Logo" 
-                className="h-10 md:h-12 w-auto object-contain rounded-md" 
-                style={{ mixBlendMode: 'screen' }} 
+                className="h-12 md:h-14 w-auto object-contain rounded-md" 
               />
               <div className="flex flex-col">
                 <div

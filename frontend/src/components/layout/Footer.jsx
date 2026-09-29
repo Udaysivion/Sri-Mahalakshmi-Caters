@@ -11,8 +11,28 @@ const Footer = () => (
         
         {/* Brand & Mission */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/3">
-          <Link to="/" onClick={()=>window.scrollTo(0,0)} className="mb-4 inline-block">
-            <img src="/logo-icon.jpg" alt="Sri Mahalakshmi" className="h-14 w-auto object-contain mix-blend-screen opacity-90 hover:opacity-100 transition-opacity" />
+          <Link to="/" onClick={()=>window.scrollTo(0,0)} className="mb-6 flex flex-col items-center md:items-start group">
+            <img src="/logo-sm.svg" alt="Sri Mahalakshmi Logo" className="h-16 md:h-20 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity mb-3" />
+            <div className="flex flex-col items-center md:items-start">
+              <div
+                className="font-extrabold leading-none mb-1.5"
+                style={{ fontFamily: "'Playfair Display', serif", color: '#F3D28F', fontSize: '1.4rem', letterSpacing: '0.02em' }}
+              >
+                Sri Mahalakshmi
+              </div>
+              <div
+                className="leading-none mb-2"
+                style={{ color: '#D4731A', fontSize: '0.7rem', letterSpacing: '0.15em', fontFamily: "'Inter', sans-serif", fontWeight: 700, textTransform: 'uppercase' }}
+              >
+                Kitchen & Caterers
+              </div>
+              <div
+                className="leading-none"
+                style={{ color: '#88A394', fontSize: '0.55rem', letterSpacing: '0.2em', fontFamily: "'Inter', sans-serif", fontWeight: 600, textTransform: 'uppercase' }}
+              >
+                Taste, Celebrate, Repeat
+              </div>
+            </div>
           </Link>
           <p className="text-gray-400 text-xs leading-relaxed max-w-[250px] mb-6">
             Authentic South Indian culinary experiences and premium event catering since 2010.
