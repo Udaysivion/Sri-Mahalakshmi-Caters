@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import { useInView } from 'react-intersection-observer';
 import { Star, ArrowRight, CheckCircle2, Users, Utensils, Award, Leaf, Truck, ShieldCheck, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useMenuData } from '../hooks/useMenuData';
 
 // Animations
 const fadeUp = { hidden:{opacity:0,y:30}, visible:{opacity:1,y:0,transition:{duration:0.6}} };
@@ -160,12 +161,10 @@ const MenuSection = () => {
   const [activeTab, setActiveTab] = useState('All');
   const { addToCart, setIsCartOpen } = useCart();
   
-  const menuItems = [
-    { id:1, cat:'Curries', name:'Paneer Butter Masala', desc:'Rich creamy tomato gravy with soft paneer cubes.', price:200, img:'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&q=80&w=400' },
-    { id:2, cat:'Biryani', name:'Chicken Dum Biryani', desc:'Slow cooked aromatic basmati rice with tender chicken.', price:140, img:'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&q=80&w=400' },
-    { id:3, cat:'Tiffins', name:'Masala Dosa', desc:'Crispy golden dosa stuffed with spiced potato masala.', price:60, img:'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=400' },
-    { id:4, cat:'Tiffins', name:'Idly Sambar', desc:'Soft steamed rice cakes served with hot lentil soup.', price:50, img:'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&q=80&w=400' }
-  ];
+  const { menuItems: allMenuItems, loading } = useMenuData();
+
+  // Pick first 4 items or filter based on something to show in highlights
+  const menuItems = allMenuItems.slice(0, 4);
 
   const handleAdd = (item) => {
     addToCart(item);
@@ -198,29 +197,35 @@ const MenuSection = () => {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {menuItems.map(item => (
-            <motion.div whileHover={{ y: -5 }} key={item.id} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 group hover:shadow-xl transition-all cursor-pointer">
-              <div className="relative h-48 rounded-xl overflow-hidden mb-4">
-                <img src={item.img} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-md text-[10px] font-bold text-[#D4731A] shadow-sm tracking-wider">NEW</div>
-              </div>
-              <div className="px-2 pb-2">
-                <h3 className="font-bold text-[#112A1F] text-lg mb-1" style={{ fontFamily:"'Playfair Display',serif" }}>{item.name}</h3>
-                <p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">{item.desc}</p>
-                <div className="flex justify-between items-end border-t border-gray-50 pt-3">
-                  <div>
-                    <span className="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">Price</span>
-                    <span className="font-bold text-[#112A1F] text-lg">₹{item.price}</span>
-                  </div>
-                  <button onClick={(e) => { e.stopPropagation(); handleAdd(item); }} className="px-4 py-1.5 rounded-full border border-gray-200 text-[#112A1F] text-xs font-bold hover:bg-[#112A1F] hover:text-white transition-colors flex items-center gap-1">
-                    Add <span className="text-lg leading-none mb-0.5">+</span>
-                  </button>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-[#112A1F]">Loading popular dishes...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {menuItems.map(item => (
+              <motion.div whileHover={{ y: -5 }} key={item.id} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 group hover:shadow-xl transition-all cursor-pointer">
+                <div className="relative h-48 rounded-xl overflow-hidden mb-4">
+                  <img src={item.img} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-md text-[10px] font-bold text-[#D4731A] shadow-sm tracking-wider">NEW</div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                <div className="px-2 pb-2">
+                  <h3 className="font-bold text-[#112A1F] text-lg mb-1" style={{ fontFamily:"'Playfair Display',serif" }}>{item.name}</h3>
+                  <p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">{item.desc}</p>
+                  <div className="flex justify-between items-end border-t border-gray-50 pt-3">
+                    <div>
+                      <span className="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">Price</span>
+                      <span className="font-bold text-[#112A1F] text-lg">₹{item.price}</span>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); handleAdd(item); }} className="px-4 py-1.5 rounded-full border border-gray-200 text-[#112A1F] text-xs font-bold hover:bg-[#112A1F] hover:text-white transition-colors flex items-center gap-1">
+                      Add <span className="text-lg leading-none mb-0.5">+</span>
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
