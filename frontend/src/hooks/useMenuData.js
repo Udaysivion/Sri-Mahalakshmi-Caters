@@ -29,13 +29,25 @@ export const useMenuData = () => {
             if (cat.includes('Biryani')) cat = 'Biryani';
             else if (cat.includes('Chinese')) cat = 'Chinese';
 
+            let imgUrl = row['image url']?.trim();
+            if (imgUrl && imgUrl.includes('drive.google.com')) {
+              const match = imgUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+              const idMatch = imgUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+              const id = (match && match[1]) || (idMatch && idMatch[1]);
+              if (id) {
+                // Use lh3.googleusercontent.com which reliably returns raw image data for <img> tags
+                imgUrl = `https://lh3.googleusercontent.com/d/${id}`;
+              }
+            }
+            imgUrl = imgUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400';
+
             return {
               id: `sheet-${index}`,
               cat: cat,
               name: name,
               price: price,
               type: isNonVeg ? 'Non-Veg' : 'Veg',
-              img: row['image url']?.trim() || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400',
+              img: imgUrl,
               desc: row['Category'] || '', 
               best: false,
               special: false
