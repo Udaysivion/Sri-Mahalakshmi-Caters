@@ -1,27 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2, X, RefreshCw } from 'lucide-react';
+import galleryApi from '@/features/gallery/api/galleryApi';
+
+const DEFAULT_IMAGES = [
+  { id: 1, src: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Morning Prep' },
+  { id: 2, src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Grand Wedding Setup' },
+  { id: 3, src: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Live Counter Service' },
+  { id: 4, src: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Traditional Cooking' },
+  { id: 5, src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Corporate Banquet' },
+  { id: 6, src: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Food Distribution' },
+  { id: 7, src: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Intimate Gathering' },
+  { id: 8, src: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Master Chef Preparing Tawa Dosa' },
+  { id: 9, src: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Serving Hot Sambar Idly' },
+];
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [images, setImages] = useState(DEFAULT_IMAGES);
+  const [loading, setLoading] = useState(true);
 
-  const tabs = ['All', 'Kitchen', 'Events', 'Catering'];
+  useEffect(() => {
+    const fetchGallery = async () => {
+      setLoading(true);
+      try {
+        const data = await galleryApi.getGallery('All');
+        if (data && data.all && data.all.length > 0) {
+          setImages(data.all);
+        }
+      } catch (err) {
+        console.warn('Could not load gallery from database:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const images = [
-    { id: 1, src: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Morning Prep' },
-    { id: 2, src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Grand Wedding Setup' },
-    { id: 3, src: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Live Counter Service' },
-    { id: 4, src: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Traditional Cooking' },
-    { id: 5, src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Corporate Banquet' },
-    { id: 6, src: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Food Distribution' },
-    { id: 7, src: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&q=80&w=800', category: 'Events', title: 'Intimate Gathering' },
-    { id: 8, src: 'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=800', category: 'Kitchen', title: 'Master Chef at Work' },
-    { id: 9, src: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=800', category: 'Catering', title: 'Serving Hot Dosas' },
-  ];
+    fetchGallery();
+  }, []);
 
-  const filteredImages = activeTab === 'All' ? images : images.filter(img => img.category === activeTab);
+  // Derive tabs dynamically from images currently in database (including dish categories)
+  const dynamicCategories = Array.from(new Set(images.map((img) => img.category).filter(Boolean)));
+  const tabs = ['All', ...(dynamicCategories.length > 0 ? dynamicCategories : ['Kitchen', 'Events', 'Catering'])];
+
+  const filteredImages = activeTab === 'All' ? images : images.filter((img) => img.category === activeTab);
 
   return (
     <motion.div
@@ -115,7 +138,7 @@ const Gallery = () => {
                 onClick={() => setSelectedImage(img)}
               >
                 <img
-                  src={img.src}
+                  src={img.src || img.image_url}
                   alt={img.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -180,7 +203,7 @@ const Gallery = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              src={selectedImage.src}
+              src={selectedImage.src || selectedImage.image_url}
               alt={selectedImage.title}
               className="max-w-full max-h-[75vh] object-contain rounded-lg"
               style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.6)', border: '2px solid rgba(200,168,75,0.4)' }}

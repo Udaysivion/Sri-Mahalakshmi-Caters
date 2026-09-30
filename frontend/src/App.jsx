@@ -21,6 +21,7 @@ const Gallery = lazy(() => import('./pages/Gallery'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Catering = lazy(() => import('./pages/Catering'));
 
+const Admin = lazy(() => import('./pages/Admin'));
 const Testimonials = lazy(() => import('./pages/Testimonials'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Terms = lazy(() => import('./pages/Terms'));
@@ -52,6 +53,7 @@ const AnimatedRoutes = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/admin" element={<Admin />} />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
@@ -61,24 +63,43 @@ const AnimatedRoutes = () => {
   );
 };
 
+const AppContent = () => {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
+
+  if (isAdmin) {
+    return (
+      <main className="flex-grow">
+        <Suspense fallback={<Loader />}>
+          <AnimatedRoutes />
+        </Suspense>
+      </main>
+    );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen" style={{ background:'#FFF8EC' }}>
+      <Navbar />
+      <main className="flex-grow">
+        <Suspense fallback={<Loader />}>
+          <AnimatedRoutes />
+        </Suspense>
+      </main>
+      <Footer />
+      <FloatingButtons />
+      <CartDrawer />
+    </div>
+  );
+};
+
 function App() {
   return (
     <HelmetProvider>
       <CartProvider>
         <Router>
-        <ScrollToTop />
-        <Toaster position="bottom-center" toastOptions={{ style: { background: '#1A1A1A', color: '#F7E8D0', borderRadius: '100px', padding: '16px 24px' } }} />
-        <div className="flex flex-col min-h-screen" style={{ background:'#FFF8EC' }}>
-          <Navbar />
-          <main className="flex-grow">
-            <Suspense fallback={<Loader />}>
-              <AnimatedRoutes />
-            </Suspense>
-          </main>
-          <Footer />
-          <FloatingButtons />
-          <CartDrawer />
-        </div>
+          <ScrollToTop />
+          <Toaster position="bottom-center" toastOptions={{ style: { background: '#1A1A1A', color: '#F7E8D0', borderRadius: '100px', padding: '16px 24px' } }} />
+          <AppContent />
         </Router>
       </CartProvider>
     </HelmetProvider>

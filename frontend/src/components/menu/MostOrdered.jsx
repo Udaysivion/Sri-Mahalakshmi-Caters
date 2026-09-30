@@ -2,15 +2,23 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Award } from 'lucide-react';
-
-const topDishes = [
-  { rank: "01", name: "Dal Makhani", desc: "Our 24-hour slow-cooked masterpiece.", image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&q=80&w=600" },
-  { rank: "02", name: "Tandoori Chicken", desc: "Classic perfection with our secret spice blend.", image: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&q=80&w=600" },
-  { rank: "03", name: "Dum Biryani", desc: "Aromatic aged basmati and tender mutton.", image: "https://images.unsplash.com/photo-1526315274106-ee192b028682?auto=format&fit=crop&q=80&w=600" },
-];
+import { useMenuData } from '../../hooks/useMenuData';
 
 const MostOrdered = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const { menuItems, loading } = useMenuData();
+
+  // Dynamically select popular dishes from database
+  const popularDishes = (menuItems || [])
+    .filter(item => item.best || item.is_popular)
+    .slice(0, 3);
+
+  const topDishes = (popularDishes.length >= 3 ? popularDishes : (menuItems || []).slice(0, 3)).map((item, idx) => ({
+    rank: `0${idx + 1}`,
+    name: item.name,
+    desc: item.desc || item.description,
+    image: item.img || item.imageUrl || item.image
+  }));
 
   return (
     <section className="bg-bg py-32 border-b border-luxury">

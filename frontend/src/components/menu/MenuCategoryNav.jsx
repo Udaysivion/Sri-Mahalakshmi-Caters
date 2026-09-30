@@ -1,73 +1,72 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Leaf, Drumstick, Utensils } from 'lucide-react';
+import { useMenuData } from '../../hooks/useMenuData';
 
-export const categories = [
-  "All", "Tiffins", "Chinese", "Biryani & Curries"
+export const defaultCategories = [
+  "All", "Tiffins", "Chinese", "Biryani", "Curries", "Rice"
 ];
 
-const MenuCategoryNav = ({ activeCategory, setActiveCategory, dietaryPreference, setDietaryPreference }) => {
+export const categories = defaultCategories;
+
+const MenuCategoryNav = ({ activeCategory, setActiveCategory, dietaryPreference, setDietaryPreference, customCategories }) => {
+  const { menuItems } = useMenuData();
+
+  // Derive categories dynamically from database items
+  const dynamicCategories = Array.from(new Set((menuItems || []).map(i => i.cat || i.category).filter(Boolean)));
+  const displayCategories = customCategories || (dynamicCategories.length > 0 ? ['All', ...dynamicCategories] : defaultCategories);
   return (
-    <div className="bg-bg relative z-40 py-8 mb-8 border-y border-luxury">
+    <div className="bg-[#FFF8EC] relative z-40 py-6 mb-8 border-y border-[#1B4332]/10">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-          
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
           {/* Left: Dietary Preferences Toggle */}
-          <div className="flex items-center gap-4 bg-bg border border-luxury p-1">
+          <div className="flex items-center gap-2 bg-white border border-[#1B4332]/15 p-1 rounded-xl">
             <button
               onClick={() => setDietaryPreference("All")}
-              className={`flex items-center gap-2 px-6 py-3 text-[10px] tracking-widest uppercase font-bold transition-all duration-500 ${
-                dietaryPreference === "All" ? "bg-primary text-bg" : "text-text-muted hover:text-white"
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                dietaryPreference === "All" ? "bg-[#1B4332] text-white" : "text-[#1B4332] hover:bg-stone-50"
               }`}
             >
-              <Utensils size={14} /> All
+              <Utensils size={13} /> All
             </button>
             <button
               onClick={() => setDietaryPreference("Veg")}
-              className={`flex items-center gap-2 px-6 py-3 text-[10px] tracking-widest uppercase font-bold transition-all duration-500 ${
-                dietaryPreference === "Veg" ? "bg-green-600 text-white" : "text-text-muted hover:text-white"
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                dietaryPreference === "Veg" ? "bg-emerald-700 text-white" : "text-emerald-700 hover:bg-emerald-50"
               }`}
             >
-              <Leaf size={14} className={dietaryPreference === "Veg" ? "text-white" : "text-green-500"} /> Veg
+              <Leaf size={13} /> Veg
             </button>
             <button
               onClick={() => setDietaryPreference("Non-Veg")}
-              className={`flex items-center gap-2 px-6 py-3 text-[10px] tracking-widest uppercase font-bold transition-all duration-500 ${
-                dietaryPreference === "Non-Veg" ? "bg-red-600 text-white" : "text-text-muted hover:text-white"
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                dietaryPreference === "Non-Veg" ? "bg-rose-700 text-white" : "text-rose-700 hover:bg-rose-50"
               }`}
             >
-              <Drumstick size={14} className={dietaryPreference === "Non-Veg" ? "text-white" : "text-red-500"} /> Non-Veg
+              <Drumstick size={13} /> Non-Veg
             </button>
           </div>
 
           {/* Right: Category Selector */}
           <div className="w-full lg:w-auto flex flex-wrap gap-2 items-center justify-center">
-            {categories.map((cat) => {
+            {displayCategories.map((cat) => {
               const isActive = activeCategory === cat;
               return (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`relative whitespace-nowrap px-6 py-3 text-[10px] tracking-[0.2em] uppercase font-semibold transition-colors duration-500 border ${
-                    isActive ? "text-bg border-primary" : "text-text-muted border-transparent hover:text-white hover:border-luxury"
+                  className={`px-5 py-2 text-xs font-bold rounded-full transition-all border ${
+                    isActive
+                      ? "bg-[#1B4332] text-white border-[#1B4332] shadow-sm"
+                      : "bg-white text-[#1B4332] border-stone-200 hover:border-[#1B4332]"
                   }`}
                 >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeCategoryBox"
-                      className="absolute inset-0 bg-primary z-0"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10">{cat}</span>
+                  {cat}
                 </button>
               );
             })}
           </div>
-
         </div>
-
       </div>
     </div>
   );

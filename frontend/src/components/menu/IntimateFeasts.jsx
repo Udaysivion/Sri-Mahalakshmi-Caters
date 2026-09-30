@@ -5,15 +5,15 @@ import { Users } from 'lucide-react';
 
 const feasts = [
   {
-    title: "The Executive Tasting",
+    title: "The Royal South Indian Feast",
     guests: "For 2 to 4 Guests",
-    desc: "A meticulous 7-course journey through our signature creations, designed for intimate business closures or profound celebrations.",
-    image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=1000"
+    desc: "A meticulous multi-course journey through our authentic curries, fragrant rices, crisp dosas, and rich traditional sweets.",
+    image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&q=80&w=1000"
   },
   {
-    title: "The Maharaja's Table",
+    title: "The Grand Biryani & Starters Feast",
     guests: "For 6 to 8 Guests",
-    desc: "Our most exclusive offering. A grand, communal centerpiece featuring whole roasted lamb and rare saffron-infused biryanis, strictly limited to tables of up to 8.",
+    desc: "Our most celebratory offering. A grand communal spread featuring our signature Chicken Dum Biryani, Chicken 65, Veg Manchuria, and rich payasam.",
     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=1000"
   }
 ];

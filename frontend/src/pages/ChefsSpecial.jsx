@@ -1,11 +1,21 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
+import { useMenuData } from '../hooks/useMenuData';
 
 const ChefsSpecial = () => {
+  const { menuItems } = useMenuData();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Dynamically get the chef's special dish from the database
+  const specialDish = (menuItems || []).find(item => item.special || item.is_signature) || (menuItems || [])[0] || {
+    name: 'Special Chicken Dum Biryani',
+    desc: 'Slow-cooked over gentle dum with fragrant aged basmati rice, farm-fresh chicken, and secret heritage spices.',
+    price: 220
+  };
 
   return (
     <motion.div
@@ -32,9 +42,9 @@ const ChefsSpecial = () => {
         <h2 className="text-3xl font-heading font-bold text-dark mb-6">Today's Highlight</h2>
         <p className="text-lg text-gray-700 font-medium mb-10">Our kitchen is preparing fresh, seasonal delicacies using farm-sourced ingredients. Ask your server about today's fresh specials when you visit!</p>
         <div className="bg-white p-10 border border-gray-200 rounded-lg shadow-sm">
-           <h3 className="text-2xl font-heading font-bold text-dark mb-4">Wood-fired Handi Mutton</h3>
-           <p className="text-gray-600 font-medium mb-6">Slow-cooked over a wood fire for 6 hours, infused with traditional spices and love.</p>
-           <span className="text-secondary font-bold text-xl block">₹650</span>
+           <h3 className="text-2xl font-heading font-bold text-dark mb-4">{specialDish.name}</h3>
+           <p className="text-gray-600 font-medium mb-6">{specialDish.desc || specialDish.description}</p>
+           <span className="text-secondary font-bold text-xl block">₹{specialDish.price}</span>
         </div>
       </div>
     </motion.div>

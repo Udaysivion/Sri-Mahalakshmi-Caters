@@ -1,30 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { MapPin, Phone, Mail, Clock, Send, MessageCircle, UtensilsCrossed, PartyPopper } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageCircle, UtensilsCrossed, PartyPopper } from 'lucide-react';
+import { TableReservationForm } from '@/features/reservation';
+import { CateringInquiryForm } from '@/features/catering';
 
 const Contact = () => {
   const [activeTab, setActiveTab] = useState('restaurant'); // 'restaurant' or 'catering'
-  
-  const { register: registerRest, handleSubmit: handleSubmitRest, formState:{ errors: errorsRest }, reset: resetRest } = useForm();
-  const { register: registerCat, handleSubmit: handleSubmitCat, formState:{ errors: errorsCat }, reset: resetCat } = useForm();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const onSubmitRestaurant = (data) => {
-    console.log("Restaurant Query:", data);
-    alert('Thank you! Your table reservation request has been received. We will call you to confirm shortly. 🙏');
-    resetRest();
-  };
-
-  const onSubmitCatering = (data) => {
-    console.log("Catering Query:", data);
-    alert('Thank you! Your catering inquiry has been received. Our event manager will contact you soon. 🎉');
-    resetCat();
-  };
 
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
@@ -111,147 +97,10 @@ const Contact = () => {
               <AnimatePresence mode="wait">
                 
                 {/* ─── RESTAURANT FORM ─── */}
-                {activeTab === 'restaurant' && (
-                  <motion.form 
-                    key="restaurant"
-                    initial={{opacity:0, x:-10}} animate={{opacity:1, x:0}} exit={{opacity:0, x:10}} transition={{duration:0.2}}
-                    onSubmit={handleSubmitRest(onSubmitRestaurant)} className="space-y-4">
-                    
-                    <div className="flex items-center gap-3 mb-5">
-                      <div style={{ height:'2px',width:'35px',background:'#D4731A' }}/>
-                      <h2 style={{ fontFamily:"'Playfair Display',sans-serif",color:'#1B4332',fontSize:'1.3rem',fontWeight:800 }}>
-                        Table Reservation & Queries
-                      </h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Full Name *</label>
-                        <input {...registerRest('name',{required:'Required'})} placeholder="Your full name"
-                          className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                        {errorsRest.name && <p className="text-red-500 text-xs mt-1">{errorsRest.name.message}</p>}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Phone *</label>
-                        <input {...registerRest('phone',{required:'Required'})} placeholder="+91 98765 43210"
-                          className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                        {errorsRest.phone && <p className="text-red-500 text-xs mt-1">{errorsRest.phone.message}</p>}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Date</label>
-                        <input type="date" {...registerRest('date')} 
-                          className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Time</label>
-                        <input type="time" {...registerRest('time')} 
-                          className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Guests</label>
-                        <select {...registerRest('guests')} className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}>
-                          <option>1-2 People</option>
-                          <option>3-4 People</option>
-                          <option>5-8 People</option>
-                          <option>9+ People</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Message / Special Requests</label>
-                      <textarea {...registerRest('message')} rows="3" placeholder="Any special requests or queries?"
-                        className="w-full px-4 py-3 text-sm rounded-xl outline-none resize-none"
-                        style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                    </div>
-
-                    <button type="submit"
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
-                      style={{ background:'#D4731A',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 4px 14px rgba(212,115,26,0.35)' }}>
-                      <Send size={15}/> Request Reservation
-                    </button>
-                  </motion.form>
-                )}
+                {activeTab === 'restaurant' && <TableReservationForm />}
 
                 {/* ─── CATERING FORM ─── */}
-                {activeTab === 'catering' && (
-                  <motion.form 
-                    key="catering"
-                    initial={{opacity:0, x:10}} animate={{opacity:1, x:0}} exit={{opacity:0, x:-10}} transition={{duration:0.2}}
-                    onSubmit={handleSubmitCat(onSubmitCatering)} className="space-y-4">
-                    
-                    <div className="flex items-center gap-3 mb-5">
-                      <div style={{ height:'2px',width:'35px',background:'#D4731A' }}/>
-                      <h2 style={{ fontFamily:"'Playfair Display',sans-serif",color:'#1B4332',fontSize:'1.3rem',fontWeight:800 }}>
-                        Catering & Bulk Order Inquiry
-                      </h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Full Name *</label>
-                        <input {...registerCat('name',{required:'Required'})} placeholder="Your full name"
-                          className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                        {errorsCat.name && <p className="text-red-500 text-xs mt-1">{errorsCat.name.message}</p>}
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Phone *</label>
-                        <input {...registerCat('phone',{required:'Required'})} placeholder="+91 98765 43210"
-                          className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                        {errorsCat.phone && <p className="text-red-500 text-xs mt-1">{errorsCat.phone.message}</p>}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Event Type</label>
-                        <select {...registerCat('eventType')} className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}>
-                          <option>Wedding/Reception</option>
-                          <option>Corporate Event</option>
-                          <option>Birthday/Party</option>
-                          <option>House Warming</option>
-                          <option>Other</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Est. Guests</label>
-                        <input type="number" {...registerCat('guests')} placeholder="e.g. 150"
-                          className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Event Date</label>
-                        <input type="date" {...registerCat('date')} 
-                          className="w-full px-4 py-3 text-sm rounded-xl outline-none"
-                          style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Venue Location & Details</label>
-                      <textarea {...registerCat('message')} rows="3" placeholder="Where is the event? Any specific menu preferences?"
-                        className="w-full px-4 py-3 text-sm rounded-xl outline-none resize-none"
-                        style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
-                    </div>
-
-                    <button type="submit"
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
-                      style={{ background:'#1B4332',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 4px 14px rgba(27,67,50,0.35)' }}>
-                      <Send size={15}/> Send Catering Inquiry
-                    </button>
-                  </motion.form>
-                )}
+                {activeTab === 'catering' && <CateringInquiryForm />}
               </AnimatePresence>
             </div>
           </motion.div>

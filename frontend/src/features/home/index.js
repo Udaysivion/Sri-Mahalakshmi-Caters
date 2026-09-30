@@ -1,0 +1,9 @@
+export { default as Collections } from '@/components/home/Collections';
+export { default as ExtraSections } from '@/components/home/ExtraSections';
+export { default as ExtraSections2 } from '@/components/home/ExtraSections2';
+export { default as FeaturedAwards } from '@/components/home/FeaturedAwards';
+export { default as FounderChefEditorials } from '@/components/home/FounderChefEditorials';
+export { default as LuxuryStatistics } from '@/components/home/LuxuryStatistics';
+export { default as SeasonalAndSpaces } from '@/components/home/SeasonalAndSpaces';
+export { default as SignatureExperiences } from '@/components/home/SignatureExperiences';
+export { default as TasteOfHomeExperience } from '@/components/home/TasteOfHomeExperience';

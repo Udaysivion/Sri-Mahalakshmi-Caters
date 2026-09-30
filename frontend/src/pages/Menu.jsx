@@ -102,10 +102,13 @@ const Menu = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const tabs = ['All','Tiffins','Chinese','Biryani','Curries','Rice'];
+  // Derive category tabs dynamically from database items
+  const dynamicCategories = Array.from(new Set(allItems.map(i => i.cat || i.category).filter(Boolean)));
+  const tabs = ['All', ...(dynamicCategories.length > 0 ? dynamicCategories : ['Tiffins','Chinese','Biryani','Curries','Rice'])];
 
   const filtered = allItems.filter(item => {
-    const tMatch = activeTab === 'All' || item.cat === activeTab;
+    const category = item.cat || item.category || '';
+    const tMatch = activeTab === 'All' || category.toLowerCase() === activeTab.toLowerCase();
     const dMatch = diet === 'All' || item.type === diet;
     const sMatch = item.name.toLowerCase().includes(search.toLowerCase());
     return tMatch && dMatch && sMatch;

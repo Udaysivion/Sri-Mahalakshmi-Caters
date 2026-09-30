@@ -14,7 +14,15 @@ const stagger = { visible:{transition:{staggerChildren:0.1}} };
 /* ══════════════════════════════════════════════
    1. HERO SECTION (Full-Width Background)
 ══════════════════════════════════════════════ */
-const Hero = () => (
+const Hero = () => {
+  const { menuItems } = useMenuData();
+  const spotlightDish = (menuItems || []).find(item => item.special || item.is_signature) || (menuItems || [])[0] || {
+    name: "Royal Hyderabadi Dum Biryani",
+    desc: "Aromatic long-grain basmati, saffron dum infusion & tender spices",
+    price: 220
+  };
+
+  return (
   <section className="relative min-h-screen flex items-center pt-24 pb-16 px-4 md:px-8 overflow-hidden">
     {/* Full Width Background Image */}
     <div className="absolute inset-0 z-0 bg-black">
@@ -91,12 +99,12 @@ const Hero = () => (
           
           {/* Title */}
           <h3 className="text-white font-bold text-[28px] mb-3 leading-tight" style={{ fontFamily:"'Playfair Display',serif" }}>
-            Royal Hyderabadi Dum Biryani
+            {spotlightDish.name}
           </h3>
           
           {/* Desc */}
           <p className="text-gray-400 text-xs leading-relaxed mb-6 font-light">
-            Aromatic long-grain basmati, saffron dum infusion & tender spices
+            {spotlightDish.desc || spotlightDish.description}
           </p>
           
           {/* Tags */}
@@ -109,7 +117,7 @@ const Hero = () => (
           <div className="flex items-center justify-between border-t border-white/10 pt-6">
             <div>
               <p className="text-[9px] text-gray-500 uppercase tracking-widest mb-1 font-bold">Special Price</p>
-              <p className="text-[#DCA145] font-bold text-2xl" style={{ fontFamily:"'Playfair Display',serif" }}>₹220</p>
+              <p className="text-[#DCA145] font-bold text-2xl" style={{ fontFamily:"'Playfair Display',serif" }}>₹{spotlightDish.price}</p>
             </div>
             <Link to="/menu" className="bg-[#DCA145] hover:bg-[#c99036] text-black px-6 py-2.5 rounded-full font-bold text-[10px] uppercase tracking-widest transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(220,161,69,0.2)]">
               Order Now <ArrowRight size={14}/>
@@ -121,7 +129,8 @@ const Hero = () => (
 
     </div>
   </section>
-);
+  );
+};
 
 /* ══════════════════════════════════════════════
    2. FEATURES BANNER (White)
@@ -163,8 +172,16 @@ const MenuSection = () => {
   
   const { menuItems: allMenuItems, loading } = useMenuData();
 
-  // Pick first 4 items or filter based on something to show in highlights
-  const menuItems = allMenuItems.slice(0, 4);
+  // Derive categories dynamically from database items
+  const dynamicCategories = Array.from(new Set(allMenuItems.map(i => i.cat || i.category).filter(Boolean)));
+  const categoryTabs = ['All', ...(dynamicCategories.length > 0 ? dynamicCategories : ['Tiffins','Chinese','Biryani','Curries','Rice'])];
+
+  // Filter items dynamically based on the active category tab
+  const filteredItems = allMenuItems.filter(item => {
+    if (activeTab === 'All') return true;
+    return (item.cat || item.category || '').toLowerCase() === activeTab.toLowerCase();
+  });
+  const menuItems = filteredItems.slice(0, 8);
 
   const handleAdd = (item) => {
     addToCart(item);
@@ -188,7 +205,7 @@ const MenuSection = () => {
 
         {/* Tabs */}
         <div className="flex gap-2 overflow-x-auto pb-6 hide-scrollbar">
-          {['All','Tiffins','Chinese','Biryani','Curries','Rice'].map(tab => (
+          {categoryTabs.map(tab => (
             <button key={tab} onClick={()=>setActiveTab(tab)}
               className={`px-6 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${activeTab===tab ? 'bg-[#112A1F] text-white border-[#112A1F]' : 'bg-white text-[#112A1F] border-gray-200 hover:border-[#112A1F]'}`}>
               {tab}

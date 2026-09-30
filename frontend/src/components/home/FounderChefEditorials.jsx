@@ -88,17 +88,17 @@ export const MasterChefEditorial = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10">
               <div>
-                <h4 className="text-white font-semibold tracking-widest text-xs uppercase mb-4 border-b border-luxury pb-2">Experience</h4>
+                <h4 className="text-white font-semibold tracking-widest text-xs uppercase mb-4 border-b border-luxury pb-2">Culinary Journey</h4>
                 <ul className="space-y-3">
-                  <li className="text-text-muted text-sm font-light flex justify-between"><span>Le Bernardin, NY</span> <span className="text-primary">2010</span></li>
-                  <li className="text-text-muted text-sm font-light flex justify-between"><span>Gaggan, Bangkok</span> <span className="text-primary">2015</span></li>
-                  <li className="text-text-muted text-sm font-light flex justify-between"><span>Taste of Home</span> <span className="text-primary">Present</span></li>
+                  <li className="text-text-muted text-sm font-light flex justify-between"><span>Warangal Traditional Kitchens</span> <span className="text-primary">2010</span></li>
+                  <li className="text-text-muted text-sm font-light flex justify-between"><span>Deccan Festive Catering</span> <span className="text-primary">2016</span></li>
+                  <li className="text-text-muted text-sm font-light flex justify-between"><span>Sri Mahalakshmi Caterers</span> <span className="text-primary">Present</span></li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-white font-semibold tracking-widest text-xs uppercase mb-4 border-b border-luxury pb-2">Philosophy</h4>
                 <p className="text-text-muted text-sm font-light leading-relaxed">
-                  "Respect the ingredient. Do not mask its true nature. We forage, we source ethically, and we plate with the precision of a watchmaker."
+                  "Authentic flavor comes from honesty in spices, unhurried traditional firewood cooking, and hospitality served from the heart."
                 </p>
               </div>
             </div>
@@ -106,8 +106,8 @@ export const MasterChefEditorial = () => {
             <div className="p-6 border border-luxury/50 bg-cream/5 backdrop-blur-sm relative overflow-hidden group cursor-default">
                <div className="absolute inset-0 bg-primary/5 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700"></div>
                <h4 className="text-white text-xs tracking-widest uppercase mb-2 relative z-10">Signature Masterpiece</h4>
-               <p className="text-primary font-heading text-xl mb-1 relative z-10">Truffle Infused Dal Bukhara</p>
-               <p className="text-text-muted font-light text-sm relative z-10">Slow-cooked over charcoal for 48 hours, finished with 24k gold leaf and black winter truffle.</p>
+               <p className="text-primary font-heading text-xl mb-1 relative z-10">Royal Hyderabadi Dum Biryani</p>
+               <p className="text-text-muted font-light text-sm relative z-10">Slow dum-cooked over charcoal embers in a sealed handi with rich saffron, fresh mint, and pure ghee.</p>
             </div>
           </motion.div>
 

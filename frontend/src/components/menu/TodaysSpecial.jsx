@@ -3,9 +3,18 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Quote, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useMenuData } from '../../hooks/useMenuData';
 
 const TodaysSpecial = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
+  const { menuItems, loading } = useMenuData();
+
+  // Dynamically pick the daily special from live menu data
+  const specialDish = (menuItems || []).find(item => item.special || item.is_signature) || (menuItems || [])[0] || {
+    name: 'Special Chicken Dum Biryani',
+    desc: "Crafted specifically for today's service using tender farm-fresh chicken slow-cooked with aged fragrant basmati rice, stone-ground spices, and pure desi ghee.",
+    img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&q=80&w=1200'
+  };
 
   return (
     <section className="bg-bg py-32 border-b border-luxury">
@@ -30,8 +39,8 @@ const TodaysSpecial = () => {
               </div>
               <div className="relative overflow-hidden aspect-square border border-luxury">
                 <img 
-                  src="https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&q=80&w=1200" 
-                  alt="Today's Special" 
+                  src={specialDish.img || specialDish.imageUrl || specialDish.image} 
+                  alt={specialDish.name} 
                   className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-110"
                 />
               </div>
@@ -42,23 +51,23 @@ const TodaysSpecial = () => {
               <span className="text-primary tracking-[0.4em] uppercase text-[10px] font-semibold mb-6 block">~ Chef's Daily Creation ~</span>
               
               <h2 className="text-4xl md:text-6xl font-heading font-light text-white mb-6">
-                Black Truffle & Wild Mushroom Risotto
+                {specialDish.name}
               </h2>
               
               <p className="text-text-muted font-light text-lg leading-relaxed mb-8">
-                Crafted specifically for tonight's service using wild mushrooms forged this morning and shaved black truffle imported directly from Alba. An ephemeral masterpiece that will only be served until our limited ingredients are depleted.
+                {specialDish.desc || specialDish.description}
               </p>
 
               <div className="flex flex-col gap-6 items-center lg:items-start mb-10 border-l-2 border-primary/30 pl-6 ml-2">
                 <Quote className="text-primary/50" size={24} />
                 <p className="text-white font-light italic text-xl">
-                  "This dish represents the absolute peak of the season. It is not just a meal; it is a fleeting moment captured on a plate."
+                  "This dish represents the absolute soul of our kitchen. It is not just a meal; it is generations of authentic culinary heritage on a plate."
                 </p>
-                <span className="text-text-muted text-[10px] uppercase tracking-widest">— Rajeev Sharma, Executive Chef</span>
+                <span className="text-text-muted text-[10px] uppercase tracking-widest">— Sri Mahalakshmi Master Chef</span>
               </div>
 
-              <Link to="/reserve" className="inline-block border border-primary bg-primary text-bg px-10 py-4 font-semibold text-xs tracking-[0.2em] uppercase hover:bg-transparent hover:text-primary transition-all duration-500">
-                Reserve This Dish
+              <Link to="/menu" className="inline-block border border-primary bg-primary text-bg px-10 py-4 font-semibold text-xs tracking-[0.2em] uppercase hover:bg-transparent hover:text-primary transition-all duration-500">
+                Explore Full Menu
               </Link>
             </div>
 
