@@ -82,7 +82,11 @@ const Footer = () => (
 
       {/* Bottom Bar */}
       <div className="pt-6 border-t border-white/10 flex flex-col-reverse md:flex-row justify-between items-center gap-4 text-[10px] text-gray-500 tracking-wider">
-        <p>&copy; {new Date().getFullYear()} Sri Mahalakshmi. All rights reserved.</p>
+        <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+          <p>&copy; {new Date().getFullYear()} Sri Mahalakshmi. All rights reserved.</p>
+          <span className="hidden md:block">|</span>
+          <p className="font-semibold text-gray-400">DEVELOPED BY SIVIONGLOBAL TECHNOLOGIES</p>
+        </div>
         <div className="flex gap-6">
           <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy</Link>
           <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
