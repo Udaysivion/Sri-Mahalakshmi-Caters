@@ -559,7 +559,7 @@ const BottomBanner = () => (
       <div className="w-full md:w-1/3 bg-[#FFF8EC] border border-gray-200 rounded-2xl p-8">
         <h3 className="font-bold text-[#112A1F] text-xl mb-6" style={{ fontFamily:"'Playfair Display',serif" }}>Sri Mahalakshmi</h3>
         <p className="text-sm text-gray-600 mb-4">123 Food Street, Kukatpally<br/>Hyderabad, Telangana 500072</p>
-        <p className="text-sm text-gray-600 mb-1"><strong>Phone:</strong> +91 98765 43210</p>
+        <p className="text-sm text-gray-600 mb-1"><strong>Phone:</strong> +91 77948 00042</p>
         <p className="text-sm text-gray-600 mb-6"><strong>Email:</strong> info@srimahalakshmi.com</p>
         <Link to="/contact" className="w-full bg-white border border-gray-300 text-[#112A1F] px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex justify-center hover:bg-gray-50 transition-colors">
           Get Directions

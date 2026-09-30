@@ -59,8 +59,8 @@ const Contact = () => {
       <div style={{ background:'#1B4332' }} className="py-4">
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            {icon:<MapPin size={16}/>,label:'Location',val:'Warangal, Telangana'},
-            {icon:<Phone size={16}/>,label:'Phone',val:'+91 98765 43210'},
+            {icon:<MapPin size={16}/>,label:'Location',val:'Bahadurpally, Hyderabad'},
+            {icon:<Phone size={16}/>,label:'Phone',val:'+91 77948 00042'},
             {icon:<MessageCircle size={16}/>,label:'WhatsApp',val:'Chat Now'},
             {icon:<Clock size={16}/>,label:'Hours',val:'11 AM – 11 PM'},
           ].map((info,i)=>(
@@ -134,7 +134,7 @@ const Contact = () => {
                       </div>
                       <div>
                         <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Phone *</label>
-                        <input {...registerRest('phone',{required:'Required'})} placeholder="+91 98765 43210"
+                        <input {...registerRest('phone',{required:'Required'})} placeholder="+91 77948 00042"
                           className="w-full px-4 py-3 text-sm rounded-xl outline-none"
                           style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
                         {errorsRest.phone && <p className="text-red-500 text-xs mt-1">{errorsRest.phone.message}</p>}
@@ -205,7 +205,7 @@ const Contact = () => {
                       </div>
                       <div>
                         <label className="block text-xs font-bold uppercase mb-1.5" style={{ color:'#1B4332',letterSpacing:'0.07em' }}>Phone *</label>
-                        <input {...registerCat('phone',{required:'Required'})} placeholder="+91 98765 43210"
+                        <input {...registerCat('phone',{required:'Required'})} placeholder="+91 77948 00042"
                           className="w-full px-4 py-3 text-sm rounded-xl outline-none"
                           style={{ background:'#FFF8EC',border:'1.5px solid rgba(196,150,10,0.4)',color:'#2C1A00' }}/>
                         {errorsCat.phone && <p className="text-red-500 text-xs mt-1">{errorsCat.phone.message}</p>}
@@ -268,17 +268,21 @@ const Contact = () => {
               </h3>
               <ul className="space-y-4">
                 {[
-                  {icon:<MapPin size={18}/>,title:'Location',val:'Warangal, Telangana, India'},
-                  {icon:<Phone size={18}/>,title:'Phone',val:'+91 98765 43210'},
-                  {icon:<MessageCircle size={18}/>,title:'WhatsApp',val:'+91 98765 43210'},
-                  {icon:<Mail size={18}/>,title:'Email',val:'info@srimahalakshmi.com'},
+                  {icon:<MapPin size={18}/>,title:'Location',val:'Bahadurpally, Hyderabad, Telangana 500043', link: 'https://www.google.com/maps/dir//SRI+MAHALAKSHMI+KITCHEN+%26+CATERERS,+HC5R%2B7R2,+Bahadurpally,+Hyderabad,+Telangana+500043/@17.4343544,78.3955979,2663m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x3bcb8f0050329baf:0x8f493cc97407ac3!2m2!1d78.4419977!2d17.5581314?entry=ttu&g_ep=EgoyMDI2MDkyNy4xIKXMDSoASAFQAw%3D%3D'},
+                  {icon:<Phone size={18}/>,title:'Phone',val:'+91 77948 00042', link: 'tel:+917794800042'},
+                  {icon:<MessageCircle size={18}/>,title:'WhatsApp',val:'+91 77948 00042', link: 'https://wa.me/917794800042'},
+                  {icon:<Mail size={18}/>,title:'Email',val:'info@smahalakshmikitchen.com', link: 'mailto:info@smahalakshmikitchen.com'},
                   {icon:<Clock size={18}/>,title:'Working Hours',val:'Mon – Sun: 11 AM – 11 PM'},
                 ].map((item,i)=>(
                   <li key={i} className="flex items-start gap-3">
                     <span style={{ color:'#D4731A',marginTop:2 }}>{item.icon}</span>
                     <div>
                       <p className="text-xs font-bold uppercase mb-0.5" style={{ color:'#1B4332',fontFamily:"'Playfair Display',sans-serif",letterSpacing:'0.05em' }}>{item.title}</p>
-                      <p className="text-sm" style={{ color:'#6B4423',fontFamily:"'Inter',sans-serif" }}>{item.val}</p>
+                      {item.link ? (
+                        <a href={item.link} target={item.link.startsWith('http') ? '_blank' : '_self'} rel="noreferrer" className="text-sm hover:text-[#D4731A] transition-colors block leading-tight" style={{ color:'#6B4423',fontFamily:"'Inter',sans-serif" }}>{item.val}</a>
+                      ) : (
+                        <p className="text-sm" style={{ color:'#6B4423',fontFamily:"'Inter',sans-serif" }}>{item.val}</p>
+                      )}
                     </div>
                   </li>
                 ))}
@@ -286,12 +290,12 @@ const Contact = () => {
 
               {/* Quick CTA */}
               <div className="mt-5 flex gap-3">
-                <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"
+                <a href="https://wa.me/917794800042" target="_blank" rel="noreferrer"
                   className="flex-1 text-center py-2.5 rounded-xl font-bold text-sm"
                   style={{ background:'#25D366',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 3px 10px rgba(37,211,102,0.35)' }}>
                   💬 WhatsApp
                 </a>
-                <a href="tel:+919876543210"
+                <a href="tel:+917794800042"
                   className="flex-1 text-center py-2.5 rounded-xl font-bold text-sm"
                   style={{ background:'#D4731A',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 3px 10px rgba(212,115,26,0.35)' }}>
                   📞 Call Now
@@ -303,7 +307,7 @@ const Contact = () => {
             <div className="rounded-2xl overflow-hidden"
               style={{ border:'1.5px solid rgba(196,150,10,0.3)',height:'160px' }}>
               <iframe title="Sri Mahalakshmi Location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30407.9!2d79.5774!3d17.9784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3342fc5af82f59%3A0x7c848d7d7e83e8e7!2sWarangal%2C%20Telangana!5e0!3m2!1sen!2sin!4v1"
+                src="https://maps.google.com/maps?q=SRI%20MAHALAKSHMI%20KITCHEN%20%26%20CATERERS,%20Bahadurpally,%20Hyderabad,%20Telangana%20500043&t=&z=14&ie=UTF8&iwloc=&output=embed"
                 width="100%" height="100%" style={{ border:0 }} allowFullScreen="" loading="lazy"/>
             </div>
           </motion.div>

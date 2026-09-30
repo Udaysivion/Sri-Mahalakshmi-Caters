@@ -48,10 +48,10 @@ const OrderExperienceCTA = () => {
           <div className="pt-12 border-t border-luxury flex flex-col md:flex-row items-center justify-center gap-8">
             <span className="text-text-muted font-light text-sm uppercase tracking-widest">Connect with our Concierge:</span>
             <div className="flex gap-6">
-              <a href="tel:+919876543210" className="flex items-center gap-2 text-white hover:text-primary transition-colors font-light text-sm">
-                <Phone size={16} className="text-primary" /> +91 98765 43210
+              <a href="tel:+917794800042" className="flex items-center gap-2 text-white hover:text-primary transition-colors font-light text-sm">
+                <Phone size={16} className="text-primary" /> +91 77948 00042
               </a>
-              <a href="https://wa.me/919876543210" className="flex items-center gap-2 text-white hover:text-green-500 transition-colors font-light text-sm">
+              <a href="https://wa.me/917794800042" className="flex items-center gap-2 text-white hover:text-green-500 transition-colors font-light text-sm">
                 <MessageCircle size={16} className="text-green-500" /> WhatsApp
               </a>
             </div>

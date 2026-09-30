@@ -101,17 +101,29 @@ const Navbar = () => {
             </div>
 
             {/* ── DESKTOP ACTIONS ── */}
-            <div className="hidden lg:flex items-center gap-6">
+            <div className="hidden lg:flex items-center gap-5">
               <a
-                href="tel:+919876543210"
+                href="tel:+917794800042"
                 className="flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80"
                 style={{ color: textColor, fontFamily: "'Inter', sans-serif" }}
               >
                 <Phone size={16} style={{ color: goldAccent }} />
-                98765 43210
+                77948 00042
               </a>
 
               <div className="h-5 w-[1px]" style={{ background: isScrolled ? 'rgba(27,67,50,0.2)' : 'rgba(255,255,255,0.2)' }}></div>
+
+              <Link
+                to="/menu"
+                className="flex items-center gap-2 px-4 py-2 text-[11px] font-bold uppercase tracking-wider rounded-full transition-transform hover:scale-105 shadow-sm"
+                style={{ background: '#D4731A', color: 'white', fontFamily: "'Inter', sans-serif" }}
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-200 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                </span>
+                Order Now
+              </Link>
 
               <button
                 onClick={() => setIsCartOpen(true)}
@@ -193,20 +205,23 @@ const Navbar = () => {
 
             <div className="mt-auto p-6 flex flex-col gap-3 pb-12 bg-white" style={{ borderTop: '1px solid rgba(27,67,50,0.1)' }}>
               <a
-                href="tel:+919876543210"
+                href="tel:+917794800042"
                 className="flex items-center justify-center gap-2 py-3.5 rounded-none font-medium text-sm transition-colors hover:bg-gray-50"
                 style={{ color: '#1B4332', border: '1px solid #1B4332', fontFamily: "'Inter', sans-serif" }}
               >
                 <Phone size={18} style={{ color: '#1B4332' }} />
-                Call: +91 98765 43210
+                Call: +91 77948 00042
               </a>
               <Link
                 to="/menu"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-3.5 rounded-none font-medium text-sm transition-colors"
-                style={{ background: '#1B4332', color: 'white', fontFamily: "'Inter', sans-serif" }}
+                className="flex items-center justify-center gap-2 py-3.5 rounded-none font-bold text-sm transition-colors uppercase tracking-widest shadow-sm"
+                style={{ background: '#D4731A', color: 'white', fontFamily: "'Inter', sans-serif" }}
               >
-                <UtensilsCrossed size={18} />
+                <span className="relative flex h-2 w-2 mr-1">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-200 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                </span>
                 Order Now
               </Link>
             </div>
