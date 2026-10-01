@@ -1,17 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone } from 'lucide-react';
+import { MapPin, Phone, Globe } from 'lucide-react';
 
 const Footer = () => (
   <footer className="bg-[#112A1F] text-white pt-12 pb-6 border-t border-white/5 relative z-10">
     <div className="max-w-7xl mx-auto px-6">
-      
+
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-10">
-        
+
         {/* Brand & Mission */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/3">
-          <Link to="/" onClick={()=>window.scrollTo(0,0)} className="mb-6 flex flex-col items-center md:items-start group">
+          <Link to="/" onClick={() => window.scrollTo(0, 0)} className="mb-6 flex flex-col items-center md:items-start group">
             <img src="/logo-sm.svg" alt="Sri Mahalakshmi Logo" className="h-16 md:h-20 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity mb-3" />
             <div className="flex flex-col items-center md:items-start">
               <div
@@ -49,14 +49,14 @@ const Footer = () => (
 
         {/* Links Grid (2 Columns on mobile for compactness) */}
         <div className="grid grid-cols-2 gap-8 md:gap-16 w-full md:w-auto text-center md:text-left">
-          
+
           {/* Menu */}
           <div>
             <h4 className="text-[10px] font-bold text-white uppercase tracking-widest mb-5 opacity-80">Explore</h4>
             <ul className="space-y-3">
               {['Home', 'The Menu', 'Catering', 'Gallery'].map(link => (
                 <li key={link}>
-                  <Link to={`/${link.toLowerCase().replace(' ','-')}`} onClick={()=>window.scrollTo(0,0)} className="text-xs text-gray-400 hover:text-[#D4731A] transition-colors font-medium">
+                  <Link to={`/${link.toLowerCase().replace(' ', '-')}`} onClick={() => window.scrollTo(0, 0)} className="text-xs text-gray-400 hover:text-[#D4731A] transition-colors font-medium">
                     {link}
                   </Link>
                 </li>
@@ -68,8 +68,22 @@ const Footer = () => (
           <div>
             <h4 className="text-[10px] font-bold text-white uppercase tracking-widest mb-5 opacity-80">Visit Us</h4>
             <ul className="space-y-3 text-xs text-gray-400 flex flex-col items-center md:items-start">
-              <li className="flex items-center gap-2"><MapPin size={13} className="text-[#D4731A]" /> Warangal, India</li>
-              <li className="flex items-center gap-2"><Phone size={13} className="text-[#D4731A]" /> +91 77948 00042</li>
+              <li className="flex items-start gap-2 text-left">
+                <MapPin size={13} className="text-[#D4731A] mt-0.5 shrink-0" />
+                <a href="https://www.google.com/maps/dir//SRI+MAHALAKSHMI+KITCHEN+%26+CATERERS,+HC5R%2B7R2,+Bahadurpally,+Hyderabad,+Telangana+500043/@17.4343544,78.3955979,2663m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x3bcb8f0050329baf:0x8f493cc97407ac3!2m2!1d78.4419977!2d17.5581314?entry=ttu&g_ep=EgoyMDI2MDkyNy4xIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4731A] transition-colors leading-tight">
+                  Bahadurpally, Hyderabad, Telangana 500043
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone size={13} className="text-[#D4731A]" />
+                <a href="tel:+917794800042" className="hover:text-[#D4731A] transition-colors">+91 77948 00042</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Globe size={13} className="text-[#D4731A]" />
+                <a href="https://smahalakshmikitchen.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4731A] transition-colors">
+                  smahalakshmikitchen.com
+                </a>
+              </li>
               <li className="pt-2">
                 <span className="block text-[10px] uppercase tracking-widest text-white/50 mb-1">Hours</span>
                 <span className="font-bold text-white/90">11:00 AM – 11:00 PM</span>
@@ -92,7 +106,7 @@ const Footer = () => (
           <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
         </div>
       </div>
-      
+
     </div>
   </footer>
 );
