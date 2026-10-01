@@ -22,6 +22,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Catering = lazy(() => import('./pages/Catering'));
 
 const Testimonials = lazy(() => import('./pages/Testimonials'));
+const Payment = lazy(() => import('./pages/Payment'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -52,6 +53,7 @@ const AnimatedRoutes = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/payment" element={<Payment />} />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />

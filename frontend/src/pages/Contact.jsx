@@ -60,7 +60,7 @@ const Contact = () => {
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             {icon:<MapPin size={16}/>,label:'Location',val:'Warangal, Telangana'},
-            {icon:<Phone size={16}/>,label:'Phone',val:'+91 98765 43210'},
+            {icon:<Phone size={16}/>,label:'Phone',val:'+91 77948 00042'},
             {icon:<MessageCircle size={16}/>,label:'WhatsApp',val:'Chat Now'},
             {icon:<Clock size={16}/>,label:'Hours',val:'11 AM – 11 PM'},
           ].map((info,i)=>(
@@ -269,8 +269,8 @@ const Contact = () => {
               <ul className="space-y-4">
                 {[
                   {icon:<MapPin size={18}/>,title:'Location',val:'Warangal, Telangana, India'},
-                  {icon:<Phone size={18}/>,title:'Phone',val:'+91 98765 43210'},
-                  {icon:<MessageCircle size={18}/>,title:'WhatsApp',val:'+91 98765 43210'},
+                  {icon:<Phone size={18}/>,title:'Phone',val:'+91 77948 00042'},
+                  {icon:<MessageCircle size={18}/>,title:'WhatsApp',val:'+91 77948 00042'},
                   {icon:<Mail size={18}/>,title:'Email',val:'info@srimahalakshmi.com'},
                   {icon:<Clock size={18}/>,title:'Working Hours',val:'Mon – Sun: 11 AM – 11 PM'},
                 ].map((item,i)=>(
@@ -286,12 +286,12 @@ const Contact = () => {
 
               {/* Quick CTA */}
               <div className="mt-5 flex gap-3">
-                <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"
+                <a href="https://wa.me/917794800042" target="_blank" rel="noreferrer"
                   className="flex-1 text-center py-2.5 rounded-xl font-bold text-sm"
                   style={{ background:'#25D366',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 3px 10px rgba(37,211,102,0.35)' }}>
                   💬 WhatsApp
                 </a>
-                <a href="tel:+919876543210"
+                <a href="tel:+917794800042"
                   className="flex-1 text-center py-2.5 rounded-xl font-bold text-sm"
                   style={{ background:'#D4731A',color:'white',fontFamily:"'Playfair Display',sans-serif",boxShadow:'0 3px 10px rgba(212,115,26,0.35)' }}>
                   📞 Call Now

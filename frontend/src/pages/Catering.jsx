@@ -180,7 +180,7 @@ const Catering = () => {
             <Link to="/contact" className="bg-[#D4731A] text-white px-10 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all hover:bg-[#B05D10] shadow-xl">
               Request a Quote
             </Link>
-            <a href="https://wa.me/919876543210" className="bg-transparent border border-white/30 text-white px-10 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all hover:border-white hover:bg-white/10">
+            <a href="https://wa.me/917794800042" className="bg-transparent border border-white/30 text-white px-10 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all hover:border-white hover:bg-white/10">
               WhatsApp Us
             </a>
           </div>

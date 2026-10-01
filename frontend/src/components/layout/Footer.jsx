@@ -69,7 +69,7 @@ const Footer = () => (
             <h4 className="text-[10px] font-bold text-white uppercase tracking-widest mb-5 opacity-80">Visit Us</h4>
             <ul className="space-y-3 text-xs text-gray-400 flex flex-col items-center md:items-start">
               <li className="flex items-center gap-2"><MapPin size={13} className="text-[#D4731A]" /> Warangal, India</li>
-              <li className="flex items-center gap-2"><Phone size={13} className="text-[#D4731A]" /> +91 98765 43210</li>
+              <li className="flex items-center gap-2"><Phone size={13} className="text-[#D4731A]" /> +91 77948 00042</li>
               <li className="pt-2">
                 <span className="block text-[10px] uppercase tracking-widest text-white/50 mb-1">Hours</span>
                 <span className="font-bold text-white/90">11:00 AM – 11:00 PM</span>

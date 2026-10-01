@@ -2,20 +2,39 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus, ShoppingBag, ArrowLeft, ArrowRight, CheckCircle, MapPin, Phone, User, CreditCard } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const CartDrawer = () => {
-  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal } = useCart();
-  const [step, setStep] = useState('cart'); // 'cart' | 'checkout' | 'success'
+  const navigate = useNavigate();
+  const { 
+    cartItems, 
+    isCartOpen, 
+    setIsCartOpen, 
+    removeFromCart, 
+    updateQuantity, 
+    cartTotal,
+    checkoutDetails,
+    updateCheckoutDetails 
+  } = useCart();
+
+  const [step, setStep] = useState('cart'); // 'cart' | 'checkout'
+  const [formData, setFormData] = useState({
+    name: checkoutDetails?.name || '',
+    phone: checkoutDetails?.phone || '',
+    address: checkoutDetails?.address || '',
+    notes: checkoutDetails?.notes || ''
+  });
 
   const handleClose = () => {
     setIsCartOpen(false);
-    setTimeout(() => setStep('cart'), 300); // Reset after close animation
+    setTimeout(() => setStep('cart'), 300);
   };
 
-  const handlePlaceOrder = (e) => {
+  const handleProceedToPayment = (e) => {
     e.preventDefault();
-    setStep('success');
+    updateCheckoutDetails(formData);
+    setIsCartOpen(false);
+    navigate('/payment');
   };
 
   return (
@@ -105,58 +124,57 @@ const CartDrawer = () => {
                 {/* STEP 2: CHECKOUT */}
                 {step === 'checkout' && (
                   <motion.div key="checkout" initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} exit={{opacity:0,x:20}} className="p-6 h-full bg-white">
-                    <h3 className="text-2xl font-bold text-[#112A1F] mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>Delivery Details</h3>
-                    <form id="checkout-form" onSubmit={handlePlaceOrder} className="space-y-4">
+                    <h3 className="text-2xl font-bold text-[#112A1F] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Delivery Details</h3>
+                    <p className="text-xs text-gray-500 mb-6">Enter your address to proceed to the secure payment screen.</p>
+                    
+                    <form id="checkout-form" onSubmit={handleProceedToPayment} className="space-y-4">
                       
                       <div className="relative">
                         <User size={18} className="absolute left-4 top-3.5 text-gray-400" />
-                        <input required type="text" placeholder="Full Name" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A] transition-all text-sm" />
+                        <input 
+                          required 
+                          type="text" 
+                          placeholder="Full Name" 
+                          value={formData.name}
+                          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A] transition-all text-sm" 
+                        />
                       </div>
                       
                       <div className="relative">
                         <Phone size={18} className="absolute left-4 top-3.5 text-gray-400" />
-                        <input required type="tel" placeholder="Phone Number" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A] transition-all text-sm" />
+                        <input 
+                          required 
+                          type="tel" 
+                          placeholder="Phone Number (10 Digits)" 
+                          value={formData.phone}
+                          onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A] transition-all text-sm" 
+                        />
                       </div>
                       
                       <div className="relative">
                         <MapPin size={18} className="absolute left-4 top-3.5 text-gray-400" />
-                        <textarea required placeholder="Complete Delivery Address" rows="3" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A] transition-all text-sm resize-none"></textarea>
+                        <textarea 
+                          required 
+                          placeholder="Complete Delivery Address (House/Flat No, Street, Landmark)" 
+                          rows="3" 
+                          value={formData.address}
+                          onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A] transition-all text-sm resize-none"
+                        ></textarea>
                       </div>
 
-                      <div className="pt-4">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Payment Method</p>
-                        <div className="grid grid-cols-2 gap-3">
-                          <label className="flex flex-col items-center justify-center p-4 border-2 border-[#D4731A] bg-[#D4731A]/5 rounded-xl cursor-pointer">
-                            <input type="radio" name="payment" value="cod" defaultChecked className="hidden" />
-                            <span className="font-bold text-[#112A1F] text-sm mt-1">Cash on Delivery</span>
-                          </label>
-                          <label className="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition-all opacity-50">
-                            <input type="radio" name="payment" value="online" disabled className="hidden" />
-                            <CreditCard size={20} className="text-gray-400" />
-                            <span className="font-bold text-gray-400 text-sm mt-1">Online (Soon)</span>
-                          </label>
-                        </div>
+                      <div className="p-3.5 bg-[#FFF8EC] rounded-xl border border-[#D4731A]/30">
+                        <p className="text-xs font-bold text-[#112A1F] flex items-center gap-1.5 mb-1">
+                          <CreditCard size={14} className="text-[#D4731A]" /> Payment on Next Page
+                        </p>
+                        <p className="text-[11px] text-gray-600 leading-relaxed">
+                          You will be able to pay via <strong>Razorpay (Cards/Netbanking)</strong>, <strong>UPI QR Code</strong>, or <strong>Cash on Delivery (COD)</strong>.
+                        </p>
                       </div>
 
                     </form>
-                  </motion.div>
-                )}
-
-                {/* STEP 3: SUCCESS */}
-                {step === 'success' && (
-                  <motion.div key="success" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} className="h-full flex flex-col items-center justify-center text-center p-8 bg-white">
-                    <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:"spring", delay:0.2}} className="w-20 h-20 bg-[#112A1F] rounded-full flex items-center justify-center mb-6">
-                      <CheckCircle size={40} className="text-[#D4731A]" />
-                    </motion.div>
-                    <h2 className="text-3xl font-bold text-[#112A1F] mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>Order Placed!</h2>
-                    <p className="text-gray-500 mb-8">Your authentic meal is being prepared. We will deliver it to you shortly.</p>
-                    <div className="bg-gray-50 w-full p-4 rounded-xl border border-gray-100 mb-8">
-                      <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Order ID</p>
-                      <p className="font-mono font-bold text-[#112A1F]">#SMK-{Math.floor(Math.random() * 90000) + 10000}</p>
-                    </div>
-                    <button onClick={handleClose} className="w-full bg-[#112A1F] text-white px-8 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#1E4A35] transition-all">
-                      Continue Browsing
-                    </button>
                   </motion.div>
                 )}
 
@@ -164,7 +182,7 @@ const CartDrawer = () => {
             </div>
 
             {/* Footer / CTA (Only shows on Cart and Checkout) */}
-            {cartItems.length > 0 && step !== 'success' && (
+            {cartItems.length > 0 && (
               <div className="p-5 bg-white border-t border-gray-100 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] z-10">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-gray-500 font-medium">Subtotal</span>
@@ -177,7 +195,7 @@ const CartDrawer = () => {
                   </button>
                 ) : (
                   <button type="submit" form="checkout-form" className="w-full py-4 bg-[#112A1F] hover:bg-[#1E4A35] text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
-                    Confirm Order • ₹{cartTotal}
+                    Confirm & Proceed to Payment • ₹{cartTotal} <ArrowRight size={16} />
                   </button>
                 )}
               </div>

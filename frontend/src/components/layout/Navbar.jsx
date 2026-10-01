@@ -103,12 +103,12 @@ const Navbar = () => {
             {/* ── DESKTOP ACTIONS ── */}
             <div className="hidden lg:flex items-center gap-6">
               <a
-                href="tel:+919876543210"
+                href="tel:+917794800042"
                 className="flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80"
                 style={{ color: textColor, fontFamily: "'Inter', sans-serif" }}
               >
                 <Phone size={16} style={{ color: goldAccent }} />
-                98765 43210
+                77948 00042
               </a>
 
               <div className="h-5 w-[1px]" style={{ background: isScrolled ? 'rgba(27,67,50,0.2)' : 'rgba(255,255,255,0.2)' }}></div>
@@ -193,12 +193,12 @@ const Navbar = () => {
 
             <div className="mt-auto p-6 flex flex-col gap-3 pb-12 bg-white" style={{ borderTop: '1px solid rgba(27,67,50,0.1)' }}>
               <a
-                href="tel:+919876543210"
+                href="tel:+917794800042"
                 className="flex items-center justify-center gap-2 py-3.5 rounded-none font-medium text-sm transition-colors hover:bg-gray-50"
                 style={{ color: '#1B4332', border: '1px solid #1B4332', fontFamily: "'Inter', sans-serif" }}
               >
                 <Phone size={18} style={{ color: '#1B4332' }} />
-                Call: +91 98765 43210
+                Call: +91 77948 00042
               </a>
               <Link
                 to="/menu"
