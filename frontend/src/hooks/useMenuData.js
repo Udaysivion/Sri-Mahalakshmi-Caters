@@ -24,12 +24,10 @@ export const useMenuData = () => {
             const priceMatch = row['Price (INR)'].toString().match(/\d+/);
             const price = priceMatch ? parseInt(priceMatch[0]) : 0;
             
-            // Format Category to match tabs (e.g. "Biryani & Curries" -> "Biryani", "Chinese & Fast Food" -> "Chinese")
-            let cat = row['Category'] || 'Other';
-            if (cat.includes('Biryani')) cat = 'Biryani';
-            else if (cat.includes('Chinese')) cat = 'Chinese';
-
+            // Use exact Category from sheet
+            let cat = row['Category']?.trim() || 'Other';
             let imgUrl = row['image url']?.trim();
+
             if (imgUrl && imgUrl.includes('drive.google.com')) {
               const match = imgUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
               const idMatch = imgUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
