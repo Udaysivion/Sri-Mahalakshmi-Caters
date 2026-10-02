@@ -124,13 +124,16 @@ const Menu = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const tabs = ['All','Tiffins','Chinese','Biryani','Curries','Rice'];
+  // Filter items matching the current diet first
+  const dietFilteredItems = diet === 'All' ? allItems : allItems.filter(item => item.type === diet);
 
-  const filtered = allItems.filter(item => {
+  // Generate tabs dynamically based ONLY on categories available for the selected diet
+  const tabs = ['All', ...new Set(dietFilteredItems.map(item => item.cat))];
+
+  const filtered = dietFilteredItems.filter(item => {
     const tMatch = activeTab === 'All' || item.cat === activeTab;
-    const dMatch = diet === 'All' || item.type === diet;
     const sMatch = item.name.toLowerCase().includes(search.toLowerCase());
-    return tMatch && dMatch && sMatch;
+    return tMatch && sMatch;
   });
 
   const handleAddItem = (item) => {
@@ -165,41 +168,43 @@ const Menu = () => {
 
       {/* Filters (Non-sticky to prevent overlap with cards during scroll) */}
       <div className="max-w-6xl mx-auto px-4 py-4 bg-[#FFF8EC] mb-8 border-b border-[#1B4332]/10">
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="flex flex-col gap-6">
           
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-            {tabs.map(t=>(
-              <button key={t} onClick={()=>setActiveTab(t)}
-                className="px-5 py-2 text-[11px] font-bold uppercase tracking-widest transition-all border"
-                style={{
-                  background: activeTab===t ? '#1B4332' : 'transparent',
-                  color: activeTab===t ? 'white' : '#1B4332',
-                  borderColor: activeTab===t ? '#1B4332' : 'rgba(27,67,50,0.15)',
-                  fontFamily:"'Inter',sans-serif",
-                }}>
-                {t}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-4 w-full md:w-auto">
+          {/* Top Row: Diet Filter and Search */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full">
             {/* Diet Filter */}
-            <div className="flex bg-white border border-[#1B4332]/15 rounded-sm p-1">
+            <div className="flex bg-white border border-[#1B4332]/15 rounded-full p-1 w-full sm:w-auto justify-center shadow-sm">
               {['All','Veg','Non-Veg'].map(f=>(
-                <button key={f} onClick={()=>setDiet(f)}
-                  className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-sm transition-all ${diet === f ? 'bg-[#FFF8EC] text-[#1B4332]' : 'text-[#6B4423] hover:bg-gray-50'}`}>
+                <button key={f} onClick={()=>{ setDiet(f); setActiveTab('All'); }}
+                  className={`px-6 py-2 text-[10px] font-bold uppercase tracking-wider rounded-full transition-all ${diet === f ? 'bg-[#1B4332] text-white' : 'text-[#6B4423] hover:bg-gray-50'}`}>
                   {f}
                 </button>
               ))}
             </div>
 
             {/* Search */}
-            <div className="relative flex-grow md:w-48">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1B4332]/50"/>
+            <div className="relative w-full sm:w-72">
+              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#1B4332]/50"/>
               <input type="text" placeholder="Search dishes..." value={search} onChange={e=>setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-xs border border-[#1B4332]/15 bg-white outline-none focus:border-[#D4731A] transition-colors rounded-sm text-[#1B4332] placeholder-[#1B4332]/40 font-medium"/>
+                className="w-full pl-10 pr-4 py-2.5 text-xs border border-[#1B4332]/15 bg-white outline-none focus:border-[#D4731A] transition-colors rounded-full text-[#1B4332] placeholder-[#1B4332]/40 font-medium shadow-sm"/>
             </div>
+          </div>
+
+          {/* Category Tabs (Horizontally Scrollable) */}
+          <div className="flex overflow-x-auto gap-3 pb-2 pt-1 w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x">
+            {tabs.map(t=>(
+              <button key={t} onClick={()=>setActiveTab(t)}
+                className="whitespace-nowrap flex-shrink-0 px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest transition-all rounded-full snap-start border"
+                style={{
+                  background: activeTab===t ? '#D4731A' : 'white',
+                  color: activeTab===t ? 'white' : '#1B4332',
+                  borderColor: activeTab===t ? '#D4731A' : 'rgba(27,67,50,0.15)',
+                  fontFamily:"'Inter',sans-serif",
+                  boxShadow: activeTab===t ? '0 4px 10px rgba(212, 115, 26, 0.25)' : '0 2px 4px rgba(0,0,0,0.02)'
+                }}>
+                {t}
+              </button>
+            ))}
           </div>
 
         </div>
