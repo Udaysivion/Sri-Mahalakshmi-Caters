@@ -51,10 +51,10 @@ export const SOUND_OPTIONS = [
   }
 ];
 
-// Load persisted settings
+// Load persisted settings from session
 export const getSoundSettings = () => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = sessionStorage.getItem(STORAGE_KEY);
     if (raw) {
       return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
     }
@@ -64,10 +64,10 @@ export const getSoundSettings = () => {
   return DEFAULT_SETTINGS;
 };
 
-// Save settings to localStorage
+// Save settings to sessionStorage
 export const saveSoundSettings = (settings) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   } catch (e) {
     console.debug('Failed to save sound settings:', e);
   }

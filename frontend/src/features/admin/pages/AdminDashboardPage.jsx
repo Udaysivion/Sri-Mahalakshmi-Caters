@@ -359,7 +359,7 @@ export const AdminDashboardPage = () => {
           <OrderDetailsModal
             order={selectedOrder}
             onClose={() => setSelectedOrder(null)}
-            onPrintKOT={(order, mode = 'both') => setKotOrder({ ...order, printMode: mode })}
+            onPrintKOT={(order, mode = 'customer') => setKotOrder({ ...order, printMode: mode })}
           />
         )}
 
@@ -367,7 +367,7 @@ export const AdminDashboardPage = () => {
         {kotOrder && (
           <KitchenTicketPrint
             order={kotOrder}
-            initialMode={kotOrder.printMode || 'both'}
+            initialMode={kotOrder.printMode || 'customer'}
             onClose={() => setKotOrder(null)}
           />
         )}

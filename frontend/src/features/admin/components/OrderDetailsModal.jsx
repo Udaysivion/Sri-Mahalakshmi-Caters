@@ -84,11 +84,11 @@ export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
                 </>
               )}
               <button
-                onClick={() => onPrintKOT ? onPrintKOT(order, 'both') : handlePrint()}
+                onClick={() => onPrintKOT ? onPrintKOT(order, 'customer') : handlePrint()}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1B4332] text-white hover:bg-[#112A1F] text-xs font-bold transition-all shadow-xs cursor-pointer"
-                title="Print 2-in-1 Dual Ticket: Chef KOT + Customer Bill"
+                title="Print Continuous Customer Bill / Tax Invoice"
               >
-                <Printer size={14} className="text-[#E0B030]" /> Print Both (Chef + Customer)
+                <Printer size={14} className="text-[#E0B030]" /> Print Bill
               </button>
               <button
                 onClick={() => onPrintKOT ? onPrintKOT(order, 'kitchen') : handlePrint()}
@@ -98,11 +98,11 @@ export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
                 <ChefHat size={13} /> Chef KOT
               </button>
               <button
-                onClick={() => onPrintKOT ? onPrintKOT(order, 'customer') : handlePrint()}
+                onClick={() => onPrintKOT ? onPrintKOT(order, 'both') : handlePrint()}
                 className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200 text-xs font-semibold transition-all border border-stone-300 cursor-pointer"
-                title="Print Customer Tax Bill Only"
+                title="Print Both (Chef KOT + Customer Bill)"
               >
-                <Receipt size={13} /> Customer Bill
+                <Layers size={13} /> Both
               </button>
             </div>
           </div>

@@ -15,8 +15,8 @@ import {
 } from 'lucide-react';
 import { parseOrderItems } from './KitchenTicketPrint';
 
-export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose }) => {
-  const [printMode, setPrintMode] = useState(initialMode); // 'both', 'kitchen', 'customer'
+export const OrderReceiptPrintModal = ({ order, initialMode = 'customer', onClose }) => {
+  const [printMode, setPrintMode] = useState(initialMode); // 'customer', 'kitchen', 'both'
   const [paperWidth, setPaperWidth] = useState('80mm');   // '80mm', '58mm', 'full'
 
   if (!order) return null;
@@ -41,6 +41,9 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
     boxSizing: 'border-box'
   };
 
+  const isDineIn = order.address && order.address.toLowerCase().includes('table');
+  const serviceType = isDineIn ? 'Dine-In Table' : order.address ? 'Home Delivery' : 'Takeaway / Pickup';
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-xs animate-fade-in no-print-overlay">
       <div 
@@ -52,14 +55,14 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-[#D4731A] text-white flex items-center justify-center shadow-sm">
-                <Printer size={18} />
+                <Receipt size={18} />
               </div>
               <div>
                 <h3 className="font-heading text-base sm:text-lg font-bold text-[#E0B030]">
-                  Print Order Tickets • #{order.orderId}
+                  Print Order Bill • #{order.orderId}
                 </h3>
                 <p className="text-[11px] text-[#FFF8EC]/70">
-                  Real-time thermal slips for Kitchen Chef and Customer
+                  Continuous extending Tax Invoice & POS Bill for Customer
                 </p>
               </div>
             </div>
@@ -68,7 +71,7 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
                 onClick={handleTriggerPrint}
                 className="px-4 py-2 rounded-xl bg-[#D4731A] hover:bg-[#b85f12] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
               >
-                <Printer size={15} /> Print Now
+                <Printer size={15} /> Print Bill
               </button>
               <button
                 onClick={onClose}
@@ -79,20 +82,20 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
             </div>
           </div>
 
-          {/* Mode Switcher Tabs */}
+          {/* Mode Switcher Tabs - Single Customer Bill is Default */}
           <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/10">
             <div className="flex bg-black/30 p-1 rounded-xl gap-1">
               <button
                 type="button"
-                onClick={() => setPrintMode('both')}
+                onClick={() => setPrintMode('customer')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-                  printMode === 'both'
+                  printMode === 'customer'
                     ? 'bg-[#E0B030] text-[#1B4332] shadow-xs'
                     : 'text-white/70 hover:text-white'
                 }`}
               >
-                <Layers size={13} />
-                <span>Dual Print (2-in-1)</span>
+                <Receipt size={13} />
+                <span>Customer Bill (Invoice)</span>
               </button>
               <button
                 type="button"
@@ -108,15 +111,15 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
               </button>
               <button
                 type="button"
-                onClick={() => setPrintMode('customer')}
+                onClick={() => setPrintMode('both')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-                  printMode === 'customer'
+                  printMode === 'both'
                     ? 'bg-[#E0B030] text-[#1B4332] shadow-xs'
                     : 'text-white/70 hover:text-white'
                 }`}
               >
-                <Receipt size={13} />
-                <span>Customer Bill Only</span>
+                <Layers size={13} />
+                <span>Dual (KOT + Bill)</span>
               </button>
             </div>
 
@@ -148,16 +151,17 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
           </div>
         </div>
 
-        {/* Printable Preview Container */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-stone-200 flex justify-center print-clean-wrapper">
+        {/* Printable Preview Container - Dynamic height expansion without centering clipping */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-stone-200 flex justify-center items-start print-clean-wrapper">
           
           <div 
             id="dual-order-slip"
-            className="thermal-receipt-print w-full bg-white shadow-lg border border-stone-300 p-4 sm:p-5 text-stone-900 leading-relaxed shrink-0 my-auto sm:my-1"
+            className={`thermal-receipt-print w-full bg-white shadow-lg border border-stone-300 p-4 sm:p-5 text-stone-900 leading-relaxed shrink-0 my-2 paper-${paperWidth}`}
             style={widthStyle}
           >
             {/* ═════════════════════════════════════════════════════════
                 SECTION 1: KITCHEN ORDER TICKET (CHEF COPY)
+                (Rendered only if Chef KOT or Dual mode selected)
             ═════════════════════════════════════════════════════════ */}
             {(printMode === 'both' || printMode === 'kitchen') && (
               <div className="kitchen-slip-section pb-4">
@@ -199,9 +203,7 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
                   <div className="flex justify-between text-[11px]">
                     <span className="font-bold">SERVICE TYPE:</span>
                     <span className="font-extrabold uppercase bg-stone-100 px-1">
-                      {order.address && order.address.toLowerCase().includes('table') 
-                        ? 'Dine-In Table' 
-                        : 'Takeaway / Delivery'}
+                      {serviceType}
                     </span>
                   </div>
                 </div>
@@ -227,14 +229,14 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
 
                   <div className="divide-y divide-stone-200 mt-1">
                     {items.map((item, idx) => (
-                      <div key={idx} className="py-2 flex items-start text-xs font-bold">
+                      <div key={idx} className="py-2 flex items-start text-xs font-bold bill-item-row">
                         <div className="w-14 text-sm font-black text-stone-950 shrink-0">
                           [{item.quantity}x]
                         </div>
-                        <div className="flex-1 font-black text-sm uppercase text-stone-900 leading-snug">
+                        <div className="flex-1 font-black text-sm uppercase text-stone-900 leading-snug break-words">
                           {item.name}
                           {item.notes && (
-                            <span className="block text-[10px] text-stone-600 font-normal italic">
+                            <span className="block text-[10px] text-stone-600 font-normal italic mt-0.5">
                               ({item.notes})
                             </span>
                           )}
@@ -259,7 +261,8 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
             )}
 
             {/* ═════════════════════════════════════════════════════════
-                CUT / PERFORATION SEPARATOR (FOR REAL-TIME CASHIER ROLL)
+                CUT / PERFORATION SEPARATOR
+                (Only shown in Dual Print mode between KOT & Bill)
             ═════════════════════════════════════════════════════════ */}
             {printMode === 'both' && (
               <div className="my-4 py-2 border-y-2 border-dashed border-stone-500 text-center flex items-center justify-center gap-1.5 text-[10px] font-black text-stone-600 bg-stone-50">
@@ -270,10 +273,11 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
             )}
 
             {/* ═════════════════════════════════════════════════════════
-                SECTION 2: CUSTOMER TAX INVOICE & BILL
+                SECTION 2: COMPLETE EXTENDED CUSTOMER TAX INVOICE & BILL
+                (Single unified receipt - dynamically extends with items)
             ═════════════════════════════════════════════════════════ */}
             {(printMode === 'both' || printMode === 'customer') && (
-              <div className="customer-slip-section pt-2">
+              <div className="customer-slip-section pt-1">
                 {/* Brand Header */}
                 <div className="text-center pb-2.5 border-b-2 border-dashed border-stone-900 flex flex-col items-center">
                   <img 
@@ -281,115 +285,156 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
                     alt="Logo" 
                     className="h-10 w-auto object-contain mb-1" 
                   />
-                  <h2 className="text-sm font-black tracking-wider uppercase">
+                  <h2 className="text-base font-black tracking-wider uppercase text-stone-900 leading-tight">
                     {restaurantName}
                   </h2>
-                  <p className="text-[10px] text-stone-600">
+                  <p className="text-[11px] font-bold text-stone-800 mt-0.5">
                     Authentic South Indian & Village Cuisine
                   </p>
-                  <p className="text-[10px] text-stone-600">
-                    Helpline / Catering: +91 {restaurantPhone}
+                  <p className="text-[10px] text-stone-600 font-semibold">
+                    Orders / Catering Helpline: +91 {restaurantPhone}
                   </p>
-                  <div className="text-[11px] font-black border border-stone-800 px-3 py-0.5 mt-1.5 uppercase">
-                    *** CUSTOMER TAX INVOICE ***
+                  <div className="text-[11px] font-black bg-stone-900 text-white px-3 py-0.5 mt-2 uppercase tracking-wider">
+                    *** TAX INVOICE / CASH BILL ***
                   </div>
                 </div>
 
-                {/* Invoice Meta */}
-                <div className="py-2 border-b border-dashed border-stone-800 space-y-0.5 text-[11px]">
-                  <div className="flex justify-between">
-                    <span className="font-bold">INVOICE / ORDER:</span>
-                    <span className="font-black text-xs">#{order.orderId}</span>
+                {/* Invoice Meta Information */}
+                <div className="py-2.5 border-b border-dashed border-stone-800 space-y-1 text-xs">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold">INVOICE / BILL NO:</span>
+                    <span className="font-black text-sm bg-stone-100 px-1.5 py-0.5 border border-stone-300">
+                      #{order.orderId}
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-bold">DATE:</span>
+                  <div className="flex justify-between text-[11px]">
+                    <span className="font-bold">DATE & TIME:</span>
                     <span>{order.timestamp || new Date().toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between text-[11px]">
                     <span className="font-bold">BILLED TO:</span>
-                    <span className="font-bold uppercase">{order.customerName || 'Walk-in Guest'}</span>
+                    <span className="font-black uppercase text-stone-900">{order.customerName || 'Walk-in Guest'}</span>
                   </div>
                   {order.phone && (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-[11px]">
                       <span className="font-bold">CONTACT:</span>
-                      <span>{order.phone}</span>
+                      <span className="font-bold">{order.phone}</span>
                     </div>
                   )}
+                  <div className="flex justify-between text-[11px]">
+                    <span className="font-bold">SERVICE TYPE:</span>
+                    <span className="font-bold uppercase bg-stone-100 px-1">
+                      {serviceType}
+                    </span>
+                  </div>
                   {order.address && (
-                    <div className="flex justify-between">
-                      <span className="font-bold">DESTINATION:</span>
-                      <span className="text-right truncate max-w-[180px]">{order.address}</span>
+                    <div className="flex justify-between text-[11px] pt-0.5 items-start">
+                      <span className="font-bold shrink-0 mr-2">ADDRESS:</span>
+                      <span className="text-right font-medium break-words leading-tight">{order.address}</span>
                     </div>
                   )}
                 </div>
 
-                {/* Itemized Bill Table */}
+                {/* Extended Itemized Bill Table (Dynamically Expands With Dishes) */}
                 <div className="py-2.5 border-b-2 border-dashed border-stone-900">
-                  <div className="flex justify-between text-[11px] font-black pb-1 border-b border-stone-400 uppercase">
-                    <span className="w-10">QTY</span>
-                    <span className="flex-1">ITEM</span>
+                  <div className="flex items-center text-[10px] font-black pb-1.5 border-b border-stone-800 uppercase tracking-wider">
+                    <span className="w-6 text-center">#</span>
+                    <span className="flex-1 px-1">ITEM DESCRIPTION</span>
+                    <span className="w-10 text-center">QTY</span>
+                    <span className="w-14 text-right">RATE</span>
                     <span className="w-16 text-right">AMOUNT</span>
                   </div>
 
+                  {/* Clean row-by-row item list that smoothly extends downwards */}
                   <div className="divide-y divide-stone-200 mt-1">
                     {items.map((item, idx) => {
-                      const itemAmount = item.price 
-                        ? Number(item.price) * item.quantity 
-                        : '';
+                      const itemRate = item.rate || item.price || 0;
+                      const itemAmount = item.amount || (itemRate ? itemRate * item.quantity : 0);
+
                       return (
-                        <div key={idx} className="py-1.5 flex justify-between items-start text-xs font-bold">
-                          <span className="w-10 text-stone-950 font-black">
+                        <div key={idx} className="py-2 flex items-start text-xs font-bold bill-item-row">
+                          <span className="w-6 text-center text-stone-500 font-mono text-[11px] pt-0.5">
+                            {idx + 1}
+                          </span>
+                          <div className="flex-1 px-1 leading-snug break-words pr-1.5">
+                            <span className="uppercase font-black text-stone-900 block text-xs">
+                              {item.name}
+                            </span>
+                            {item.notes && (
+                              <span className="block text-[10px] text-stone-500 font-normal italic">
+                                ({item.notes})
+                              </span>
+                            )}
+                          </div>
+                          <span className="w-10 text-center font-black text-stone-950 text-xs">
                             {item.quantity}x
                           </span>
-                          <span className="flex-1 uppercase font-semibold text-stone-800 pr-1">
-                            {item.name}
+                          <span className="w-14 text-right font-semibold text-stone-700 text-xs">
+                            {itemRate > 0 ? `₹${itemRate}` : '-'}
                           </span>
-                          <span className="w-16 text-right font-black text-stone-950">
-                            {itemAmount ? `₹${itemAmount}` : '-'}
+                          <span className="w-16 text-right font-black text-stone-950 text-xs">
+                            {itemAmount > 0 ? `₹${itemAmount}` : (order.totalAmount && items.length === 1 ? `₹${order.totalAmount}` : '-')}
                           </span>
                         </div>
                       );
                     })}
                   </div>
+
+                  {/* Items and Units summary count */}
+                  <div className="pt-2 mt-1 border-t border-dashed border-stone-300 flex justify-between text-[11px] font-bold text-stone-700">
+                    <span>TOTAL ITEMS: {items.length}</span>
+                    <span>TOTAL UNITS: {totalItemCount}</span>
+                  </div>
                 </div>
 
-                {/* Financial Summary */}
-                <div className="py-2 border-b border-dashed border-stone-800 space-y-1 text-xs">
+                {/* Financial Summary & Total */}
+                <div className="py-2.5 border-b border-dashed border-stone-800 space-y-1 text-xs">
                   <div className="flex justify-between text-[11px]">
-                    <span>Subtotal:</span>
+                    <span className="text-stone-700">Item Subtotal:</span>
                     <span className="font-bold">₹{Number(order.totalAmount).toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between text-[11px]">
-                    <span>Taxes & Restaurant Charges:</span>
-                    <span className="font-bold">₹0.00</span>
+                    <span className="text-stone-700">GST / Service Charges:</span>
+                    <span className="font-bold">₹0.00 (Inclusive)</span>
                   </div>
-                  <div className="flex justify-between items-center text-sm font-black pt-1 border-t border-stone-300">
-                    <span className="uppercase">GRAND TOTAL:</span>
-                    <span className="text-base font-extrabold bg-stone-100 px-2 py-0.5 border border-stone-800">
+                  <div className="flex justify-between items-center text-sm font-black pt-1.5 mt-1 border-t-2 border-stone-900">
+                    <span className="uppercase tracking-wide text-sm font-black">GRAND TOTAL:</span>
+                    <span className="text-base font-black bg-stone-900 text-white px-2.5 py-0.5 tracking-tight border border-stone-900">
                       ₹{Number(order.totalAmount).toLocaleString('en-IN')}
                     </span>
                   </div>
                 </div>
 
-                {/* Payment Badge */}
+                {/* Payment Badge & Settlement Details */}
                 <div className="py-2 border-b border-dashed border-stone-800 flex justify-between items-center text-xs">
-                  <span className="font-bold">PAYMENT MODE:</span>
-                  <span className="font-black uppercase bg-stone-100 px-2 py-0.5 border border-stone-300">
+                  <span className="font-bold text-stone-800">PAYMENT STATUS:</span>
+                  <span className="font-black uppercase bg-stone-100 px-2 py-0.5 border border-stone-400 text-[11px]">
                     {order.paymentMethod || 'CASH ON DELIVERY'} • {order.paymentStatus || 'CONFIRMED'}
                   </span>
                 </div>
 
+                {/* Special Instructions (if any) */}
+                {order.notes && (
+                  <div className="my-2 p-2 bg-stone-50 border border-dashed border-stone-400 text-stone-800 text-xs">
+                    <span className="font-bold block uppercase text-[10px] text-stone-600">CUSTOMER INSTRUCTION:</span>
+                    <span className="italic">"{order.notes}"</span>
+                  </div>
+                )}
+
                 {/* Customer Thank You Footer */}
                 <div className="pt-3 text-center text-[10px] text-stone-600 space-y-1">
-                  <p className="font-black text-xs text-stone-900">
-                    🙏 THANK YOU FOR YOUR PATRONAGE!
+                  <p className="font-black text-xs text-stone-900 tracking-wide">
+                    🙏 THANK YOU FOR DINING WITH US!
                   </p>
                   <p className="font-semibold text-stone-700">
-                    Please visit again • Have a delicious meal!
+                    Taste The Authentic South Indian Tradition • Visit Again!
                   </p>
-                  <p className="text-[9px] text-stone-400">
-                    Sri Mahalakshmi Caters • Quality Food Since 2012
+                  <p className="text-[9px] text-stone-500">
+                    Sri Mahalakshmi Caters • Quality Food & Premium Catering
                   </p>
+                  <div className="pt-1 text-[9px] font-mono text-stone-400">
+                    *** END OF INVOICE ***
+                  </div>
                 </div>
               </div>
             )}
@@ -398,10 +443,10 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
 
         {/* Modal Bottom Actions */}
         <div className="bg-stone-100 p-3 sm:p-4 border-t border-stone-200 flex items-center justify-between no-print shrink-0">
-          <div className="text-xs text-stone-600">
-            {printMode === 'both' && 'Printing 2-in-1: Chef KOT + Customer Bill'}
-            {printMode === 'kitchen' && 'Printing: Chef KOT Only'}
-            {printMode === 'customer' && 'Printing: Customer Receipt Only'}
+          <div className="text-xs text-stone-600 font-medium">
+            {printMode === 'customer' && '🧾 Standard: Extended Customer Tax Invoice'}
+            {printMode === 'kitchen' && '👨‍🍳 Kitchen: Chef Preparation Ticket'}
+            {printMode === 'both' && '📑 Dual Mode: Chef KOT + Customer Bill'}
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -414,7 +459,7 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'both', onClose })
               onClick={handleTriggerPrint}
               className="px-5 py-2 rounded-xl bg-[#1B4332] hover:bg-[#112A1F] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
             >
-              <Printer size={15} /> Print {printMode === 'both' ? 'Both Tickets' : printMode === 'kitchen' ? 'Kitchen Slip' : 'Customer Bill'}
+              <Printer size={15} /> Print {printMode === 'kitchen' ? 'Kitchen Slip' : 'Bill'}
             </button>
           </div>
         </div>

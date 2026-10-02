@@ -23,18 +23,18 @@ export const submitOrderToDatabase = async (orderData) => {
     paymentId: orderData.paymentId || 'N/A'
   };
 
-  // 1. Cache locally for instant UI response and cross-tab sync
+  // 1. Cache in session storage for instant UI response
   try {
-    const existing = JSON.parse(localStorage.getItem('smk_orders_history') || '[]');
+    const existing = JSON.parse(sessionStorage.getItem('smk_orders_history') || '[]');
     existing.unshift({
       ...payload,
       itemsRaw: orderData.items || [],
       timestamp: new Date().toISOString()
     });
-    localStorage.setItem('smk_orders_history', JSON.stringify(existing.slice(0, 50)));
+    sessionStorage.setItem('smk_orders_history', JSON.stringify(existing.slice(0, 50)));
     window.dispatchEvent(new Event('storage'));
   } catch (err) {
-    console.warn('Could not cache order in localStorage:', err);
+    console.warn('Could not cache order in sessionStorage:', err);
   }
 
   // 2. Primary: Store directly into PostgreSQL Database via Backend API

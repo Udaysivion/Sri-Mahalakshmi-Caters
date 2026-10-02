@@ -3,7 +3,7 @@
  * Direct PostgreSQL Database integration via Express REST API.
  */
 
-const LOCAL_STORAGE_KEY = 'smk_orders_history';
+const SESSION_STORAGE_KEY = 'smk_orders_history';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001/api';
 
 /**
@@ -25,15 +25,15 @@ export const fetchAllOrders = async () => {
     console.debug('PostgreSQL orders fetch notice:', err.message);
   }
 
-  // 2. Retrieve locally cached orders for offline support
+  // 2. Retrieve session cached orders for fallback
   let localOrders = [];
   try {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
     if (raw) {
       localOrders = JSON.parse(raw);
     }
   } catch (err) {
-    console.warn('Error reading local orders:', err);
+    console.warn('Error reading session orders:', err);
   }
 
   // Merge and deduplicate by orderId with PostgreSQL primary
@@ -41,7 +41,7 @@ export const fetchAllOrders = async () => {
 
   localOrders.forEach(order => {
     const id = String(order.orderId || order.timestamp);
-    orderMap.set(id, { ...order, source: 'local' });
+    orderMap.set(id, { ...order, source: 'session' });
   });
 
   pgOrders.forEach(order => {
@@ -64,9 +64,9 @@ export const fetchAllOrders = async () => {
  * Update an order's status directly in PostgreSQL Database
  */
 export const updateLocalOrderStatus = async (orderId, newStatus) => {
-  // Update local storage
+  // Update session storage
   try {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
     if (raw) {
       let orders = JSON.parse(raw);
       orders = orders.map(ord => {
@@ -75,11 +75,11 @@ export const updateLocalOrderStatus = async (orderId, newStatus) => {
         }
         return ord;
       });
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(orders));
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(orders));
       window.dispatchEvent(new Event('storage'));
     }
   } catch (err) {
-    console.error('Failed to update status in localStorage:', err);
+    console.error('Failed to update status in sessionStorage:', err);
   }
 
   // Update in PostgreSQL

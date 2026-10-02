@@ -190,11 +190,11 @@ export const OrdersTable = ({
                     <td className="py-3.5 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                       <div className="inline-flex items-center gap-1.5">
                         <button
-                          onClick={() => onPrintKOT(order, 'both')}
+                          onClick={() => onPrintKOT(order, 'customer')}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1B4332] hover:bg-[#112A1F] text-[#FFF8EC] text-xs font-bold transition-all shadow-2xs cursor-pointer"
-                          title="Print 2-in-1 Tickets (Chef KOT + Customer Bill)"
+                          title="Print Customer Bill / Tax Invoice"
                         >
-                          <Printer size={13} className="text-[#E0B030]" /> Print Tickets
+                          <Printer size={13} className="text-[#E0B030]" /> Print Bill
                         </button>
                         <button
                           onClick={() => onSelectOrder(order)}
@@ -280,11 +280,11 @@ export const OrdersTable = ({
                       </>
                     )}
                     <button
-                      onClick={() => onPrintKOT(order, 'both')}
+                      onClick={() => onPrintKOT(order, 'customer')}
                       className="px-2.5 py-1 rounded-lg bg-[#1B4332] text-[#E0B030] border border-[#1B4332] text-xs font-bold flex items-center gap-1 cursor-pointer"
-                      title="Print Chef KOT + Customer Bill"
+                      title="Print Customer Bill / Tax Invoice"
                     >
-                      <Printer size={12} /> Print Tickets
+                      <Printer size={12} /> Print Bill
                     </button>
                     <button
                       onClick={() => onSelectOrder(order)}

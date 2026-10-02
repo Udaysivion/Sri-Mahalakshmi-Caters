@@ -4,8 +4,8 @@
  * Direct Neon PostgreSQL Database integration via Express REST API.
  */
 
-const LOCAL_DINING_KEY = 'smk_dining_bookings';
-const LOCAL_CATERING_KEY = 'smk_catering_bookings';
+const SESSION_DINING_KEY = 'smk_dining_bookings';
+const SESSION_CATERING_KEY = 'smk_catering_bookings';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001/api';
 
 /**
@@ -24,14 +24,14 @@ export const submitDiningReservation = async (reservationData) => {
     timestamp: new Date().toISOString()
   };
 
-  // 1. Cache locally for instant UI response and cross-tab event
+  // 1. Cache in session storage for instant UI response and cross-tab event
   try {
-    const existing = JSON.parse(localStorage.getItem(LOCAL_DINING_KEY) || '[]');
+    const existing = JSON.parse(sessionStorage.getItem(SESSION_DINING_KEY) || '[]');
     existing.unshift(payload);
-    localStorage.setItem(LOCAL_DINING_KEY, JSON.stringify(existing.slice(0, 50)));
+    sessionStorage.setItem(SESSION_DINING_KEY, JSON.stringify(existing.slice(0, 50)));
     window.dispatchEvent(new Event('smk_booking_created'));
   } catch (err) {
-    console.warn('Could not cache dining booking locally:', err);
+    console.warn('Could not cache dining booking in session:', err);
   }
 
   // 2. Save directly to PostgreSQL Database
@@ -69,14 +69,14 @@ export const submitCateringInquiry = async (cateringData) => {
     timestamp: new Date().toISOString()
   };
 
-  // 1. Cache locally for instant UI response
+  // 1. Cache in session storage for instant UI response
   try {
-    const existing = JSON.parse(localStorage.getItem(LOCAL_CATERING_KEY) || '[]');
+    const existing = JSON.parse(sessionStorage.getItem(SESSION_CATERING_KEY) || '[]');
     existing.unshift(payload);
-    localStorage.setItem(LOCAL_CATERING_KEY, JSON.stringify(existing.slice(0, 50)));
+    sessionStorage.setItem(SESSION_CATERING_KEY, JSON.stringify(existing.slice(0, 50)));
     window.dispatchEvent(new Event('smk_booking_created'));
   } catch (err) {
-    console.warn('Could not cache catering booking locally:', err);
+    console.warn('Could not cache catering booking in session:', err);
   }
 
   // 2. Save directly to PostgreSQL Database
@@ -117,13 +117,13 @@ export const fetchAllDiningReservations = async () => {
     console.debug('PostgreSQL dining fetch notice:', err.message);
   }
 
-  // Retrieve local cache for offline redundancy
+  // Retrieve session cache for offline redundancy
   let localList = [];
   try {
-    const raw = localStorage.getItem(LOCAL_DINING_KEY);
+    const raw = sessionStorage.getItem(SESSION_DINING_KEY);
     if (raw) localList = JSON.parse(raw);
   } catch (err) {
-    console.warn('Error reading local dining storage:', err);
+    console.warn('Error reading session dining storage:', err);
   }
 
   // Deduplicate and merge: PostgreSQL primary
@@ -155,13 +155,13 @@ export const fetchAllCateringInquiries = async () => {
     console.debug('PostgreSQL catering fetch notice:', err.message);
   }
 
-  // Retrieve local cache for offline redundancy
+  // Retrieve session cache for offline redundancy
   let localList = [];
   try {
-    const raw = localStorage.getItem(LOCAL_CATERING_KEY);
+    const raw = sessionStorage.getItem(SESSION_CATERING_KEY);
     if (raw) localList = JSON.parse(raw);
   } catch (err) {
-    console.warn('Error reading local catering storage:', err);
+    console.warn('Error reading session catering storage:', err);
   }
 
   // Deduplicate and merge: PostgreSQL primary
@@ -178,17 +178,17 @@ export const fetchAllCateringInquiries = async () => {
  * Update dining status directly in PostgreSQL DB
  */
 export const updateLocalDiningStatus = async (bookingId, newStatus) => {
-  // Update local storage
+  // Update session storage
   try {
-    const raw = localStorage.getItem(LOCAL_DINING_KEY);
+    const raw = sessionStorage.getItem(SESSION_DINING_KEY);
     if (raw) {
       let list = JSON.parse(raw);
       list = list.map(item => item.bookingId === bookingId ? { ...item, status: newStatus } : item);
-      localStorage.setItem(LOCAL_DINING_KEY, JSON.stringify(list));
+      sessionStorage.setItem(SESSION_DINING_KEY, JSON.stringify(list));
       window.dispatchEvent(new Event('storage'));
     }
   } catch (err) {
-    console.error('Error updating dining status in localStorage:', err);
+    console.error('Error updating dining status in sessionStorage:', err);
   }
 
   // Update in PostgreSQL DB
@@ -209,17 +209,17 @@ export const updateLocalDiningStatus = async (bookingId, newStatus) => {
  * Update catering status directly in PostgreSQL DB
  */
 export const updateLocalCateringStatus = async (inquiryId, newStatus) => {
-  // Update local storage
+  // Update session storage
   try {
-    const raw = localStorage.getItem(LOCAL_CATERING_KEY);
+    const raw = sessionStorage.getItem(SESSION_CATERING_KEY);
     if (raw) {
       let list = JSON.parse(raw);
       list = list.map(item => item.inquiryId === inquiryId ? { ...item, status: newStatus } : item);
-      localStorage.setItem(LOCAL_CATERING_KEY, JSON.stringify(list));
+      sessionStorage.setItem(SESSION_CATERING_KEY, JSON.stringify(list));
       window.dispatchEvent(new Event('storage'));
     }
   } catch (err) {
-    console.error('Error updating catering status in localStorage:', err);
+    console.error('Error updating catering status in sessionStorage:', err);
   }
 
   // Update in PostgreSQL DB

@@ -12,20 +12,18 @@ export const AdminLoginPage = () => {
   const { login, authError, setAuthError } = useAdminAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setAuthError(null);
 
-    try {
-      const success = await login(email, password);
+    setTimeout(() => {
+      const success = login(email, password);
       setIsSubmitting(false);
       if (success) {
         navigate('/admin');
       }
-    } catch {
-      setIsSubmitting(false);
-    }
+    }, 400);
   };
 
   return (
@@ -36,7 +34,7 @@ export const AdminLoginPage = () => {
       <div className="absolute top-32 -left-20 w-80 h-80 rounded-full bg-[#1B4332]/10 blur-3xl"></div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        
+
         {/* Back to site link */}
         <div className="mb-4 text-center">
           <Link
@@ -50,19 +48,19 @@ export const AdminLoginPage = () => {
         {/* Card Header with Website Logo */}
         <div className="text-center flex flex-col items-center">
           <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-white/95 border-2 border-[#D4731A] shadow-xl mb-3 backdrop-blur-xs">
-            <img 
-              src="/logo-sm.svg" 
-              alt="Sri Mahalakshmi Caters Logo" 
-              className="h-16 w-auto object-contain rounded-md" 
+            <img
+              src="/logo-sm.svg"
+              alt="Sri Mahalakshmi Caters Logo"
+              className="h-16 w-auto object-contain rounded-md"
             />
           </div>
-          <h2 
+          <h2
             className="text-2xl sm:text-3xl font-extrabold text-[#FFF8EC] tracking-tight"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Sri Mahalakshmi
           </h2>
-          <p 
+          <p
             className="mt-1 text-xs uppercase tracking-[0.18em] text-[#E0B030] font-bold"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
@@ -72,7 +70,7 @@ export const AdminLoginPage = () => {
 
         {/* Login Form Box */}
         <div className="mt-8 bg-white py-8 px-6 sm:px-10 shadow-2xl rounded-2xl border-2 border-[#C4960A]/40 relative">
-          
+
           {authError && (
             <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
               <span className="text-base">⚠️</span>
@@ -82,9 +80,9 @@ export const AdminLoginPage = () => {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-xs font-bold text-[#6B4423] uppercase tracking-wider mb-1.5">
+              <input className="block text-xs font-bold text-[#6B4423] uppercase tracking-wider mb-1.5">
                 Admin Email Address
-              </label>
+              </input>
               <div className="relative">
                 <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
