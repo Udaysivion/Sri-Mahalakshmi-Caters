@@ -8,26 +8,42 @@
 
 @theme {
   /* Core Palette — Warm, Earthy, Village */
-  --color-primary:       #D4731A;   /* Warm Saffron/Turmeric Orange */
-  --color-primary-dark:  #B05D10;   /* Darker Saffron */
-  --color-primary-light: #F08C30;   /* Lighter Saffron */
-  --color-green:         #1B4332;   /* Banana Leaf Green */
-  --color-green-dark:    #0D2219;   /* Deep Green */
-  --color-green-light:   #4A8C4C;   /* Lighter Green */
-  --color-gold:          #C4960A;   /* Earthy Gold */
-  --color-gold-light:    #E0B030;   /* Warm Gold */
-  --color-cream:         #FFF8EC;   /* Warm Buttermilk Cream */
-  --color-cream-dark:    #F5EBCF;   /* Darker Cream */
-  --color-brown:         #5C2D0E;   /* Earthy Brown */
-  --color-brown-light:   #8B4513;   /* Sienna Brown */
-  --color-text:          #2C1A00;   /* Deep Warm Black */
-  --color-text-soft:     #6B4423;   /* Warm Muted Brown */
-  --color-bg:            #FFF8EC;   /* Warm Cream Background */
-  --color-red:           #C0392B;   /* Non-veg red */
+  --color-primary: #D4731A;
+  /* Warm Saffron/Turmeric Orange */
+  --color-primary-dark: #B05D10;
+  /* Darker Saffron */
+  --color-primary-light: #F08C30;
+  /* Lighter Saffron */
+  --color-green: #1B4332;
+  /* Banana Leaf Green */
+  --color-green-dark: #0D2219;
+  /* Deep Green */
+  --color-green-light: #4A8C4C;
+  /* Lighter Green */
+  --color-gold: #C4960A;
+  /* Earthy Gold */
+  --color-gold-light: #E0B030;
+  /* Warm Gold */
+  --color-cream: #FFF8EC;
+  /* Warm Buttermilk Cream */
+  --color-cream-dark: #F5EBCF;
+  /* Darker Cream */
+  --color-brown: #5C2D0E;
+  /* Earthy Brown */
+  --color-brown-light: #8B4513;
+  /* Sienna Brown */
+  --color-text: #2C1A00;
+  /* Deep Warm Black */
+  --color-text-soft: #6B4423;
+  /* Warm Muted Brown */
+  --color-bg: #FFF8EC;
+  /* Warm Cream Background */
+  --color-red: #C0392B;
+  /* Non-veg red */
 
-  --font-heading:  "Baloo 2", "Arial", sans-serif;
-  --font-body:     "Inter", "Arial", sans-serif;
-  --font-telugu:   "Tiro Telugu", serif;
+  --font-heading: "Baloo 2", "Arial", sans-serif;
+  --font-body: "Inter", "Arial", sans-serif;
+  --font-telugu: "Tiro Telugu", serif;
 }
 
 @layer base {
@@ -44,16 +60,31 @@
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: "Baloo 2", sans-serif;
   }
 
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #F5EBCF; }
-  ::-webkit-scrollbar-thumb { background: #D4731A; border-radius: 3px; }
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #F5EBCF;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #D4731A;
+    border-radius: 3px;
+  }
 }
 
 @layer utilities {
+
   /* === EARTHY SECTION HEADER === */
   .earthy-header {
     text-align: center;
@@ -90,10 +121,11 @@
     font-size: 0.9rem;
     letter-spacing: 0.02em;
   }
+
   .btn-saffron:hover {
     background: #B05D10;
     transform: translateY(-2px);
-    box-shadow: 0 4px 14px rgba(212,115,26,0.4);
+    box-shadow: 0 4px 14px rgba(212, 115, 26, 0.4);
   }
 
   /* === GREEN BUTTON === */
@@ -110,6 +142,7 @@
     transition: all 0.25s;
     font-size: 0.9rem;
   }
+
   .btn-leaf:hover {
     background: #0D2219;
     transform: translateY(-2px);
@@ -117,28 +150,39 @@
 
   /* === VEG / NON-VEG DOTS === */
   .veg-box {
-    width: 14px; height: 14px;
+    width: 14px;
+    height: 14px;
     border: 1.5px solid #1B4332;
     border-radius: 2px;
-    display: inline-flex; align-items: center; justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
   }
+
   .veg-box::after {
     content: '';
-    width: 7px; height: 7px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: #1B4332;
   }
+
   .nonveg-box {
-    width: 14px; height: 14px;
+    width: 14px;
+    height: 14px;
     border: 1.5px solid #C0392B;
     border-radius: 2px;
-    display: inline-flex; align-items: center; justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
   }
+
   .nonveg-box::after {
     content: '';
-    width: 7px; height: 7px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: #C0392B;
   }
@@ -164,11 +208,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.35rem 0;
-    border-bottom: 1px dashed rgba(196,150,10,0.25);
+    border-bottom: 1px dashed rgba(196, 150, 10, 0.25);
     font-size: 0.88rem;
     gap: 0.5rem;
   }
-  .menu-row:last-child { border-bottom: none; }
+
+  .menu-row:last-child {
+    border-bottom: none;
+  }
 
   /* === HIGHLIGHT BAR ITEM === */
   .bar-item {
@@ -181,30 +228,57 @@
 
   /* === FLOAT ANIMATION === */
   @keyframes gentleFloat {
-    0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-6px); }
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-6px);
+    }
   }
-  .float { animation: gentleFloat 2.8s ease-in-out infinite; }
+
+  .float {
+    animation: gentleFloat 2.8s ease-in-out infinite;
+  }
 
   /* === FADE IN === */
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  .fade-in-up { animation: fadeInUp 0.55s ease-out forwards; }
+
+  .fade-in-up {
+    animation: fadeInUp 0.55s ease-out forwards;
+  }
 
   /* === SAFFRON SHIMMER FOR PRICES === */
   @keyframes priceGlow {
-    0%, 100% { color: #1B4332; }
-    50%       { color: #4A8C4C; }
+
+    0%,
+    100% {
+      color: #1B4332;
+    }
+
+    50% {
+      color: #4A8C4C;
+    }
   }
 
   /* === BANANA LEAF PATTERN === */
   .banana-bg {
     background-color: #1B4332;
     background-image:
-      radial-gradient(ellipse at 10% 30%, rgba(212,115,26,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 90% 70%, rgba(196,150,10,0.08) 0%, transparent 60%);
+      radial-gradient(ellipse at 10% 30%, rgba(212, 115, 26, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 70%, rgba(196, 150, 10, 0.08) 0%, transparent 60%);
   }
 
   /* === RUSTIC PAPER TEXTURE === */
@@ -224,5 +298,129 @@
     background: #1B4332 !important;
     color: #FFF8EC !important;
     border-radius: 8px !important;
+  }
+}
+
+/* ============================================================
+   KITCHEN ORDER TICKET (KOT) PRINTING RULES
+   ============================================================ */
+@media print {
+  @page {
+    size: auto;
+    margin: 0mm;
+  }
+
+  html,
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Completely hide all navigation, headers, footers, admin tables, and buttons */
+  header,
+  footer,
+  nav,
+  main,
+  button,
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  .no-print-overlay {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    backdrop-filter: none !important;
+  }
+
+  .no-print-modal-container {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-clean-wrapper {
+    display: block !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* KOT & Customer Thermal Slips: Clean, continuous extending receipt for 80mm POS */
+  #kitchen-order-slip,
+  #customer-order-slip,
+  #dual-order-slip,
+  .thermal-receipt-print {
+    position: relative !important;
+    display: block !important;
+    margin: 0 auto !important;
+    left: auto !important;
+    top: auto !important;
+    width: 78mm !important;
+    max-width: 78mm !important;
+    min-width: 78mm !important;
+    padding: 3mm 2mm !important;
+    box-sizing: border-box !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  .print-page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+    height: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Daily Kitchen Sheet: Full page A4 dispatch report */
+  #daily-kitchen-sheet {
+    position: relative !important;
+    display: block !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    padding: 8mm !important;
+    box-sizing: border-box !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    height: auto !important;
+    overflow: visible !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
   }
 }

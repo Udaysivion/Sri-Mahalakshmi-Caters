@@ -5,13 +5,13 @@ import { MapPin, Phone, Globe } from 'lucide-react';
 const Footer = () => (
   <footer className="bg-[#112A1F] text-white pt-12 pb-6 border-t border-white/5 relative z-10">
     <div className="max-w-7xl mx-auto px-6">
-      
+
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-10">
-        
+
         {/* Brand & Mission */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/3">
-          <Link to="/" onClick={()=>window.scrollTo(0,0)} className="mb-6 flex flex-col items-center md:items-start group">
+          <Link to="/" onClick={() => window.scrollTo(0, 0)} className="mb-6 flex flex-col items-center md:items-start group">
             <img src="/logo-sm.svg" alt="Sri Mahalakshmi Logo" className="h-16 md:h-20 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity mb-3" />
             <div className="flex flex-col items-center md:items-start">
               <div
@@ -49,14 +49,14 @@ const Footer = () => (
 
         {/* Links Grid (2 Columns on mobile for compactness) */}
         <div className="grid grid-cols-2 gap-8 md:gap-16 w-full md:w-auto text-center md:text-left">
-          
+
           {/* Menu */}
           <div>
             <h4 className="text-[10px] font-bold text-white uppercase tracking-widest mb-5 opacity-80">Explore</h4>
             <ul className="space-y-3">
               {['Home', 'The Menu', 'Catering', 'Gallery'].map(link => (
                 <li key={link}>
-                  <Link to={`/${link.toLowerCase().replace(' ','-')}`} onClick={()=>window.scrollTo(0,0)} className="text-xs text-gray-400 hover:text-[#D4731A] transition-colors font-medium">
+                  <Link to={`/${link.toLowerCase().replace(' ', '-')}`} onClick={() => window.scrollTo(0, 0)} className="text-xs text-gray-400 hover:text-[#D4731A] transition-colors font-medium">
                     {link}
                   </Link>
                 </li>
@@ -75,7 +75,7 @@ const Footer = () => (
                 </a>
               </li>
               <li className="flex items-center gap-2">
-                <Phone size={13} className="text-[#D4731A]" /> 
+                <Phone size={13} className="text-[#D4731A]" />
                 <a href="tel:+917794800042" className="hover:text-[#D4731A] transition-colors">+91 77948 00042</a>
               </li>
               <li className="flex items-center gap-2">
@@ -106,7 +106,7 @@ const Footer = () => (
           <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
         </div>
       </div>
-      
+
     </div>
   </footer>
 );

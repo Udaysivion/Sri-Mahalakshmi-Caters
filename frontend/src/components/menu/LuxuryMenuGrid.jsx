@@ -73,6 +73,11 @@ const LuxuryMenuGrid = ({ activeCategory, dietaryPreference }) => {
                     <img 
                       src={item.img} 
                       alt={item.name} 
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = item.fallbackImg || 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=600';
+                      }}
                       className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
                     />
                     

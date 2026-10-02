@@ -6,6 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { Star, ArrowRight, CheckCircle2, Users, Utensils, Award, Leaf, Truck, ShieldCheck, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useMenuData } from '../hooks/useMenuData';
+import LogoLoader from '../components/common/LogoLoader';
 
 // Animations
 const fadeUp = { hidden:{opacity:0,y:30}, visible:{opacity:1,y:0,transition:{duration:0.6}} };
@@ -198,15 +199,36 @@ const MenuSection = () => {
 
         {/* Cards */}
         {loading ? (
-          <div className="text-center py-12">
-            <p className="text-[#112A1F]">Loading popular dishes...</p>
-          </div>
+          <LogoLoader 
+            size="md" 
+            message="Preparing Our Popular Delicacies..." 
+            subtext="Fresh from Sri Mahalakshmi Kitchen" 
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {menuItems.map(item => (
               <motion.div whileHover={{ y: -5 }} key={item.id} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 group hover:shadow-xl transition-all cursor-pointer">
-                <div className="relative h-48 rounded-xl overflow-hidden mb-4">
-                  <img src={item.img} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="relative h-48 rounded-xl overflow-hidden mb-4 bg-[#1B4332]/5 flex items-center justify-center">
+                  {item.img ? (
+                    <img 
+                      src={item.img} 
+                      alt={item.name} 
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const placeholder = e.currentTarget.parentElement.querySelector('.home-dish-placeholder');
+                        if (placeholder) placeholder.style.display = 'flex';
+                      }}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    />
+                  ) : null}
+                  <div 
+                    className="home-dish-placeholder flex-col items-center justify-center text-[#1B4332]/40 gap-1.5 p-4 text-center"
+                    style={{ display: item.img ? 'none' : 'flex' }}
+                  >
+                    <Utensils size={28} strokeWidth={1.5} />
+                    <span className="text-[10px] font-semibold tracking-wider uppercase text-[#1B4332]/60">{item.name}</span>
+                  </div>
                   <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-md text-[10px] font-bold text-[#D4731A] shadow-sm tracking-wider">NEW</div>
                 </div>
                 <div className="px-2 pb-2">

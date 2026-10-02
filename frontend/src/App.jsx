@@ -22,20 +22,25 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Catering = lazy(() => import('./pages/Catering'));
 
 const Testimonials = lazy(() => import('./pages/Testimonials'));
+const Payment = lazy(() => import('./pages/Payment'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
+// Admin Feature Module Pages (Modular Monolithic Architecture)
+const AdminDashboardPage = lazy(() => import('./features/admin/pages/AdminDashboardPage').then(m => ({ default: m.AdminDashboardPage })));
+const AdminLoginPage = lazy(() => import('./features/admin/pages/AdminLoginPage').then(m => ({ default: m.AdminLoginPage })));
+
+// Common UI Components
+import LogoLoader from './components/common/LogoLoader';
+
 const Loader = () => (
-  <div className="flex items-center justify-center min-h-screen" style={{ background:'#FFF8EC' }}>
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-16 h-16 border-4 rounded-full animate-spin"
-        style={{ borderColor:'#1B4332',borderTopColor:'#D4731A' }}/>
-      <p className="font-bold text-lg tracking-widest" style={{ color:'#1B4332',fontFamily:"'Playfair Display',sans-serif" }}>
-        🪔 Sri Mahalakshmi
-      </p>
-    </div>
-  </div>
+  <LogoLoader 
+    fullScreen 
+    size="lg" 
+    message="Sri Mahalakshmi Caters" 
+    subtext="Authentic Homely & Village Cuisine" 
+  />
 );
 
 const AnimatedRoutes = () => {
@@ -52,6 +57,11 @@ const AnimatedRoutes = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/payment" element={<Payment />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
@@ -61,24 +71,38 @@ const AnimatedRoutes = () => {
   );
 };
 
+const AppLayout = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  return (
+    <div className="flex flex-col min-h-screen" style={{ background:'#FFF8EC' }}>
+      <ScrollToTop />
+      <Toaster 
+        position="bottom-center" 
+        toastOptions={{ 
+          style: { background: '#1A1A1A', color: '#F7E8D0', borderRadius: '16px', padding: '14px 22px' } 
+        }} 
+      />
+      {!isAdminRoute && <Navbar />}
+      <main className="flex-grow">
+        <Suspense fallback={<Loader />}>
+          <AnimatedRoutes />
+        </Suspense>
+      </main>
+      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <FloatingButtons />}
+      {!isAdminRoute && <CartDrawer />}
+    </div>
+  );
+};
+
 function App() {
   return (
     <HelmetProvider>
       <CartProvider>
         <Router>
-        <ScrollToTop />
-        <Toaster position="bottom-center" toastOptions={{ style: { background: '#1A1A1A', color: '#F7E8D0', borderRadius: '100px', padding: '16px 24px' } }} />
-        <div className="flex flex-col min-h-screen" style={{ background:'#FFF8EC' }}>
-          <Navbar />
-          <main className="flex-grow">
-            <Suspense fallback={<Loader />}>
-              <AnimatedRoutes />
-            </Suspense>
-          </main>
-          <Footer />
-          <FloatingButtons />
-          <CartDrawer />
-        </div>
+          <AppLayout />
         </Router>
       </CartProvider>
     </HelmetProvider>

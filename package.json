@@ -1,0 +1,14 @@
+{
+  "name": "sri-mahalakshmi-caters",
+  "version": "1.0.0",
+  "description": "Sri Mahalakshmi Caters - Full Stack Multi-Channel Catering & Dining Platform",
+  "scripts": {
+    "start:backend": "node backend/server.js",
+    "dev:backend": "node backend/server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build"
+  },
+  "keywords": [],
+  "author": "Sri Mahalakshmi Caters",
+  "license": "ISC"
+}
