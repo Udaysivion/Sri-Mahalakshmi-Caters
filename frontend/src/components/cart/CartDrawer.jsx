@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minus, Plus, ShoppingBag, ArrowLeft, ArrowRight, CheckCircle, MapPin, Phone, User, CreditCard } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, ArrowLeft, ArrowRight, CheckCircle, MapPin, Phone, User, CreditCard, Utensils } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -93,7 +93,27 @@ const CartDrawer = () => {
                       <div className="p-4 flex flex-col gap-3">
                         {cartItems.map((item) => (
                           <div key={item.id} className="flex gap-4 p-4 rounded-2xl bg-white shadow-sm border border-gray-100">
-                            <img src={item.img} alt={item.name} className="w-20 h-20 object-cover rounded-xl" />
+                            <div className="w-20 h-20 rounded-xl overflow-hidden bg-[#1B4332]/5 flex items-center justify-center shrink-0">
+                              {item.img ? (
+                                <img 
+                                  src={item.img} 
+                                  alt={item.name} 
+                                  referrerPolicy="no-referrer"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const placeholder = e.currentTarget.parentElement.querySelector('.cart-dish-placeholder');
+                                    if (placeholder) placeholder.style.display = 'flex';
+                                  }}
+                                  className="w-full h-full object-cover" 
+                                />
+                              ) : null}
+                              <div 
+                                className="cart-dish-placeholder flex-col items-center justify-center text-[#1B4332]/40"
+                                style={{ display: item.img ? 'none' : 'flex' }}
+                              >
+                                <Utensils size={20} strokeWidth={1.5} />
+                              </div>
+                            </div>
                             <div className="flex-1 flex flex-col justify-between">
                               <div className="flex justify-between items-start gap-2">
                                 <h3 className="font-bold text-[#112A1F] leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>{item.name}</h3>

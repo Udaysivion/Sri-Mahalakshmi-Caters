@@ -1,7 +1,30 @@
 import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 
-const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/10piS5vroWp7u2kwFHwknmuZP-vbRe6JSR24aaWaxk5E/export?format=csv&gid=0';
+/**
+ * Converts any Google Sheet link into a direct CSV export endpoint.
+ * Supports:
+ * - https://docs.google.com/spreadsheets/d/{id}/edit#gid={gid}
+ * - https://docs.google.com/spreadsheets/d/{id}/export?format=csv
+ * - Direct CSV / gviz URLs
+ */
+const getGoogleSheetCsvUrl = (rawUrl) => {
+  if (!rawUrl) return '';
+  const trimmed = rawUrl.trim();
+  const sheetIdMatch = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  if (sheetIdMatch && sheetIdMatch[1]) {
+    const sheetId = sheetIdMatch[1];
+    const gidMatch = trimmed.match(/[?&#]gid=([0-9]+)/);
+    const gid = gidMatch ? gidMatch[1] : '0';
+    return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+  }
+  return trimmed;
+};
+
+// Read Google Sheet URL exclusively from environment variables
+const SHEET_URL = getGoogleSheetCsvUrl(
+  import.meta.env.VITE_MENU_SHEET_URL || import.meta.env.VITE_GOOGLE_SHEET_URL || ''
+);
 
 export const useMenuData = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -9,37 +32,43 @@ export const useMenuData = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    Papa.parse(GOOGLE_SHEET_URL, {
+    if (!SHEET_URL) {
+      console.warn("⚠️ VITE_MENU_SHEET_URL is not configured in .env");
+      setLoading(false);
+      return;
+    }
+
+    Papa.parse(SHEET_URL, {
       download: true,
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const parsedData = results.data
-          .filter(row => row['Item Name'] && row['Price (INR)']) 
+        const parsedData = (results.data || [])
+          .filter(row => row['Item Name'] && row['Price (INR)'])
           .map((row, index) => {
-            const name = row['Item Name'] || '';
+            const name = (row['Item Name'] || '').trim();
             const isNonVeg = /chicken|egg|mutton|fish/i.test(name);
-            
-            // Extract the first number found in price string
-            const priceMatch = row['Price (INR)'].toString().match(/\d+/);
-            const price = priceMatch ? parseInt(priceMatch[0]) : 0;
-            
-            // Format Category to match tabs (e.g. "Biryani & Curries" -> "Biryani", "Chinese & Fast Food" -> "Chinese")
-            let cat = row['Category'] || 'Other';
+
+            // Extract numeric price
+            const priceMatch = (row['Price (INR)'] || '').toString().match(/\d+/);
+            const price = priceMatch ? parseInt(priceMatch[0], 10) : 0;
+
+            const category = (row['Category'] || 'Other').trim();
+            let cat = category;
             if (cat.includes('Biryani')) cat = 'Biryani';
             else if (cat.includes('Chinese')) cat = 'Chinese';
 
-            let imgUrl = row['image url']?.trim();
-            if (imgUrl && imgUrl.includes('drive.google.com')) {
+            let imgUrl = (row['image url'] || '').trim();
+
+            // Convert Google Drive view links to direct image stream URLs
+            if (imgUrl && (imgUrl.includes('drive.google.com') || imgUrl.includes('drive.usercontent.google.com'))) {
               const match = imgUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
               const idMatch = imgUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-              const id = (match && match[1]) || (idMatch && idMatch[1]);
-              if (id) {
-                // Use lh3.googleusercontent.com which reliably returns raw image data for <img> tags
-                imgUrl = `https://lh3.googleusercontent.com/d/${id}`;
+              const driveId = (match && match[1]) || (idMatch && idMatch[1]);
+              if (driveId) {
+                imgUrl = `https://lh3.googleusercontent.com/d/${driveId}`;
               }
             }
-            imgUrl = imgUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400';
 
             return {
               id: `sheet-${index}`,
@@ -48,16 +77,17 @@ export const useMenuData = () => {
               price: price,
               type: isNonVeg ? 'Non-Veg' : 'Veg',
               img: imgUrl,
-              desc: row['Category'] || '', 
+              desc: category,
               best: false,
               special: false
             };
           });
+
         setMenuItems(parsedData);
         setLoading(false);
       },
       error: (err) => {
-        console.error("Error fetching menu data:", err);
+        console.error("Error fetching menu data from Google Sheet:", err);
         setError(err);
         setLoading(false);
       }

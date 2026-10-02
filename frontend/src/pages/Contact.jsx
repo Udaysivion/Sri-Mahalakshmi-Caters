@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
-import { MapPin, Phone, Mail, Clock, Send, MessageCircle, UtensilsCrossed, PartyPopper } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageCircle, UtensilsCrossed, PartyPopper, CheckCircle2, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { submitDiningReservation, submitCateringInquiry } from '../services/bookingService';
 
 const Contact = () => {
   const [activeTab, setActiveTab] = useState('restaurant'); // 'restaurant' or 'catering'
+  const [isSubmittingRest, setIsSubmittingRest] = useState(false);
+  const [isSubmittingCat, setIsSubmittingCat] = useState(false);
 
   const { register: registerRest, handleSubmit: handleSubmitRest, formState: { errors: errorsRest }, reset: resetRest } = useForm();
   const { register: registerCat, handleSubmit: handleSubmitCat, formState: { errors: errorsCat }, reset: resetCat } = useForm();
@@ -14,16 +18,38 @@ const Contact = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const onSubmitRestaurant = (data) => {
-    console.log("Restaurant Query:", data);
-    alert('Thank you! Your table reservation request has been received. We will call you to confirm shortly. 🙏');
-    resetRest();
+  const onSubmitRestaurant = async (data) => {
+    setIsSubmittingRest(true);
+    try {
+      const res = await submitDiningReservation(data);
+      toast.success(
+        `Table reservation booked! Ref #${res.bookingId}. Our host will call you shortly to confirm. 🙏`,
+        { duration: 6000 }
+      );
+      resetRest();
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to submit reservation. Please reach out on phone directly.');
+    } finally {
+      setIsSubmittingRest(false);
+    }
   };
 
-  const onSubmitCatering = (data) => {
-    console.log("Catering Query:", data);
-    alert('Thank you! Your catering inquiry has been received. Our event manager will contact you soon. 🎉');
-    resetCat();
+  const onSubmitCatering = async (data) => {
+    setIsSubmittingCat(true);
+    try {
+      const res = await submitCateringInquiry(data);
+      toast.success(
+        `Catering request received! Ref #${res.inquiryId}. Our event director will call you shortly. 🎉`,
+        { duration: 6000 }
+      );
+      resetCat();
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to submit inquiry. Please contact us via phone or WhatsApp.');
+    } finally {
+      setIsSubmittingCat(false);
+    }
   };
 
   return (
@@ -174,9 +200,18 @@ const Contact = () => {
                     </div>
 
                     <button type="submit"
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
+                      disabled={isSubmittingRest}
+                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all hover:opacity-90 cursor-pointer disabled:opacity-60"
                       style={{ background: '#D4731A', color: 'white', fontFamily: "'Playfair Display',sans-serif", boxShadow: '0 4px 14px rgba(212,115,26,0.35)' }}>
-                      <Send size={15} /> Request Reservation
+                      {isSubmittingRest ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" /> Saving Reservation...
+                        </>
+                      ) : (
+                        <>
+                          <Send size={15} /> Request Table Reservation
+                        </>
+                      )}
                     </button>
                   </motion.form>
                 )}
@@ -246,9 +281,18 @@ const Contact = () => {
                     </div>
 
                     <button type="submit"
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
+                      disabled={isSubmittingCat}
+                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all hover:opacity-90 cursor-pointer disabled:opacity-60"
                       style={{ background: '#1B4332', color: 'white', fontFamily: "'Playfair Display',sans-serif", boxShadow: '0 4px 14px rgba(27,67,50,0.35)' }}>
-                      <Send size={15} /> Send Catering Inquiry
+                      {isSubmittingCat ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" /> Transmitting Inquiry...
+                        </>
+                      ) : (
+                        <>
+                          <Send size={15} /> Send Catering Inquiry
+                        </>
+                      )}
                     </button>
                   </motion.form>
                 )}

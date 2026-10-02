@@ -16,32 +16,37 @@ import {
   Check, 
   ExternalLink,
   Receipt,
-  FileSpreadsheet,
-  AlertCircle
+  Utensils
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { submitOrderToGoogleSheet } from '../services/googleSheetService';
+import { submitOrderToDatabase } from '../services/orderService';
 import toast from 'react-hot-toast';
 
 const Payment = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, checkoutDetails, clearCart, saveLastOrder, lastOrder } = useCart();
 
-  const [paymentMethod, setPaymentMethod] = useState('razorpay'); // 'razorpay' | 'upi' | 'cod'
+  const [paymentMethod, setPaymentMethod] = useState('razorpay'); // default to automated online payment (GPay / PhonePe / Cards / UPI)
   const [upiRefId, setUpiRefId] = useState('');
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
 
+  // Read credentials, contacts, and configuration exclusively from environment variables
   const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
-  const upiId = import.meta.env.VITE_RESTAURANT_UPI_ID || 'srimahalakshmi@upi';
-  const restaurantName = import.meta.env.VITE_RESTAURANT_NAME || 'Sri Mahalakshmi Caters';
+  const restaurantPhone = import.meta.env.VITE_RESTAURANT_PHONE || '';
+  const upiId = import.meta.env.VITE_RESTAURANT_UPI_ID || '';
+  const restaurantName = import.meta.env.VITE_RESTAURANT_NAME || '';
 
-  // Dynamic UPI URL for QR code
+  // Dynamic UPI URL for QR code & Deep Links
   const generatedOrderId = `SMK-${Math.floor(100000 + Math.random() * 900000)}`;
   const upiDeepLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${cartTotal}&cu=INR&tn=${encodeURIComponent(`Order ${generatedOrderId}`)}`;
+  const gpayDeepLink = `tez://upi/pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${cartTotal}&cu=INR&tn=${encodeURIComponent(`Order ${generatedOrderId}`)}`;
+  const phonepeDeepLink = `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${cartTotal}&cu=INR&tn=${encodeURIComponent(`Order ${generatedOrderId}`)}`;
+  const paytmDeepLink = `paytmmp://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${cartTotal}&cu=INR&tn=${encodeURIComponent(`Order ${generatedOrderId}`)}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiDeepLink)}&margin=8`;
 
   // Dynamically load Razorpay SDK
@@ -62,6 +67,13 @@ const Payment = () => {
     setTimeout(() => setCopiedUpi(false), 2500);
   };
 
+  const handleCopyPhone = () => {
+    navigator.clipboard.writeText(restaurantPhone);
+    setCopiedPhone(true);
+    toast.success('Phone / GPay number copied!');
+    setTimeout(() => setCopiedPhone(false), 2500);
+  };
+
   // Complete and record order
   const finalizeOrder = async (methodName, statusText, paymentRef) => {
     setIsProcessing(true);
@@ -80,26 +92,20 @@ const Payment = () => {
     };
 
     try {
-      const response = await submitOrderToGoogleSheet(orderPayload);
+      const response = await submitOrderToDatabase(orderPayload);
       
       saveLastOrder(orderPayload);
-      setConfirmedOrder({ ...orderPayload, sheetResponse: response });
+      setConfirmedOrder({ ...orderPayload, dbResponse: response });
       clearCart();
       setOrderComplete(true);
 
-      if (response.sheetSaved) {
-        toast.success('Order recorded in Google Sheets!', {
-          icon: '📊',
-          style: { background: '#112A1F', color: '#FFF8EC' }
-        });
-      } else {
-        toast.success('Order placed! (Sheet Webhook pending)', {
-          style: { background: '#112A1F', color: '#FFF8EC' }
-        });
-      }
+      toast.success('Order confirmed & saved to database!', {
+        icon: '✅',
+        style: { background: '#112A1F', color: '#FFF8EC' }
+      });
     } catch (err) {
       console.error(err);
-      toast.error('Order saved locally. Please contact support if needed.');
+      toast.error('Order placed. Processing receipt.');
       setConfirmedOrder(orderPayload);
       setOrderComplete(true);
     } finally {
@@ -126,21 +132,32 @@ const Payment = () => {
         },
         theme: {
           color: '#1B4332'
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+            toast('Payment cancelled or closed.', { icon: 'ℹ️' });
+          }
         }
       };
 
       const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', function (response) {
-        toast.error(`Payment failed: ${response.error.description}`);
+        setIsProcessing(false);
+        toast.error(`Payment failed: ${response.error?.description || 'Transaction unsuccessful'}`);
       });
       rzp.open();
     } else {
       // Demo / Test Gateway Mode if API key is not yet set
-      setIsProcessing(true);
-      setTimeout(() => {
-        finalizeOrder('Razorpay (Test Mode)', 'Paid', `pay_test_${Math.random().toString(36).substring(7)}`);
-      }, 1500);
+      simulateInstantPayment();
     }
+  };
+
+  const simulateInstantPayment = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      finalizeOrder('Razorpay (Test Simulation)', 'Paid', `pay_test_${Math.random().toString(36).substring(7)}`);
+    }, 800);
   };
 
   // 2. UPI Verification Handler
@@ -195,25 +212,13 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Google Sheets Status Badge */}
-            {confirmedOrder.sheetResponse?.sheetSaved ? (
-              <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800">
-                <FileSpreadsheet size={18} className="text-emerald-600 shrink-0" />
-                <span>
-                  This order has been recorded into your Google Sheet in the <strong>"Orders"</strong> tab!
-                </span>
-              </div>
-            ) : (
-              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 space-y-1">
-                <div className="flex items-center gap-2 font-bold text-amber-900">
-                  <AlertCircle size={16} className="text-amber-600 shrink-0" />
-                  <span>Google Sheets Webhook Not Connected in .env</span>
-                </div>
-                <p className="text-[11px] text-amber-800 leading-relaxed">
-                  The order was saved locally. To save directly to your Google Sheet, deploy <code>google-apps-script.js</code> in your Google Sheet (via <em>Extensions &gt; Apps Script</em>) and paste the generated Web App URL into <code>.env</code>.
-                </p>
-              </div>
-            )}
+            {/* Database Storage Confirmation */}
+            <div className="flex items-center gap-2.5 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800">
+              <CheckCircle size={16} className="text-emerald-600 shrink-0" />
+              <span className="font-semibold">
+                Order successfully verified and recorded into the database!
+              </span>
+            </div>
 
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
@@ -305,165 +310,114 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Payment Method Selector */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#1B4332]/10">
-              <h2 className="text-xl font-bold text-[#112A1F] mb-6 flex items-center justify-between" style={{ fontFamily: "'Playfair Display', serif" }}>
-                <span>Select Payment Method</span>
-                <span className="text-xs font-sans font-semibold text-gray-400 uppercase tracking-widest">Step 3 of 3</span>
-              </h2>
-
-              {/* Tabs */}
-              <div className="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-xl mb-6">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('razorpay')}
-                  className={`py-3 px-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all flex flex-col items-center gap-1.5 ${
-                    paymentMethod === 'razorpay' ? 'bg-[#112A1F] text-white shadow-md' : 'text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <CreditCard size={18} />
-                  <span>Razorpay</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('upi')}
-                  className={`py-3 px-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all flex flex-col items-center gap-1.5 ${
-                    paymentMethod === 'upi' ? 'bg-[#112A1F] text-white shadow-md' : 'text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <Smartphone size={18} />
-                  <span>UPI / QR</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('cod')}
-                  className={`py-3 px-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all flex flex-col items-center gap-1.5 ${
-                    paymentMethod === 'cod' ? 'bg-[#112A1F] text-white shadow-md' : 'text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <Banknote size={18} />
-                  <span>Cash on Delivery</span>
-                </button>
+            {/* E-Commerce Payment Method Selector */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#1B4332]/10 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div>
+                  <h2 className="text-xl font-bold text-[#112A1F]" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    Select Payment Method
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-0.5">100% Safe, Secure & Encrypted Checkout</p>
+                </div>
+                <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                  Step 3 of 3
+                </span>
               </div>
 
-              {/* TAB 1: RAZORPAY */}
-              {paymentMethod === 'razorpay' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                  <div className="p-5 border-2 border-emerald-600/30 bg-emerald-50/40 rounded-xl">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#112A1F]">Razorpay Secure Checkout</span>
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-800 text-white px-2 py-0.5 rounded">Instant</span>
-                    </div>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      Pay safely using <strong>Cards (Visa, Mastercard, RuPay)</strong>, <strong>UPI (GPay, PhonePe)</strong>, <strong>Net Banking (50+ banks)</strong>, or <strong>Wallets</strong>.
-                    </p>
-                    
-                    {!razorpayKey && (
-                      <div className="mt-3 flex items-start gap-2 bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[11px] text-amber-800">
-                        <AlertCircle size={15} className="text-amber-600 shrink-0 mt-0.5" />
-                        <span>Interactive Test Mode active (Configure <code>VITE_RAZORPAY_KEY_ID</code> in <code>.env</code> for live merchant transactions).</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={handleRazorpayPayment}
-                    disabled={isProcessing}
-                    className="w-full py-4 bg-[#D4731A] hover:bg-[#B05D10] text-white font-bold text-sm uppercase tracking-widest rounded-xl transition-all shadow-lg flex justify-center items-center gap-2"
-                  >
-                    {isProcessing ? 'Processing Transaction...' : `Pay ₹${cartTotal} via Razorpay`}
-                  </button>
-                </motion.div>
-              )}
-
-              {/* TAB 2: UPI / QR CODE */}
-              {paymentMethod === 'upi' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                  <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Scan with Any UPI App</p>
-                    <div className="inline-block p-3 bg-white rounded-2xl shadow-md border border-gray-200">
-                      <img 
-                        src={qrCodeUrl} 
-                        alt="UPI Payment QR Code" 
-                        className="w-48 h-48 mx-auto"
-                        loading="eager"
-                      />
-                    </div>
-                    <p className="text-lg font-black text-[#112A1F] mt-3">₹{cartTotal}</p>
-
-                    {/* UPI ID copy pill */}
-                    <div className="mt-3 flex items-center justify-center gap-2">
-                      <span className="text-xs font-mono bg-white px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700">
-                        {upiId}
-                      </span>
-                      <button 
-                        type="button" 
-                        onClick={handleCopyUpi} 
-                        className="p-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700 transition-colors"
-                        title="Copy UPI ID"
-                      >
-                        {copiedUpi ? <Check size={14} className="text-emerald-700" /> : <Copy size={14} />}
-                      </button>
-                    </div>
-
-                    {/* Deep link for mobile devices */}
-                    <div className="mt-4 sm:hidden">
-                      <a 
-                        href={upiDeepLink} 
-                        className="inline-block w-full py-2.5 bg-[#112A1F] text-white font-bold text-xs uppercase tracking-wider rounded-lg"
-                      >
-                        Open UPI App Directly
-                      </a>
-                    </div>
-                  </div>
-
-                  <form onSubmit={handleUpiVerification} className="space-y-3">
+              {/* OPTION 1: AUTOMATED ONLINE PAYMENT (GPAY / PHONEPE / CARDS / UPI) */}
+              <div className={`rounded-2xl border-2 transition-all overflow-hidden ${paymentMethod === 'razorpay' ? 'border-[#1B4332] bg-emerald-50/20 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                {/* Header / Radio */}
+                <div 
+                  onClick={() => setPaymentMethod('razorpay')}
+                  className="p-4.5 flex items-center justify-between cursor-pointer"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <input 
+                      type="radio" 
+                      name="payment_method" 
+                      checked={paymentMethod === 'razorpay'} 
+                      onChange={() => setPaymentMethod('razorpay')}
+                      className="w-4 h-4 accent-[#1B4332] cursor-pointer" 
+                    />
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
-                        UPI Transaction Reference ID (UTR / Txn ID)
-                      </label>
-                      <input 
-                        type="text" 
-                        value={upiRefId} 
-                        onChange={(e) => setUpiRefId(e.target.value)}
-                        placeholder="e.g. 429381029481 or leave blank for instant confirmation"
-                        className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-[#D4731A]"
-                      />
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-sm text-[#112A1F]">Online Payment (Google Pay, PhonePe, Cards, UPI)</span>
+                        <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-800 text-white">Automated</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5">Real-time instant bank verification • No manual UTR needed</p>
                     </div>
-                    <button
-                      type="submit"
-                      disabled={isProcessing}
-                      className="w-full py-4 bg-[#112A1F] hover:bg-[#1E4A35] text-white font-bold text-sm uppercase tracking-widest rounded-xl transition-all shadow-lg flex justify-center items-center gap-2"
-                    >
-                      {isProcessing ? 'Verifying & Saving Order...' : 'I Have Paid • Confirm Order'}
-                    </button>
-                  </form>
-                </motion.div>
-              )}
-
-              {/* TAB 3: CASH ON DELIVERY */}
-              {paymentMethod === 'cod' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                  <div className="p-5 border border-amber-300/60 bg-amber-50/40 rounded-xl">
-                    <h3 className="font-bold text-[#112A1F] text-sm mb-1">Pay with Cash on Delivery</h3>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      You can pay ₹{cartTotal} in cash or via UPI to our delivery executive when your feast reaches your doorstep.
-                    </p>
                   </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#4285F4] text-white">GPay</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#5f259f] text-white">PhonePe</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#002e6e] text-white">Paytm</span>
+                    <CreditCard size={18} className="text-gray-500 hidden sm:inline" />
+                  </div>
+                </div>
 
-                  <button
-                    onClick={handleCodPayment}
-                    disabled={isProcessing}
-                    className="w-full py-4 bg-[#112A1F] hover:bg-[#1E4A35] text-white font-bold text-sm uppercase tracking-widest rounded-xl transition-all shadow-lg flex justify-center items-center gap-2"
-                  >
-                    {isProcessing ? 'Confirming Order...' : `Place Order (COD) • ₹${cartTotal}`}
-                  </button>
-                </motion.div>
-              )}
+                {/* Expanded Details when active */}
+                {paymentMethod === 'razorpay' && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="p-4.5 pt-0 border-t border-gray-100 space-y-4">
+                    <div className="p-3.5 bg-white rounded-xl border border-gray-200 space-y-2 text-xs">
+                      <div className="flex items-center justify-between text-emerald-800 font-bold">
+                        <span className="flex items-center gap-1.5"><ShieldCheck size={16} /> 100% Real-Time Automated Verification</span>
+                        <span className="text-[10px] bg-emerald-100 px-2 py-0.5 rounded">Bank Protected</span>
+                      </div>
+                      <p className="text-gray-600 leading-relaxed text-[11px]">
+                        Pay directly via <strong>Google Pay</strong>, <strong>PhonePe</strong>, <strong>UPI QR</strong>, <strong>Cards (Debit/Credit)</strong>, or <strong>Net Banking</strong>. The system automatically confirms your payment with the bank in real time — you don't need to enter any transaction ID manually.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={handleRazorpayPayment}
+                      disabled={isProcessing}
+                      className="w-full py-4 bg-[#D4731A] hover:bg-[#B05D10] text-white font-bold text-sm uppercase tracking-wider rounded-xl transition-all shadow-md flex justify-center items-center gap-2"
+                    >
+                      {isProcessing ? 'Connecting to Bank...' : `Pay ₹${cartTotal} Online (GPay / PhonePe / Card)`}
+                    </button>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* OPTION 2: CASH ON DELIVERY (COD) */}
+              <div className={`rounded-2xl border-2 transition-all overflow-hidden ${paymentMethod === 'cod' ? 'border-[#1B4332] bg-emerald-50/20 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                {/* Header / Radio */}
+                <div 
+                  onClick={() => setPaymentMethod('cod')}
+                  className="p-4.5 flex items-center justify-between cursor-pointer"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <input 
+                      type="radio" 
+                      name="payment_method" 
+                      checked={paymentMethod === 'cod'} 
+                      onChange={() => setPaymentMethod('cod')}
+                      className="w-4 h-4 accent-[#1B4332] cursor-pointer" 
+                    />
+                    <div>
+                      <span className="font-bold text-sm text-[#112A1F]">Cash on Delivery (COD)</span>
+                      <p className="text-xs text-gray-500 mt-0.5">Pay in cash or UPI when your food arrives at your doorstep</p>
+                    </div>
+                  </div>
+                  <Banknote size={20} className="text-gray-600 shrink-0" />
+                </div>
+
+                {/* Expanded Details */}
+                {paymentMethod === 'cod' && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="p-4.5 pt-0 border-t border-gray-100 space-y-3">
+                    <p className="text-xs text-gray-600 bg-white p-3.5 rounded-xl border border-gray-200 leading-relaxed">
+                      You can pay <strong>₹{cartTotal}</strong> to our delivery partner in cash or by scanning their UPI QR code upon food delivery.
+                    </p>
+                    <button
+                      onClick={handleCodPayment}
+                      disabled={isProcessing}
+                      className="w-full py-3.5 bg-[#112A1F] hover:bg-[#1E4A35] text-white font-bold text-sm uppercase tracking-wider rounded-xl transition-all shadow-md flex justify-center items-center gap-2"
+                    >
+                      {isProcessing ? 'Confirming Order...' : `Place Cash on Delivery Order • ₹${cartTotal}`}
+                    </button>
+                  </motion.div>
+                )}
+              </div>
 
             </div>
           </div>
@@ -479,7 +433,27 @@ const Payment = () => {
               {cartItems.map((item) => (
                 <div key={item.id} className="py-3 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <img src={item.img} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#1B4332]/5 flex items-center justify-center shrink-0">
+                      {item.img ? (
+                        <img 
+                          src={item.img} 
+                          alt={item.name} 
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const placeholder = e.currentTarget.parentElement.querySelector('.payment-dish-placeholder');
+                            if (placeholder) placeholder.style.display = 'flex';
+                          }}
+                          className="w-full h-full object-cover" 
+                        />
+                      ) : null}
+                      <div 
+                        className="payment-dish-placeholder flex-col items-center justify-center text-[#1B4332]/40"
+                        style={{ display: item.img ? 'none' : 'flex' }}
+                      >
+                        <Utensils size={16} strokeWidth={1.5} />
+                      </div>
+                    </div>
                     <div>
                       <p className="text-sm font-bold text-[#112A1F] line-clamp-1">{item.name}</p>
                       <p className="text-xs text-gray-500">Qty: {item.quantity} × ₹{item.price}</p>

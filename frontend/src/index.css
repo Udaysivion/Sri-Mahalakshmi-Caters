@@ -226,3 +226,127 @@
     border-radius: 8px !important;
   }
 }
+
+/* ============================================================
+   KITCHEN ORDER TICKET (KOT) PRINTING RULES
+   ============================================================ */
+@media print {
+  @page {
+    size: auto;
+    margin: 0mm;
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Completely hide all navigation, headers, footers, admin tables, and buttons */
+  header,
+  footer,
+  nav,
+  main,
+  button,
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  .no-print-overlay {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    backdrop-filter: none !important;
+  }
+
+  .no-print-modal-container {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-clean-wrapper {
+    display: block !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* KOT & Customer Thermal Slips: Clean, continuous extending receipt for 80mm POS */
+  #kitchen-order-slip,
+  #customer-order-slip,
+  #dual-order-slip,
+  .thermal-receipt-print {
+    position: relative !important;
+    display: block !important;
+    margin: 0 auto !important;
+    left: auto !important;
+    top: auto !important;
+    width: 78mm !important;
+    max-width: 78mm !important;
+    min-width: 78mm !important;
+    padding: 3mm 2mm !important;
+    box-sizing: border-box !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  .print-page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+    height: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Daily Kitchen Sheet: Full page A4 dispatch report */
+  #daily-kitchen-sheet {
+    position: relative !important;
+    display: block !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    padding: 8mm !important;
+    box-sizing: border-box !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    height: auto !important;
+    overflow: visible !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+}
+

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Search, Check } from 'lucide-react';
+import { ShoppingCart, Search, Check, Utensils } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
 import { useMenuData } from '../hooks/useMenuData';
+import LogoLoader from '../components/common/LogoLoader';
 
 /* ─── Menu Data comes from Google Sheets ─── */
 
@@ -39,8 +40,29 @@ const FoodCard = ({ item }) => {
       className="group flex flex-col bg-white overflow-hidden transition-all duration-300 relative border border-[#1B4332]/10 shadow-[0_4px_15px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(27,67,50,0.08)] hover:-translate-y-1 rounded-sm">
       
       {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-gray-100">
-        <img src={item.img} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+      <div className="relative h-48 overflow-hidden bg-[#1B4332]/5 flex items-center justify-center">
+        {item.img ? (
+          <img 
+            src={item.img} 
+            alt={item.name} 
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const placeholder = e.currentTarget.parentElement.querySelector('.dish-placeholder');
+              if (placeholder) placeholder.style.display = 'flex';
+            }}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+            loading="lazy" 
+          />
+        ) : null}
+        
+        <div 
+          className="dish-placeholder flex-col items-center justify-center text-[#1B4332]/40 gap-2 p-4 text-center"
+          style={{ display: item.img ? 'none' : 'flex' }}
+        >
+          <Utensils size={32} strokeWidth={1.5} />
+          <span className="text-[11px] font-semibold tracking-wider uppercase text-[#1B4332]/60">{item.name}</span>
+        </div>
         
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
@@ -186,9 +208,12 @@ const Menu = () => {
       {/* Grid */}
       <div className="max-w-6xl mx-auto px-4">
         {loading ? (
-          <div className="text-center py-32 border border-[#1B4332]/5 bg-white">
-            <h3 className="text-2xl text-[#1B4332] mb-2" style={{ fontFamily:"'Playfair Display',serif" }}>Loading Menu...</h3>
-            <p className="text-sm text-[#6B4423]">Fetching fresh dishes from our kitchen</p>
+          <div className="py-20 flex justify-center">
+            <LogoLoader 
+              size="lg" 
+              message="Loading Kitchen Menu..." 
+              subtext="Fetching today's authentic dishes" 
+            />
           </div>
         ) : (
           <AnimatePresence>
