@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, MessageSquare, Calendar, Clock, Users, CheckCircle, Clock3, XCircle, Search, Filter } from 'lucide-react';
 import { AdminPagination } from './AdminPagination';
+import { AdminDateFilter } from './AdminDateFilter';
 import LogoLoader from '../../../components/common/LogoLoader';
 
 export const DiningReservationsTable = ({
@@ -10,15 +11,22 @@ export const DiningReservationsTable = ({
 }) => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [dateFilter, setDateFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Reset to page 1 whenever filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, statusFilter]);
+  }, [search, statusFilter, dateFilter]);
 
   const filtered = reservations.filter(res => {
+    // Date filter
+    if (dateFilter) {
+      const d = res.date || res.timestamp || '';
+      if (!d.includes(dateFilter)) return false;
+    }
+
     if (statusFilter !== 'ALL' && (res.status || 'Pending').toLowerCase() !== statusFilter.toLowerCase()) {
       return false;
     }
@@ -105,6 +113,13 @@ export const DiningReservationsTable = ({
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
+
+          {/* Date Wise Filter */}
+          <AdminDateFilter
+            selectedDate={dateFilter}
+            onDateChange={setDateFilter}
+            totalCount={filtered.length}
+          />
         </div>
       </div>
 

@@ -58,6 +58,8 @@ export const AdminDashboardPage = () => {
     setSearchQuery,
     statusFilter,
     setStatusFilter,
+    selectedDate,
+    setSelectedDate,
     refreshOrders,
     handleUpdateOrderStatus,
     handleUpdateDiningStatus,
@@ -234,8 +236,10 @@ export const AdminDashboardPage = () => {
                 onSearchChange={setSearchQuery}
                 statusFilter={statusFilter}
                 onStatusFilterChange={setStatusFilter}
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
                 onSelectOrder={(order) => setSelectedOrder(order)}
-                onPrintKOT={(order, mode = 'both') => setKotOrder({ ...order, printMode: mode })}
+                onPrintKOT={(order, mode = 'customer') => setKotOrder({ ...order, printMode: mode })}
               />
             </div>
           )}

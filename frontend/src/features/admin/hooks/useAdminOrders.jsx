@@ -44,6 +44,7 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [selectedDate, setSelectedDate] = useState(''); // 'YYYY-MM-DD' or '' for all
   const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'dining', 'catering'
 
   // Refs for change tracking
@@ -258,6 +259,22 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
 
   // Filtered orders list
   const filteredOrders = orders.filter(order => {
+    // 1. Date Filter (matches YYYY-MM-DD in local time or ISO UTC)
+    if (selectedDate) {
+      const ts = order.timestamp || order.created_at;
+      if (!ts) return false;
+      const orderDate = new Date(ts);
+      if (isNaN(orderDate.getTime())) return false;
+
+      const localDateStr = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}-${String(orderDate.getDate()).padStart(2, '0')}`;
+      const utcDateStr = orderDate.toISOString().slice(0, 10);
+
+      if (localDateStr !== selectedDate && utcDateStr !== selectedDate) {
+        return false;
+      }
+    }
+
+    // 2. Status Filter
     if (statusFilter !== 'ALL') {
       const pMethod = (order.paymentMethod || '').toLowerCase();
       const pStatus = (order.paymentStatus || '').toLowerCase();
@@ -271,6 +288,7 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
       }
     }
 
+    // 3. Search Query
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase().trim();
     return (
@@ -322,6 +340,8 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
     setSearchQuery,
     statusFilter,
     setStatusFilter,
+    selectedDate,
+    setSelectedDate,
     refreshOrders: () => loadAllData(true),
     handleUpdateOrderStatus,
     handleUpdateDiningStatus,
