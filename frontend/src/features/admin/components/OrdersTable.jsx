@@ -29,10 +29,10 @@ export const OrdersTable = ({
   );
   return (
     <div className="bg-white rounded-2xl border-1.5 border-[#C4960A]/30 shadow-sm overflow-hidden">
-      
+
       {/* Search & Filter Toolbar */}
       <div className="p-4 sm:p-5 border-b border-stone-200 bg-[#FFF8EC]/40 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-        
+
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
           <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
@@ -64,11 +64,10 @@ export const OrdersTable = ({
             <button
               key={f.id}
               onClick={() => onStatusFilterChange(f.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-                statusFilter === f.id
-                  ? 'bg-[#1B4332] text-[#FFF8EC] shadow-xs'
-                  : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${statusFilter === f.id
+                ? 'bg-[#1B4332] text-[#FFF8EC] shadow-xs'
+                : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
+                }`}
             >
               {f.label}
             </button>
@@ -93,10 +92,10 @@ export const OrdersTable = ({
             {isLoading && orders.length === 0 ? (
               <tr>
                 <td colSpan="6" className="py-12 text-center">
-                  <LogoLoader 
-                    size="sm" 
-                    message="Syncing Live Orders..." 
-                    subtext="Connecting to PostgreSQL Database" 
+                  <LogoLoader
+                    size="sm"
+                    message="Syncing Live Orders..."
+                    subtext="Connecting to PostgreSQL Database"
                   />
                 </td>
               </tr>
@@ -116,7 +115,7 @@ export const OrdersTable = ({
                 const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
 
                 return (
-                  <tr 
+                  <tr
                     key={order.orderId || idx}
                     className="hover:bg-[#FFF8EC]/50 transition-colors cursor-pointer group"
                     onClick={() => onSelectOrder(order)}
@@ -217,10 +216,10 @@ export const OrdersTable = ({
       <div className="md:hidden divide-y divide-stone-100">
         {isLoading && orders.length === 0 ? (
           <div className="py-10 text-center p-4">
-            <LogoLoader 
-              size="sm" 
-              message="Syncing Live Orders..." 
-              subtext="Connecting to PostgreSQL Database" 
+            <LogoLoader
+              size="sm"
+              message="Syncing Live Orders..."
+              subtext="Connecting to PostgreSQL Database"
             />
           </div>
         ) : orders.length === 0 ? (
@@ -234,7 +233,7 @@ export const OrdersTable = ({
             const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
 
             return (
-              <div 
+              <div
                 key={order.orderId || idx}
                 onClick={() => onSelectOrder(order)}
                 className="p-4 hover:bg-[#FFF8EC]/40 transition-colors active:bg-[#FFF8EC]"
@@ -259,7 +258,7 @@ export const OrdersTable = ({
 
                 <div className="flex items-center justify-between mt-3 pt-2 border-t border-stone-100">
                   <OrderStatusBadge status={order.paymentStatus} method={order.paymentMethod} />
-                  
+
                   <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                     {order.phone && (
                       <>

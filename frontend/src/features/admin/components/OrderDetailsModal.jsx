@@ -21,17 +21,17 @@ export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div 
+      <div
         className="relative w-full max-w-2xl bg-[#FFF8EC] rounded-2xl shadow-2xl border-2 border-[#D4731A] overflow-hidden max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="bg-[#1B4332] text-[#FFF8EC] p-4 sm:p-5 flex items-center justify-between border-b-2 border-[#D4731A]">
           <div className="flex items-center gap-3">
-            <img 
-              src="/logo-sm.svg" 
-              alt="Logo" 
-              className="h-10 sm:h-12 w-auto object-contain rounded-md bg-white/10 p-1" 
+            <img
+              src="/logo-sm.svg"
+              alt="Logo"
+              className="h-10 sm:h-12 w-auto object-contain rounded-md bg-white/10 p-1"
             />
             <div>
               <div className="flex items-center gap-2">
@@ -135,7 +135,7 @@ export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
             <h4 className="text-xs font-bold text-[#6B4423] uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <Utensils size={14} className="text-[#D4731A]" /> Ordered Delicacies
             </h4>
-            
+
             <div className="divide-y divide-stone-100">
               {order.itemsRaw && Array.isArray(order.itemsRaw) && order.itemsRaw.length > 0 ? (
                 order.itemsRaw.map((item, idx) => (
