@@ -12,18 +12,19 @@ export const AdminLoginPage = () => {
   const { login, authError, setAuthError } = useAdminAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setAuthError(null);
 
-    setTimeout(() => {
-      const success = login(email, password);
-      setIsSubmitting(false);
+    try {
+      const success = await login(email, password);
       if (success) {
         navigate('/admin');
       }
-    }, 400);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
