@@ -80,9 +80,9 @@ export const AdminLoginPage = () => {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <input className="block text-xs font-bold text-[#6B4423] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#6B4423] uppercase tracking-wider mb-1.5">
                 Admin Email Address
-              </input>
+              </label>
               <div className="relative">
                 <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
