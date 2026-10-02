@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react';
 
 const SESSION_KEY = 'smk_admin_session';
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001/api';
-
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL;
 export const useAdminAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     try {
@@ -26,7 +25,7 @@ export const useAdminAuth = () => {
       return false;
     }
 
-    // 1. Try Backend API Authentication (Domain-Driven Admin Service)
+    // Strictly authenticate via Backend API (reads credentials from backend .env)
     try {
       const res = await fetch(`${BACKEND_URL}/admin/login`, {
         method: 'POST',
@@ -34,38 +33,27 @@ export const useAdminAuth = () => {
         body: JSON.stringify({ username: inputUser, password: inputPass })
       });
 
-      if (res.ok) {
-        const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.success) {
         sessionStorage.setItem(SESSION_KEY, 'true');
-        sessionStorage.setItem('smk_admin_user', JSON.stringify({ user: inputUser, ...data.user, loginTime: Date.now() }));
+        sessionStorage.setItem(
+          'smk_admin_user',
+          JSON.stringify({
+            username: inputUser,
+            role: data.user?.role || 'SUPER_ADMIN',
+            loginTime: Date.now()
+          })
+        );
         setIsAuthenticated(true);
         return true;
+      } else {
+        setAuthError(data.message || 'Invalid administrator credentials.');
+        return false;
       }
     } catch (err) {
-      console.debug('Backend auth unreachable, checking env fallback:', err.message);
-    }
-
-    // 2. Strict Environment Variable Validation Fallback
-    const expectedEmail = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase();
-    const expectedPassword = (import.meta.env.VITE_ADMIN_PASSWORD || '').trim();
-
-    const isMatch = Boolean(
-      expectedPassword &&
-      (expectedEmail ? inputUser.toLowerCase() === expectedEmail || inputUser.toLowerCase() === 'admin' : inputUser.toLowerCase() === 'admin') &&
-      inputPass === expectedPassword
-    );
-
-    if (isMatch) {
-      try {
-        sessionStorage.setItem(SESSION_KEY, 'true');
-        sessionStorage.setItem('smk_admin_user', JSON.stringify({ email: inputUser, loginTime: Date.now() }));
-      } catch (err) {
-        console.warn('Session storage warning:', err);
-      }
-      setIsAuthenticated(true);
-      return true;
-    } else {
-      setAuthError('Invalid administrator credentials.');
+      console.error('Backend authentication error:', err);
+      setAuthError('Authentication server unreachable. Please make sure the backend server is running.');
       return false;
     }
   }, []);
