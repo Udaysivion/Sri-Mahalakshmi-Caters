@@ -12,16 +12,16 @@ import { OrderDetailsModal } from '../components/OrderDetailsModal';
 import { KitchenTicketPrint } from '../components/KitchenTicketPrint';
 import { DailyKitchenSummaryModal } from '../components/DailyKitchenSummaryModal';
 import SoundSettingsModal from '../components/SoundSettingsModal';
-import { 
-  Menu, 
-  RefreshCw, 
-  Volume2, 
-  VolumeX, 
-  ChefHat, 
-  Download, 
-  LogOut, 
-  ShoppingBag, 
-  UtensilsCrossed, 
+import {
+  Menu,
+  RefreshCw,
+  Volume2,
+  VolumeX,
+  ChefHat,
+  Download,
+  LogOut,
+  ShoppingBag,
+  UtensilsCrossed,
   PartyPopper,
   Calendar,
   Users,
@@ -58,6 +58,8 @@ export const AdminDashboardPage = () => {
     setSearchQuery,
     statusFilter,
     setStatusFilter,
+    selectedDate,
+    setSelectedDate,
     refreshOrders,
     handleUpdateOrderStatus,
     handleUpdateDiningStatus,
@@ -98,7 +100,7 @@ export const AdminDashboardPage = () => {
 
       {/* Main Admin Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        
+
         {/* Top Header Bar */}
         <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-[#C4960A]/30 shadow-xs px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -140,11 +142,10 @@ export const AdminDashboardPage = () => {
             <div className="flex items-center bg-white border border-[#C4960A]/30 rounded-xl p-1 shadow-2xs">
               <button
                 onClick={() => setSoundEnabled(!soundEnabled)}
-                className={`p-1.5 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
-                  soundEnabled 
-                    ? 'bg-[#1B4332] text-white shadow-xs'
-                    : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
-                }`}
+                className={`p-1.5 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${soundEnabled
+                  ? 'bg-[#1B4332] text-white shadow-xs'
+                  : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                  }`}
                 title={soundEnabled ? 'Order sound alert is ON (click to mute)' : 'Order sound alert is MUTED'}
               >
                 {soundEnabled ? <Volume2 size={15} className="text-[#E0B030]" /> : <VolumeX size={15} />}
@@ -188,33 +189,30 @@ export const AdminDashboardPage = () => {
         <div className="md:hidden bg-white border-b border-stone-200 px-4 py-2 flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => setActiveTab('orders')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-              activeTab === 'orders'
-                ? 'bg-[#1B4332] text-white'
-                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${activeTab === 'orders'
+              ? 'bg-[#1B4332] text-white'
+              : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
           >
             <ShoppingBag size={14} />
             <span>Orders ({stats.totalOrders})</span>
           </button>
           <button
             onClick={() => setActiveTab('dining')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-              activeTab === 'dining'
-                ? 'bg-[#D4731A] text-white'
-                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${activeTab === 'dining'
+              ? 'bg-[#D4731A] text-white'
+              : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
           >
             <UtensilsCrossed size={14} />
             <span>Dining ({stats.pendingDining})</span>
           </button>
           <button
             onClick={() => setActiveTab('catering')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-              activeTab === 'catering'
-                ? 'bg-purple-700 text-white'
-                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${activeTab === 'catering'
+              ? 'bg-purple-700 text-white'
+              : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
           >
             <PartyPopper size={14} />
             <span>Catering ({stats.newCatering})</span>
@@ -223,7 +221,7 @@ export const AdminDashboardPage = () => {
 
         {/* Main Workspace Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 no-print max-w-7xl w-full mx-auto">
-          
+
           {/* Desk 1: Food Orders */}
           {activeTab === 'orders' && (
             <div className="space-y-6">
@@ -238,8 +236,10 @@ export const AdminDashboardPage = () => {
                 onSearchChange={setSearchQuery}
                 statusFilter={statusFilter}
                 onStatusFilterChange={setStatusFilter}
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
                 onSelectOrder={(order) => setSelectedOrder(order)}
-                onPrintKOT={(order, mode = 'both') => setKotOrder({ ...order, printMode: mode })}
+                onPrintKOT={(order, mode = 'customer') => setKotOrder({ ...order, printMode: mode })}
               />
             </div>
           )}

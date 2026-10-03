@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Phone, MessageSquare, Eye, Utensils, AlertCircle, Printer, ChefHat } from 'lucide-react';
+import { Search, Phone, MessageSquare, Eye, Utensils, AlertCircle, Printer, ChefHat, Calendar } from 'lucide-react';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { AdminPagination } from './AdminPagination';
+import { AdminDateFilter } from './AdminDateFilter';
 import LogoLoader from '../../../components/common/LogoLoader';
 
 export const OrdersTable = ({
@@ -11,6 +12,8 @@ export const OrdersTable = ({
   onSearchChange,
   statusFilter,
   onStatusFilterChange,
+  selectedDate = '',
+  onDateChange,
   onSelectOrder,
   onPrintKOT
 }) => {
@@ -20,7 +23,7 @@ export const OrdersTable = ({
   // Reset to page 1 whenever filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, statusFilter]);
+  }, [searchQuery, statusFilter, selectedDate]);
 
   // Paginated slice
   const paginatedOrders = orders.slice(
@@ -29,51 +32,75 @@ export const OrdersTable = ({
   );
   return (
     <div className="bg-white rounded-2xl border-1.5 border-[#C4960A]/30 shadow-sm overflow-hidden">
-      
-      {/* Search & Filter Toolbar */}
-      <div className="p-4 sm:p-5 border-b border-stone-200 bg-[#FFF8EC]/40 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-        
-        {/* Search Input */}
-        <div className="relative flex-1 max-w-md">
-          <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search by Order ID, customer, phone, or dish..."
-            className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4731A] focus:border-transparent transition-all"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 font-bold"
-            >
-              ✕
-            </button>
-          )}
-        </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-          {[
-            { id: 'ALL', label: 'All Orders' },
-            { id: 'PAID', label: 'Paid Online' },
-            { id: 'COD', label: 'Cash on Delivery' },
-            { id: 'PENDING', label: 'Pending' }
-          ].map(f => (
-            <button
-              key={f.id}
-              onClick={() => onStatusFilterChange(f.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-                statusFilter === f.id
+      {/* Search & Filter Toolbar */}
+      <div className="p-4 sm:p-5 border-b border-stone-200 bg-[#FFF8EC]/40 flex flex-col gap-3">
+        {/* Top Controls Row: Search Input & Status Pills */}
+        <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+          {/* Search Input */}
+          <div className="relative flex-1 max-w-md">
+            <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search by Order ID, customer, phone, or dish..."
+              className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4731A] focus:border-transparent transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => onSearchChange('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Status Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+            {[
+              { id: 'ALL', label: 'All Orders' },
+              { id: 'PAID', label: 'Paid Online' },
+              { id: 'COD', label: 'Cash on Delivery' },
+              { id: 'PENDING', label: 'Pending' }
+            ].map(f => (
+              <button
+                key={f.id}
+                onClick={() => onStatusFilterChange(f.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${statusFilter === f.id
                   ? 'bg-[#1B4332] text-[#FFF8EC] shadow-xs'
                   : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
+                  }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Bottom Controls Row: Small Calendar Date Filter */}
+        {onDateChange && (
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-stone-200/70">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-stone-600 flex items-center gap-1">
+                <Calendar size={13} className="text-[#D4731A]" />
+                Filter by Date:
+              </span>
+              <AdminDateFilter
+                selectedDate={selectedDate}
+                onDateChange={onDateChange}
+                totalCount={orders.length}
+              />
+            </div>
+
+            {selectedDate && (
+              <span className="text-[11px] text-stone-500 font-medium">
+                Showing date-filtered results ({orders.length} orders found)
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Orders Table - Desktop View */}
@@ -93,10 +120,10 @@ export const OrdersTable = ({
             {isLoading && orders.length === 0 ? (
               <tr>
                 <td colSpan="6" className="py-12 text-center">
-                  <LogoLoader 
-                    size="sm" 
-                    message="Syncing Live Orders..." 
-                    subtext="Connecting to PostgreSQL Database" 
+                  <LogoLoader
+                    size="sm"
+                    message="Syncing Live Orders..."
+                    subtext="Connecting to PostgreSQL Database"
                   />
                 </td>
               </tr>
@@ -116,7 +143,7 @@ export const OrdersTable = ({
                 const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
 
                 return (
-                  <tr 
+                  <tr
                     key={order.orderId || idx}
                     className="hover:bg-[#FFF8EC]/50 transition-colors cursor-pointer group"
                     onClick={() => onSelectOrder(order)}
@@ -217,10 +244,10 @@ export const OrdersTable = ({
       <div className="md:hidden divide-y divide-stone-100">
         {isLoading && orders.length === 0 ? (
           <div className="py-10 text-center p-4">
-            <LogoLoader 
-              size="sm" 
-              message="Syncing Live Orders..." 
-              subtext="Connecting to PostgreSQL Database" 
+            <LogoLoader
+              size="sm"
+              message="Syncing Live Orders..."
+              subtext="Connecting to PostgreSQL Database"
             />
           </div>
         ) : orders.length === 0 ? (
@@ -234,7 +261,7 @@ export const OrdersTable = ({
             const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
 
             return (
-              <div 
+              <div
                 key={order.orderId || idx}
                 onClick={() => onSelectOrder(order)}
                 className="p-4 hover:bg-[#FFF8EC]/40 transition-colors active:bg-[#FFF8EC]"
@@ -259,7 +286,7 @@ export const OrdersTable = ({
 
                 <div className="flex items-center justify-between mt-3 pt-2 border-t border-stone-100">
                   <OrderStatusBadge status={order.paymentStatus} method={order.paymentMethod} />
-                  
+
                   <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                     {order.phone && (
                       <>
