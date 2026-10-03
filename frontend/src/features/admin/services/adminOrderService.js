@@ -4,7 +4,8 @@
  */
 
 const SESSION_STORAGE_KEY = 'smk_orders_history';
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001/api';
+let BACKEND_URL = (import.meta.env.VITE_BACKEND_API_URL || 'https://sri-mahalakshmi-caters.onrender.com/api').replace(/\/+$/, '');
+if (!BACKEND_URL.endsWith('/api')) { BACKEND_URL += '/api'; }
 
 /**
  * Fetch all orders directly from PostgreSQL Database

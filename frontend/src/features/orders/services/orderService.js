@@ -4,7 +4,8 @@
  * Communicates with the Backend Orders Domain on PostgreSQL
  */
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001/api';
+let BACKEND_URL = (import.meta.env.VITE_BACKEND_API_URL || 'https://sri-mahalakshmi-caters.onrender.com/api').replace(/\/+$/, '');
+if (!BACKEND_URL.endsWith('/api')) { BACKEND_URL += '/api'; }
 
 export const submitOrderToDatabase = async (orderData) => {
   const formattedItems = Array.isArray(orderData.items)

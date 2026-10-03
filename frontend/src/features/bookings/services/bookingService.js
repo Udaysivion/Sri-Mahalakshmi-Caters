@@ -6,7 +6,8 @@
 
 const SESSION_DINING_KEY = 'smk_dining_bookings';
 const SESSION_CATERING_KEY = 'smk_catering_bookings';
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001/api';
+let BACKEND_URL = (import.meta.env.VITE_BACKEND_API_URL || 'https://sri-mahalakshmi-caters.onrender.com/api').replace(/\/+$/, '');
+if (!BACKEND_URL.endsWith('/api')) { BACKEND_URL += '/api'; }
 
 /**
  * Submit Table Dining Reservation directly to PostgreSQL DB

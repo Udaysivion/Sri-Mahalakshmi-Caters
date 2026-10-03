@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 
 const SESSION_KEY = 'smk_admin_session';
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API_URL;
+let BACKEND_URL = (import.meta.env.VITE_BACKEND_API_URL || 'https://sri-mahalakshmi-caters.onrender.com/api').replace(/\/+$/, '');
+if (!BACKEND_URL.endsWith('/api')) { BACKEND_URL += '/api'; }
 export const useAdminAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     try {
