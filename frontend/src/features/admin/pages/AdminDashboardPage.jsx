@@ -12,6 +12,7 @@ import { OrderDetailsModal } from '../components/OrderDetailsModal';
 import { KitchenTicketPrint } from '../components/KitchenTicketPrint';
 import { DailyKitchenSummaryModal } from '../components/DailyKitchenSummaryModal';
 import SoundSettingsModal from '../components/SoundSettingsModal';
+import { MenuManagerPage } from './MenuManagerPage';
 import {
   Menu,
   RefreshCw,
@@ -217,6 +218,16 @@ export const AdminDashboardPage = () => {
             <PartyPopper size={14} />
             <span>Catering ({stats.newCatering})</span>
           </button>
+          <button
+            onClick={() => setActiveTab('menu_sheet')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${activeTab === 'menu_sheet'
+              ? 'bg-[#1B4332] text-white'
+              : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
+          >
+            <ChefHat size={14} />
+            <span>Menu Manager</span>
+          </button>
         </div>
 
         {/* Main Workspace Body */}
@@ -350,6 +361,11 @@ export const AdminDashboardPage = () => {
                 onUpdateStatus={handleUpdateCateringStatus}
               />
             </div>
+          )}
+
+          {/* Desk 4: Menu Manager */}
+          {activeTab === 'menu_sheet' && (
+            <MenuManagerPage />
           )}
 
         </main>

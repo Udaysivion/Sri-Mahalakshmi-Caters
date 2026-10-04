@@ -59,6 +59,12 @@ export const AdminSidebar = ({
       count: cateringCount,
       badgeColor: 'bg-purple-600 text-white',
       desc: 'Weddings & Celebrations'
+    },
+    {
+      id: 'menu_sheet',
+      label: 'Menu Manager',
+      icon: ChefHat,
+      desc: 'Database Management',
     }
   ];
 
@@ -129,8 +135,13 @@ export const AdminSidebar = ({
             <button
               key={item.id}
               onClick={() => {
-                setActiveTab(item.id);
-                if (onCloseMobile) onCloseMobile();
+                if (item.isExternal) {
+                  window.open(item.url, '_blank');
+                  if (onCloseMobile) onCloseMobile();
+                } else {
+                  setActiveTab(item.id);
+                  if (onCloseMobile) onCloseMobile();
+                }
               }}
               className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-left transition-all cursor-pointer ${
                 isActive

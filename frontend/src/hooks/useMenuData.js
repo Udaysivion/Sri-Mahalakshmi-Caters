@@ -38,7 +38,7 @@ export const useMenuData = () => {
       return;
     }
 
-    Papa.parse(SHEET_URL, {
+    Papa.parse(`${SHEET_URL}&t=${new Date().getTime()}`, {
       download: true,
       header: true,
       skipEmptyLines: true,
