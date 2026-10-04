@@ -26,6 +26,7 @@ const Payment = lazy(() => import('./pages/Payment'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const DigitalMenu = lazy(() => import('./pages/DigitalMenu'));
 
 // Admin Feature Module Pages (Modular Monolithic Architecture)
 const AdminDashboardPage = lazy(() => import('./features/admin/pages/AdminDashboardPage').then(m => ({ default: m.AdminDashboardPage })));
@@ -58,6 +59,7 @@ const AnimatedRoutes = () => {
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/digital-menu" element={<DigitalMenu />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboardPage />} />
