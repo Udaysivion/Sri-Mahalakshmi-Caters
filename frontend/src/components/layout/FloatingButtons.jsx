@@ -13,17 +13,6 @@ const FloatingButtons = () => {
   return (
     <div className="fixed bottom-6 right-5 z-50 flex flex-col gap-3 items-end">
 
-      {/* Order Now */}
-      <a href="/menu" className="group flex items-center gap-2" aria-label="Order Now">
-        <span className="text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 whitespace-nowrap"
-          style={{ background:'#1A3A1C',color:'#E0B030',border:'1px solid rgba(224,176,48,0.4)',fontFamily:"'Playfair Display',sans-serif" }}>
-          Order Now
-        </span>
-        <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
-          style={{ background:'#B22222',boxShadow:'0 4px 14px rgba(178,34,34,0.5)' }}>
-          <Utensils size={20} color="white"/>
-        </div>
-      </a>
 
       {/* WhatsApp */}
       <a href="https://wa.me/917794800042" target="_blank" rel="noreferrer"

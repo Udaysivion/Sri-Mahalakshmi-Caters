@@ -16,18 +16,104 @@ const stagger = { visible:{transition:{staggerChildren:0.1}} };
    1. HERO SECTION (Full-Width Background)
 ══════════════════════════════════════════════ */
 const Hero = () => (
-  <section className="relative min-h-screen flex items-center pt-24 pb-16 px-4 md:px-8 overflow-hidden">
-    {/* Full Width Background Image */}
+  <section className="relative h-[100dvh] flex flex-col md:flex-row items-end md:items-center pb-8 md:pt-24 md:pb-16 overflow-hidden">
+    {/* ── MOBILE BACKGROUND: custom food image, desktop: hero-bg ── */}
     <div className="absolute inset-0 z-0 bg-black">
-      <img src="/screen.png" alt="Biryani Feast" className="w-full h-full object-cover" />
-      {/* Targeted dark gradient ONLY on the left side so text is perfectly readable, leaving the biryani bright */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent w-full md:w-2/3"></div>
+      {/* Desktop background */}
+      <img src="/hero-bg.png" alt="Sri Mahalakshmi Feast" className="hidden md:block w-full h-full object-cover object-center" />
+      {/* Mobile background - new food image */}
+      <img src="/mobile-hero.png" alt="Sri Mahalakshmi Feast" className="block md:hidden w-full h-full object-cover object-top" />
+      {/* Desktop gradient */}
+      <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent w-2/3 h-full"></div>
+      {/* Mobile gradient - dark at bottom for text readability */}
+      <div className="block md:hidden absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent h-full"></div>
     </div>
 
-    <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-12 relative z-20 mt-10">
+    {/* ── ORDER NOW — Hero Right Side Floating Button (Desktop only) ── */}
+    <motion.a
+      href="/menu"
+      initial={{ opacity: 0, x: 60 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.8, delay: 0.9 }}
+      className="hidden md:flex absolute right-10 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-2 group"
+      aria-label="Order Now"
+    >
+      {/* Outer pulsing ring */}
+      <span className="absolute w-24 h-24 rounded-full animate-ping opacity-20"
+        style={{ background: 'radial-gradient(circle, #DCA145, transparent)', animationDuration: '2s' }}/>
+      {/* Circle button */}
+      <motion.div
+        whileHover={{ scale: 1.12 }}
+        whileTap={{ scale: 0.95 }}
+        className="w-20 h-20 rounded-full flex flex-col items-center justify-center relative cursor-pointer"
+        style={{
+          background: 'linear-gradient(135deg, #DCA145 0%, #8B4513 100%)',
+          boxShadow: '0 0 0 3px rgba(220,161,69,0.3), 0 8px 32px rgba(220,161,69,0.5)',
+        }}
+      >
+        <Utensils size={24} color="white" strokeWidth={2}/>
+        <span className="text-white text-[9px] font-black uppercase tracking-widest mt-1">Order</span>
+        <span className="text-white text-[9px] font-black uppercase tracking-widest leading-none">Now</span>
+        <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-white/80"/>
+      </motion.div>
+      {/* Hover label */}
+      <span className="text-[#DCA145] text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+        style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
+        View Full Menu →
+      </span>
+    </motion.a>
+
+    <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-12 relative z-20 mt-auto md:mt-10 px-4 md:px-8">
       
-      {/* ── LEFT CONTENT ── */}
-      <motion.div initial="hidden" animate="visible" variants={stagger} className="w-full md:w-[55%] text-left">
+      {/* ── MOBILE SPECIFIC CONTENT ── */}
+      <motion.div initial="hidden" animate="visible" variants={stagger} className="w-full flex flex-col md:hidden">
+        
+        {/* Floating banners positioned over the image */}
+        <div className="relative w-full h-[55vh] pointer-events-none">
+          {/* Top-left banner */}
+          <motion.div variants={fadeUp} className="absolute top-6 left-0 bg-black/55 backdrop-blur-sm border-r-[3px] border-[#DCA145] px-4 py-2">
+            <p className="text-[#DCA145] text-[12px] font-bold tracking-widest leading-snug text-left" style={{ fontFamily:"'Playfair Display',serif" }}>
+              UNFORGETTABLE<br/>WEDDINGS
+            </p>
+          </motion.div>
+
+          {/* Bottom-right banner */}
+          <motion.div variants={fadeUp} className="absolute bottom-4 right-0 bg-black/55 backdrop-blur-sm border-l-[3px] border-[#DCA145] px-4 py-2 text-right">
+            <p className="text-[#DCA145] text-[12px] font-bold tracking-widest leading-snug" style={{ fontFamily:"'Playfair Display',serif" }}>
+              PRIVATE<br/>CELEBRATIONS &<br/>HOME CATERING
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Bottom logo + buttons */}
+        <div className="flex flex-col items-center text-center w-full pt-6 pb-4">
+          <motion.h1 variants={fadeUp} className="text-3xl sm:text-4xl text-[#DCA145] mb-1 font-normal tracking-wide" style={{ fontFamily:"'Playfair Display',serif" }}>
+            SRI MAHALAKSHMI
+          </motion.h1>
+          <motion.div variants={fadeUp} className="flex items-center gap-3 mb-3">
+            <div className="h-[1px] w-8 bg-[#DCA145]/40"></div>
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-300">KITCHEN & CATERERS</p>
+            <div className="h-[1px] w-8 bg-[#DCA145]/40"></div>
+          </motion.div>
+
+          {/* Attractive Quote */}
+          <motion.p variants={fadeUp} className="text-gray-300 text-[13px] leading-relaxed mb-6 px-2 font-light italic">
+            "From intimate home gatherings to grand wedding feasts — we bring authentic South Indian flavours to every celebration."
+          </motion.p>
+
+          <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 w-full max-w-sm">
+            <Link to="/menu" className="flex-1 bg-transparent border border-[#DCA145] text-[#DCA145] px-2 py-3 rounded-xl font-bold text-sm transition-all flex justify-center items-center text-center shadow-[0_0_15px_rgba(220,161,69,0.1)]">
+              Explore Menu
+            </Link>
+            <Link to="/catering" className="flex-1 bg-gradient-to-r from-[#DCA145] to-[#B05D10] text-black px-2 py-3 border border-[#DCA145] rounded-xl font-bold text-sm transition-all flex justify-center items-center text-center shadow-[0_0_15px_rgba(220,161,69,0.3)]">
+              Request Quote
+            </Link>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* ── DESKTOP LEFT CONTENT ── */}
+      <motion.div initial="hidden" animate="visible" variants={stagger} className="hidden md:block w-full md:w-[55%] text-left">
         
         {/* Top Badge */}
         <motion.div variants={fadeUp} className="inline-flex items-center gap-2 mb-8 border border-[#DCA145]/40 bg-black/30 backdrop-blur-sm px-4 py-1.5 rounded-full">
@@ -75,50 +161,8 @@ const Hero = () => (
 
       </motion.div>
 
-      {/* ── RIGHT FLOATING CARD ── */}
-      <motion.div initial={{opacity:0, x:40}} animate={{opacity:1, x:0}} transition={{duration:0.8, delay:0.4}} className="w-full md:w-[45%] flex justify-end">
-        <div className="bg-black/30 backdrop-blur-md border border-white/10 p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] max-w-[420px] w-full relative overflow-hidden">
-          {/* subtle inner light reflection for glass effect */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none"></div>
-          
-          {/* Top Info Row */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#DCA145]"></div>
-              <p className="text-[9px] text-[#DCA145] font-bold uppercase tracking-widest">Chef's Signature Recommendation</p>
-            </div>
-            <span className="border border-[#DCA145]/40 text-[#DCA145] text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full">Must Try</span>
-          </div>
-          
-          {/* Title */}
-          <h3 className="text-white font-bold text-[28px] mb-3 leading-tight" style={{ fontFamily:"'Playfair Display',serif" }}>
-            Royal Hyderabadi Dum Biryani
-          </h3>
-          
-          {/* Desc */}
-          <p className="text-gray-400 text-xs leading-relaxed mb-6 font-light">
-            Aromatic long-grain basmati, saffron dum infusion & tender spices
-          </p>
-          
-          {/* Tags */}
-          <div className="flex items-center gap-3 mb-8">
-            <span className="border border-white/20 text-gray-300 text-[10px] px-3 py-1.5 rounded-md">Slow Dum Cooked</span>
-            <span className="border border-white/20 text-gray-300 text-[10px] px-3 py-1.5 rounded-md">Pure Saffron</span>
-          </div>
-          
-          {/* Price & Button */}
-          <div className="flex items-center justify-between border-t border-white/10 pt-6">
-            <div>
-              <p className="text-[9px] text-gray-500 uppercase tracking-widest mb-1 font-bold">Special Price</p>
-              <p className="text-[#DCA145] font-bold text-2xl" style={{ fontFamily:"'Playfair Display',serif" }}>₹220</p>
-            </div>
-            <Link to="/menu" className="bg-[#DCA145] hover:bg-[#c99036] text-black px-6 py-2.5 rounded-full font-bold text-[10px] uppercase tracking-widest transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(220,161,69,0.2)]">
-              Order Now <ArrowRight size={14}/>
-            </Link>
-          </div>
-          
-        </div>
-      </motion.div>
+      {/* ── DESKTOP RIGHT (Empty to maintain layout if needed, or just removed) ── */}
+      <div className="hidden md:flex w-full md:w-[45%] justify-end"></div>
 
     </div>
   </section>
