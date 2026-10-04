@@ -16,7 +16,7 @@ const getGoogleSheetCsvUrl = (rawUrl) => {
     const sheetId = sheetIdMatch[1];
     const gidMatch = trimmed.match(/[?&#]gid=([0-9]+)/);
     const gid = gidMatch ? gidMatch[1] : '0';
-    return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+    return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
   }
   return trimmed;
 };
