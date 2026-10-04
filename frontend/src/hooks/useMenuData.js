@@ -44,21 +44,25 @@ export const useMenuData = () => {
       skipEmptyLines: true,
       complete: (results) => {
         const parsedData = (results.data || [])
-          .filter(row => row['Item Name'] && row['Price (INR)'])
+          .filter(row => {
+            const values = Object.values(row);
+            return values.length >= 3 && values[1] && values[2];
+          })
           .map((row, index) => {
-            const name = (row['Item Name'] || '').trim();
+            const values = Object.values(row);
+            const name = (values[1] || '').trim();
             const isNonVeg = /chicken|egg|mutton|fish/i.test(name);
 
             // Extract numeric price
-            const priceMatch = (row['Price (INR)'] || '').toString().match(/\d+/);
+            const priceMatch = (values[2] || '').toString().match(/\d+/);
             const price = priceMatch ? parseInt(priceMatch[0], 10) : 0;
 
-            const category = (row['Category'] || 'Other').trim();
+            const category = (values[0] || 'Other').trim();
             let cat = category;
             if (cat.includes('Biryani')) cat = 'Biryani';
             else if (cat.includes('Chinese')) cat = 'Chinese';
 
-            let imgUrl = (row['image url'] || '').trim();
+            let imgUrl = (values[3] || '').trim();
 
             // Convert Google Drive view links to direct image stream URLs
             if (imgUrl && (imgUrl.includes('drive.google.com') || imgUrl.includes('drive.usercontent.google.com'))) {
