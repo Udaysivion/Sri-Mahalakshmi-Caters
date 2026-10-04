@@ -624,12 +624,12 @@ const BottomBanner = () => (
       {/* Contact Info Card */}
       <div className="w-full md:w-1/3 bg-[#FFF8EC] border border-gray-200 rounded-2xl p-8">
         <h3 className="font-bold text-[#112A1F] text-xl mb-6" style={{ fontFamily:"'Playfair Display',serif" }}>Sri Mahalakshmi</h3>
-        <p className="text-sm text-gray-600 mb-4">123 Food Street, Kukatpally<br/>Hyderabad, Telangana 500072</p>
+        <p className="text-sm text-gray-600 mb-4">HC5R+7R2, Bahadurpally<br/>Hyderabad, Telangana 500043</p>
         <p className="text-sm text-gray-600 mb-1"><strong>Phone:</strong> +91 77948 00042</p>
-        <p className="text-sm text-gray-600 mb-6"><strong>Email:</strong> info@srimahalakshmi.com</p>
-        <Link to="/contact" className="w-full bg-white border border-gray-300 text-[#112A1F] px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex justify-center hover:bg-gray-50 transition-colors">
+        <p className="text-sm text-gray-600 mb-6"><strong>Website:</strong> <a href="https://smahalakshmikitchen.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4731A] transition-colors">smahalakshmikitchen.com</a></p>
+        <a href="https://www.google.com/maps/dir//SRI+MAHALAKSHMI+KITCHEN+%26+CATERERS,+HC5R%2B7R2,+Bahadurpally,+Hyderabad,+Telangana+500043/@17.4343544,78.3955979,2663m/data=!3m1!1e3!4m8!4m7!1m0!1m5!1m1!1s0x3bcb8f0050329baf:0x8f493cc97407ac3!2m2!1d78.4419977!2d17.5581314?entry=ttu" target="_blank" rel="noopener noreferrer" className="w-full bg-white border border-gray-300 text-[#112A1F] px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex justify-center hover:bg-gray-50 transition-colors">
           Get Directions
-        </Link>
+        </a>
       </div>
 
       {/* CTA Card */}
