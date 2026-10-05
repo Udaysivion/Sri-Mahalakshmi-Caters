@@ -186,7 +186,7 @@ export const OrdersTable = ({
                             <span>{order.phone}</span>
                           </a>
                           <a
-                            href={`https://wa.me/${waPhone}`}
+                            href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters regarding your order #${order.orderId}.`)}`}
                             target="_blank"
                             rel="noreferrer"
                             className="p-0.5 rounded bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all"
@@ -306,7 +306,7 @@ export const OrdersTable = ({
                           <Phone size={13} />
                         </a>
                         <a
-                          href={`https://wa.me/${waPhone}`}
+                          href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters regarding your order #${order.orderId}.`)}`}
                           target="_blank"
                           rel="noreferrer"
                           className="p-1.5 rounded-lg bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all"
