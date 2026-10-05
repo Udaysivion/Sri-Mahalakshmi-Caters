@@ -141,6 +141,7 @@ export const OrdersTable = ({
               paginatedOrders.map((order, idx) => {
                 const cleanPhone = (order.phone || '').replace(/[^0-9]/g, '');
                 const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+                const waText = `Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters.\n\n📦 Order #${order.orderId} Details:\n🍲 Items: ${order.items || 'Food Items'}\n💰 Total Amount: ₹${Number(order.totalAmount || 0).toLocaleString('en-IN')}\n\nThank you for choosing Sri Mahalakshmi Caters! 🙏`;
 
                 return (
                   <tr
@@ -186,7 +187,7 @@ export const OrdersTable = ({
                             <span>{order.phone}</span>
                           </a>
                           <a
-                            href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters regarding your order #${order.orderId}.`)}`}
+                            href={`https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`}
                             target="_blank"
                             rel="noreferrer"
                             className="p-0.5 rounded bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all"
@@ -268,6 +269,7 @@ export const OrdersTable = ({
           paginatedOrders.map((order, idx) => {
             const cleanPhone = (order.phone || '').replace(/[^0-9]/g, '');
             const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+            const waTextMobile = `Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters.\n\n📦 Order #${order.orderId} Details:\n🍲 Items: ${order.items || 'Food Items'}\n💰 Total Amount: ₹${Number(order.totalAmount || 0).toLocaleString('en-IN')}\n\nThank you for choosing Sri Mahalakshmi Caters! 🙏`;
 
             return (
               <div
@@ -306,7 +308,7 @@ export const OrdersTable = ({
                           <Phone size={13} />
                         </a>
                         <a
-                          href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters regarding your order #${order.orderId}.`)}`}
+                          href={`https://wa.me/${waPhone}?text=${encodeURIComponent(waTextMobile)}`}
                           target="_blank"
                           rel="noreferrer"
                           className="p-1.5 rounded-lg bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all"

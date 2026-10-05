@@ -16,7 +16,7 @@ export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
   const cleanPhone = (order.phone || '').replace(/[^0-9]/g, '');
   const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
   const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(
-    `Namaste ${order.customerName}! This is Sri Mahalakshmi Caters regarding your order #${order.orderId}.`
+    `Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters.\n\n📦 Order #${order.orderId} Details:\n🍲 Items: ${order.items || 'Food Items'}\n💰 Total Amount: ₹${Number(order.totalAmount || 0).toLocaleString('en-IN')}\n\nThank you for choosing Sri Mahalakshmi Caters! 🙏`
   )}`;
 
   return (
