@@ -6,32 +6,52 @@ import OrderReceiptPrintModal from './OrderReceiptPrintModal';
  */
 export const parseOrderItems = (order) => {
   if (!order) return [];
+
+  // 1. If structured itemsRaw array exists
   if (order.itemsRaw && Array.isArray(order.itemsRaw) && order.itemsRaw.length > 0) {
     return order.itemsRaw.map(item => ({
-      quantity: item.quantity || 1,
+      quantity: Number(item.quantity) || 1,
       name: item.name || 'Dish Item',
-      price: item.price || 0,
+      price: Number(item.price) || 0,
       notes: item.notes || ''
     }));
   }
 
+  // 2. If items string exists
   if (typeof order.items === 'string' && order.items.trim()) {
-    // E.g. "2x Masala Dosa (₹120), 1x Filter Coffee (₹40)"
-    return order.items.split(',').map(str => {
-      const trimmed = str.trim();
-      const match = trimmed.match(/^(\d+)\s*x\s*([^(\n]+)(?:\(([^)]+)\))?/i);
-      if (match) {
-        return {
-          quantity: parseInt(match[1], 10),
-          name: match[2].trim(),
-          price: match[3] ? match[3].replace(/[^0-9.]/g, '') : '',
-          notes: ''
-        };
+    const rawParts = order.items.split(',').map(s => s.trim()).filter(Boolean);
+    
+    return rawParts.map(part => {
+      let quantity = 1;
+      let name = part;
+      let price = 0;
+
+      // Extract price if formatted like (₹120) or (120)
+      const priceMatch = part.match(/\((?:₹|rs\.?|inr)?\s*(\d+(?:\.\d+)?)\s*\)/i);
+      if (priceMatch) {
+        price = parseFloat(priceMatch[1]);
       }
+
+      // Pattern 1: "2x Masala Dosa" or "2 x Masala Dosa"
+      const leadingQty = part.match(/^(\d+)\s*x\s*(.+)/i);
+      // Pattern 2: "Masala Dosa x 2" or "Idly (4) x 2"
+      const trailingQty = part.match(/^(.+?)\s*x\s*(\d+)$/i);
+
+      if (leadingQty) {
+        quantity = parseInt(leadingQty[1], 10);
+        name = leadingQty[2].trim();
+      } else if (trailingQty) {
+        quantity = parseInt(trailingQty[2], 10);
+        name = trailingQty[1].trim();
+      }
+
+      // Remove price string from dish name if present
+      name = name.replace(/\((?:₹|rs\.?|inr)?\s*\d+(?:\.\d+)?\s*\)/gi, '').trim();
+
       return {
-        quantity: 1,
-        name: trimmed,
-        price: '',
+        quantity: quantity || 1,
+        name: name || part,
+        price: price || 0,
         notes: ''
       };
     });

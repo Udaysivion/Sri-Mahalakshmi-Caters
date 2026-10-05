@@ -348,7 +348,10 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'customer', onClos
                   {/* Clean row-by-row item list that smoothly extends downwards */}
                   <div className="divide-y divide-stone-200 mt-1">
                     {items.map((item, idx) => {
-                      const itemRate = item.rate || item.price || 0;
+                      const calculatedRate = order.totalAmount && totalItemCount > 0 
+                        ? Math.round(order.totalAmount / totalItemCount) 
+                        : 0;
+                      const itemRate = Number(item.rate || item.price) || calculatedRate;
                       const itemAmount = item.amount || (itemRate ? itemRate * item.quantity : 0);
 
                       return (
@@ -373,7 +376,7 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'customer', onClos
                             {itemRate > 0 ? `₹${itemRate}` : '-'}
                           </span>
                           <span className="w-16 text-right font-black text-stone-950 text-xs">
-                            {itemAmount > 0 ? `₹${itemAmount}` : (order.totalAmount && items.length === 1 ? `₹${order.totalAmount}` : '-')}
+                            {itemAmount > 0 ? `₹${itemAmount}` : (order.totalAmount ? `₹${order.totalAmount}` : '-')}
                           </span>
                         </div>
                       );
