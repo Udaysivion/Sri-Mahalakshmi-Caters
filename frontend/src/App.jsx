@@ -76,6 +76,7 @@ const AnimatedRoutes = () => {
 const AppLayout = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isDigitalMenuRoute = location.pathname.startsWith('/digital-menu');
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background:'#FFF8EC' }}>
@@ -86,14 +87,14 @@ const AppLayout = () => {
           style: { background: '#1A1A1A', color: '#F7E8D0', borderRadius: '16px', padding: '14px 22px' } 
         }} 
       />
-      {!isAdminRoute && <Navbar />}
+      {!isAdminRoute && !isDigitalMenuRoute && <Navbar />}
       <main className="flex-grow">
         <Suspense fallback={<Loader />}>
           <AnimatedRoutes />
         </Suspense>
       </main>
-      {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <FloatingButtons />}
+      {!isAdminRoute && !isDigitalMenuRoute && <Footer />}
+      {!isAdminRoute && !isDigitalMenuRoute && <FloatingButtons />}
       {!isAdminRoute && <CartDrawer />}
     </div>
   );

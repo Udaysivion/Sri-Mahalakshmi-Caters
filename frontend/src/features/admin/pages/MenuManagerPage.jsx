@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMenuData } from '../../../hooks/useMenuData';
-import { Plus, Edit2, Trash2, Image as ImageIcon, Save, X, Search, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Image as ImageIcon, Save, X, Search, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 import LogoLoader from '../../../components/common/LogoLoader';
 import toast from 'react-hot-toast';
 
 export const MenuManagerPage = () => {
-  const { menuItems, loading } = useMenuData();
+  const { menuItems, loading, refetch, toggleAvailability } = useMenuData();
   const [search, setSearch] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [categoryFilter, setCategoryFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -26,14 +27,33 @@ export const MenuManagerPage = () => {
   const filteredItems = menuItems.filter(item => {
     const itemName = item.name || '';
     const itemCat = item.cat || item.category || 'Other';
+    const isAvailable = item.available !== false;
     
     const matchesSearch = itemName.toLowerCase().includes(search.toLowerCase()) || 
                           itemCat.toLowerCase().includes(search.toLowerCase());
     
     const matchesCategory = categoryFilter === 'All' || itemCat === categoryFilter;
+    const matchesStatus = statusFilter === 'All' || 
+                          (statusFilter === 'Active' && isAvailable) || 
+                          (statusFilter === 'Inactive' && !isAvailable);
 
-    return matchesSearch && matchesCategory;
+    return matchesSearch && matchesCategory && matchesStatus;
   });
+
+  const handleToggle = (dishName) => {
+    const nextState = toggleAvailability(dishName);
+    if (nextState) {
+      toast.success(`"${dishName}" is now ACTIVE & Visible on Website!`, {
+        icon: '🟢',
+        style: { background: '#1B4332', color: '#FFF8EC' }
+      });
+    } else {
+      toast.error(`"${dishName}" is turned OFF & Hidden from Website!`, {
+        icon: '🔴',
+        style: { background: '#7F1D1D', color: '#FEF2F2' }
+      });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,7 +78,7 @@ export const MenuManagerPage = () => {
     try {
       const urlEncodedData = new URLSearchParams(formData).toString();
 
-      const response = await fetch(scriptUrl, {
+      await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors',
         headers: {
@@ -67,10 +87,14 @@ export const MenuManagerPage = () => {
         body: urlEncodedData,
       });
 
-      // Because of no-cors, we can't read the exact response, so we assume success if no error was thrown
-      toast.success('Item added to Google Sheet! Refresh the page to see changes.');
+      toast.success('Item sent to Google Sheet! Refreshing menu data...');
       setIsAddModalOpen(false);
       setFormData({ category: '', name: '', price: '', img: '' });
+
+      // Delay slightly for Google Sheets to process row, then refetch
+      setTimeout(() => {
+        refetch();
+      }, 1500);
     } catch (error) {
       console.error('Error adding item:', error);
       toast.error('Failed to add item to Google Sheet.');
@@ -89,15 +113,27 @@ export const MenuManagerPage = () => {
             Menu Database Manager
           </h2>
           <p className="text-xs text-stone-500 mt-1">
-            Live synchronization with your Google Sheet CMS
+            Live synchronization with your Google Sheet CMS ({menuItems.length} items loaded • {menuItems.filter(i => i.available !== false).length} Active on Website)
           </p>
         </div>
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="bg-[#DCA145] hover:bg-[#B05D10] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all flex items-center gap-2"
-        >
-          <Plus size={16} /> Add New Dish
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              refetch();
+              toast.success('Re-syncing menu with Google Sheet...');
+            }}
+            title="Refresh latest items from Google Sheet"
+            className="bg-stone-100 hover:bg-stone-200 text-[#1B4332] px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 border border-stone-200"
+          >
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Sync Sheet
+          </button>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="bg-[#DCA145] hover:bg-[#B05D10] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all flex items-center gap-2"
+          >
+            <Plus size={16} /> Add New Dish
+          </button>
+        </div>
       </div>
 
       {/* Setup Instructions Warning */}
@@ -128,11 +164,20 @@ export const MenuManagerPage = () => {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-4 py-3 rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-sm bg-white text-stone-700 min-w-[200px]"
+          className="px-4 py-3 rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-sm bg-white text-stone-700 min-w-[180px]"
         >
           {categories.map(cat => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
+        </select>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="px-4 py-3 rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-sm bg-white text-stone-700 min-w-[180px]"
+        >
+          <option value="All">All Status (Active & OFF)</option>
+          <option value="Active">🟢 Active / Available Only</option>
+          <option value="Inactive">🔴 Turned OFF / Hidden Only</option>
         </select>
       </div>
 
@@ -151,35 +196,52 @@ export const MenuManagerPage = () => {
                   <th className="p-4 font-semibold">Dish Name</th>
                   <th className="p-4 font-semibold">Category</th>
                   <th className="p-4 font-semibold">Price (₹)</th>
+                  <th className="p-4 font-semibold text-center">Website Availability (Toggle ON/OFF)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
-                {filteredItems.map((item, idx) => (
-                  <tr key={item.id || idx} className="hover:bg-stone-50/50 transition-colors">
-                    <td className="p-4 pl-6">
-                      {item.img ? (
-                        <div className="w-12 h-12 rounded-lg overflow-hidden border border-stone-200 shadow-sm bg-stone-100">
-                          <img src={item.img} alt={item.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                        </div>
-                      ) : (
-                        <div className="w-12 h-12 rounded-lg border border-dashed border-stone-300 bg-stone-50 flex items-center justify-center text-stone-400">
-                          <ImageIcon size={18} />
-                        </div>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <p className="font-bold text-[#1B4332]">{item.name}</p>
-                    </td>
-                    <td className="p-4">
-                      <span className="px-2.5 py-1 bg-stone-100 text-stone-600 rounded-lg text-xs font-semibold">
-                        {item.category || item.cat}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <p className="font-black text-[#DCA145]">₹{item.price}</p>
-                    </td>
-                  </tr>
-                ))}
+                {filteredItems.map((item, idx) => {
+                  const isAvailable = item.available !== false;
+                  return (
+                    <tr key={item.id || idx} className="hover:bg-stone-50/50 transition-colors">
+                      <td className="p-4 pl-6">
+                        {item.img ? (
+                          <div className="w-12 h-12 rounded-lg overflow-hidden border border-stone-200 shadow-sm bg-stone-100">
+                            <img src={item.img} alt={item.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          </div>
+                        ) : (
+                          <div className="w-12 h-12 rounded-lg border border-dashed border-stone-300 bg-stone-50 flex items-center justify-center text-stone-400">
+                            <ImageIcon size={18} />
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <p className="font-bold text-[#1B4332]">{item.name}</p>
+                      </td>
+                      <td className="p-4">
+                        <span className="px-2.5 py-1 bg-stone-100 text-stone-600 rounded-lg text-xs font-semibold">
+                          {item.category || item.cat}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <p className="font-black text-[#DCA145]">₹{item.price}</p>
+                      </td>
+                      <td className="p-4 text-center">
+                        <button
+                          onClick={() => handleToggle(item.name)}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 mx-auto border ${
+                            isAvailable
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                              : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+                          }`}
+                        >
+                          <span className={`w-2.5 h-2.5 rounded-full ${isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                          {isAvailable ? 'ACTIVE (Shown on Website)' : 'TURNED OFF (Hidden)'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
                 {filteredItems.length === 0 && (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-stone-500">

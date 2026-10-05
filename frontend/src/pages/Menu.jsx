@@ -124,8 +124,10 @@ const Menu = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const activeItems = allItems.filter(item => item.available !== false);
+
   // Filter items matching the current diet first
-  const dietFilteredItems = diet === 'All' ? allItems : allItems.filter(item => item.type === diet);
+  const dietFilteredItems = diet === 'All' ? activeItems : activeItems.filter(item => item.type === diet);
 
   // Generate tabs dynamically based ONLY on categories available for the selected diet
   const tabs = ['All', ...new Set(dietFilteredItems.map(item => item.cat))];

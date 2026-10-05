@@ -208,8 +208,16 @@ const MenuSection = () => {
   
   const { menuItems: allMenuItems, loading } = useMenuData();
 
-  // Pick first 4 items or filter based on something to show in highlights
-  const menuItems = allMenuItems.slice(0, 4);
+  const activeMenuItems = allMenuItems.filter(item => item.available !== false);
+
+  const filteredItems = activeTab === 'All'
+    ? activeMenuItems
+    : activeMenuItems.filter(item => {
+        const cat = (item.cat || item.category || '').toLowerCase();
+        return cat.includes(activeTab.toLowerCase());
+      });
+
+  const menuItems = filteredItems.slice(0, 4);
 
   const handleAdd = (item) => {
     addToCart(item);

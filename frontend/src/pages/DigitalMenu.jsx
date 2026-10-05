@@ -155,54 +155,113 @@ const MiniCard = ({ item }) => {
 };
 
 /* ═══════════════════════════════════════════
-   ORDER SUMMARY DRAWER (no payment)
+   ORDER SUMMARY DRAWER (Flexible Cart Management)
 ═══════════════════════════════════════════ */
-const OrderDrawer = ({ open, onClose, tableNumber, cartItems, onConfirm }) => {
+const OrderDrawer = ({ open, onClose, tableNumber, customerName, cartItems, updateQuantity, removeFromCart, onConfirm }) => {
+  const [specialNote, setSpecialNote] = useState('');
   const total = cartItems.reduce((s, i) => s + (parseFloat(i.price) * i.quantity), 0);
+
   return (
     <AnimatePresence>
       {open && (
         <>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-50" onClick={onClose} />
+            className="fixed inset-0 bg-black/60 z-50 backdrop-blur-xs" onClick={onClose} />
           <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28 }}
-            className="fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-5">
+            transition={{ type: 'spring', damping: 26, stiffness: 280 }}
+            className="fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-3xl p-6 max-h-[88vh] overflow-y-auto shadow-2xl flex flex-col">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
               <div>
-                <h3 className="text-lg font-bold text-[#112A1F]" style={{ fontFamily: "'Playfair Display', serif" }}>Your Order</h3>
-                <p className="text-xs text-gray-400">Table {tableNumber}</p>
+                <h3 className="text-xl font-bold text-[#112A1F]" style={{ fontFamily: "'Playfair Display', serif" }}>Review Your Order</h3>
+                <p className="text-xs text-stone-500 font-semibold mt-0.5">
+                  Table {tableNumber} • Guest: <span className="text-[#D4731A] font-bold">{customerName || 'Customer'}</span>
+                </p>
               </div>
-              <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><X size={16}/></button>
+              <button onClick={onClose} className="w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition-colors">
+                <X size={18}/>
+              </button>
             </div>
 
-            {/* Items */}
-            <div className="space-y-3 mb-5">
-              {cartItems.map(item => (
-                <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-50">
-                  <div>
-                    <p className="font-semibold text-[#112A1F] text-sm">{item.name}</p>
-                    <p className="text-xs text-gray-400">x{item.quantity}</p>
-                  </div>
-                  <p className="font-bold text-[#D4731A]">₹{(parseFloat(item.price) * item.quantity).toFixed(0)}</p>
+            {/* Cart Items List with Delete & Quantity adjustments */}
+            <div className="space-y-3 mb-5 max-h-[40vh] overflow-y-auto pr-1">
+              {cartItems.length === 0 ? (
+                <div className="py-8 text-center text-stone-400 text-xs">
+                  Your order is empty. Add dishes from the menu below!
                 </div>
-              ))}
+              ) : (
+                cartItems.map(item => (
+                  <div key={item.id} className="flex justify-between items-center p-3 bg-stone-50/80 rounded-2xl border border-stone-100">
+                    <div className="flex-1 pr-3">
+                      <p className="font-bold text-[#112A1F] text-sm leading-tight">{item.name}</p>
+                      <p className="text-xs text-[#D4731A] font-bold mt-0.5">₹{(parseFloat(item.price) * item.quantity).toFixed(0)}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-1.5 bg-white border border-stone-200 rounded-full p-1 shadow-2xs">
+                        <button onClick={() => updateQuantity(item.id, -1)} className="w-6 h-6 rounded-full text-[#112A1F] font-bold flex items-center justify-center hover:bg-stone-100">
+                          <Minus size={12}/>
+                        </button>
+                        <span className="w-5 text-center font-black text-[#112A1F] text-xs">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, 1)} className="w-6 h-6 rounded-full bg-[#112A1F] text-white font-bold flex items-center justify-center">
+                          <Plus size={12}/>
+                        </button>
+                      </div>
+
+                      {/* Delete Item Button */}
+                      <button 
+                        onClick={() => removeFromCart(item.id)}
+                        className="w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors"
+                        title="Remove item"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Add More Items Button */}
+            <button 
+              onClick={onClose}
+              className="w-full py-2.5 mb-4 rounded-xl border border-dashed border-[#112A1F]/30 text-[#112A1F] text-xs font-bold uppercase tracking-wider hover:bg-stone-50 transition-all flex items-center justify-center gap-1.5"
+            >
+              <Plus size={14} /> Add More Dishes
+            </button>
+
+            {/* Special Instructions */}
+            <div className="mb-4">
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-1">
+                Special Requests / Cooking Notes (Optional)
+              </label>
+              <textarea
+                rows={2}
+                placeholder="e.g. Extra spicy, less oil, serve hot..."
+                value={specialNote}
+                onChange={(e) => setSpecialNote(e.target.value)}
+                className="w-full p-3 text-xs bg-stone-50 rounded-xl border border-stone-200 focus:outline-none focus:border-[#DCA145] text-stone-800"
+              />
             </div>
 
             {/* Total */}
-            <div className="flex justify-between items-center bg-[#FFF8EC] rounded-xl p-4 mb-5 border border-[#DCA145]/30">
-              <p className="font-bold text-[#112A1F] text-sm uppercase tracking-wide">Total</p>
-              <p className="font-black text-[#D4731A] text-xl">₹{total.toFixed(0)}</p>
+            <div className="flex justify-between items-center bg-[#FFF8EC] rounded-2xl p-4 mb-4 border border-[#DCA145]/30 shadow-2xs">
+              <p className="font-bold text-[#112A1F] text-xs uppercase tracking-wider">Total Bill Amount</p>
+              <p className="font-black text-[#D4731A] text-2xl">₹{total.toFixed(0)}</p>
             </div>
 
-            <p className="text-xs text-gray-500 text-center mb-4">
-              🔔 Once you confirm, the waiter will be notified to serve you. No online payment needed.
+            <p className="text-[11px] text-stone-500 text-center mb-4 leading-relaxed font-medium">
+              ⚡ Order will be dispatched directly to Table #{tableNumber} for <span className="font-bold text-[#112A1F]">{customerName}</span>. No waiting for waiter!
             </p>
 
             {/* Confirm Button */}
-            <button onClick={onConfirm}
-              className="w-full flex items-center justify-center gap-2 bg-[#112A1F] text-white py-4 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-[#1E4A35] transition-all shadow-lg">
-              <Bell size={16}/> Notify Waiter & Confirm Order
+            <button 
+              disabled={cartItems.length === 0}
+              onClick={() => onConfirm(specialNote)}
+              className="w-full flex items-center justify-center gap-2 bg-[#112A1F] hover:bg-[#1E4A35] text-white py-4 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all shadow-lg disabled:opacity-50"
+            >
+              <Bell size={16}/> Confirm & Send Order to Kitchen
             </button>
           </motion.div>
         </>
@@ -214,56 +273,155 @@ const OrderDrawer = ({ open, onClose, tableNumber, cartItems, onConfirm }) => {
 /* ═══════════════════════════════════════════
    ORDER SUCCESS SCREEN
 ═══════════════════════════════════════════ */
-const OrderSuccess = ({ tableNumber, onReset }) => (
-  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+const OrderSuccess = ({ tableNumber, customerName, onReset }) => (
+  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
     className="fixed inset-0 bg-[#112A1F] z-50 flex flex-col items-center justify-center p-8 text-center">
-    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}
-      className="w-24 h-24 rounded-full bg-[#DCA145] flex items-center justify-center mb-6">
+    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.15, type: 'spring' }}
+      className="w-24 h-24 rounded-full bg-[#DCA145] flex items-center justify-center mb-6 shadow-xl">
       <CheckCircle2 size={48} color="#112A1F" strokeWidth={2.5}/>
     </motion.div>
     <h2 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Order Placed!</h2>
-    <p className="text-[#DCA145] font-bold text-lg mb-1">Table {tableNumber}</p>
+    <p className="text-[#DCA145] font-bold text-lg mb-1">Table #{tableNumber} • {customerName}</p>
     <p className="text-gray-300 text-sm leading-relaxed mb-8 max-w-xs">
-      Your waiter has been notified. Sit back and relax — your food is on its way! 🍽️
+      Your order is sent straight to the kitchen! Freshly prepared food will be served directly at your table. 🍽️
     </p>
-    <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 2 }}
+    <motion.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 2 }}
       className="flex items-center gap-2 bg-[#DCA145]/20 border border-[#DCA145]/40 px-6 py-3 rounded-full mb-8">
       <Bell size={16} className="text-[#DCA145]"/>
-      <span className="text-[#DCA145] text-sm font-bold">Waiter Notified</span>
+      <span className="text-[#DCA145] text-xs font-bold uppercase tracking-wider">Sent to Kitchen</span>
     </motion.div>
     <button onClick={onReset}
-      className="text-gray-400 text-xs underline underline-offset-4 hover:text-white transition-colors">
-      Order more items
+      className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all">
+      + Add More Dishes to Table #{tableNumber}
     </button>
   </motion.div>
 );
 
 /* ═══════════════════════════════════════════
-   TABLE MODE — what customers see after QR scan
+   TABLE MODE — Customer Entry & Menu Flow
 ═══════════════════════════════════════════ */
-const TableMenuMode = ({ tableNumber }) => {
+const TableMenuMode = ({ tableNumber: initialTableNumber }) => {
   const { menuItems, loading } = useMenuData();
   const { cartItems, addToCart, updateQuantity, removeFromCart, clearCart } = useCart();
+  
+  // Table & Customer Name State
+  const [tableNumber, setTableNumber] = useState(() => {
+    return initialTableNumber || localStorage.getItem('table_ordering_number') || '1';
+  });
+  const [customerName, setCustomerName] = useState(() => {
+    return localStorage.getItem('table_ordering_customer_name') || '';
+  });
+  const [hasEnteredDetails, setHasEnteredDetails] = useState(() => {
+    return Boolean(localStorage.getItem('table_ordering_customer_name'));
+  });
+
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [showDrawer, setShowDrawer] = useState(false);
   const [ordered, setOrdered] = useState(false);
 
   const cartCount = cartItems.reduce((s, i) => s + i.quantity, 0);
-  const categories = ['All', ...Array.from(new Set(menuItems.map(i => i.category).filter(Boolean)))];
-  const filtered = menuItems.filter(item => {
-    const matchCat = activeCategory === 'All' || item.category === activeCategory;
+
+  // Show ONLY active/available dishes to customers
+  const activeDishes = menuItems.filter(item => item.available !== false);
+  const categories = ['All', ...Array.from(new Set(activeDishes.map(i => i.category || i.cat).filter(Boolean)))];
+  const filtered = activeDishes.filter(item => {
+    const matchCat = activeCategory === 'All' || (item.category || item.cat) === activeCategory;
     const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
 
-  const handleConfirmOrder = () => {
+  const handleSaveDetails = (e) => {
+    e.preventDefault();
+    if (!customerName.trim()) {
+      toast.error('Please enter your name to proceed');
+      return;
+    }
+    localStorage.setItem('table_ordering_number', tableNumber);
+    localStorage.setItem('table_ordering_customer_name', customerName.trim());
+    setHasEnteredDetails(true);
+    toast.success(`Welcome ${customerName}! You can now browse & order.`);
+  };
+
+  const handleConfirmOrder = (specialNote) => {
     setShowDrawer(false);
     setOrdered(true);
+    toast.success(`Order placed for Table ${tableNumber} (${customerName})!`);
     clearCart();
   };
 
-  if (ordered) return <OrderSuccess tableNumber={tableNumber} onReset={() => setOrdered(false)} />;
+  if (ordered) {
+    return (
+      <OrderSuccess 
+        tableNumber={tableNumber} 
+        customerName={customerName} 
+        onReset={() => setOrdered(false)} 
+      />
+    );
+  }
+
+  // Step 1: Customer Details Entry Modal/Screen
+  if (!hasEnteredDetails) {
+    return (
+      <div className="min-h-screen bg-[#FFF8EC] flex items-center justify-center p-4">
+        <Helmet>
+          <title>Table Ordering | Sri Mahalakshmi Kitchen</title>
+        </Helmet>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-sm bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#DCA145]/30 text-center"
+        >
+          <div className="w-16 h-16 rounded-full bg-[#112A1F] text-[#DCA145] flex items-center justify-center mx-auto mb-4 shadow-md">
+            <Utensils size={28} />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#D4731A] mb-1">Instant Table Service</p>
+          <h2 className="text-2xl font-bold text-[#112A1F] mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Sri Mahalakshmi
+          </h2>
+          <p className="text-xs text-stone-500 mb-6">Enter details below to browse menu & order directly from your phone!</p>
+
+          <form onSubmit={handleSaveDetails} className="space-y-4 text-left">
+            <div>
+              <label className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">
+                Table Number
+              </label>
+              <input
+                required
+                type="number"
+                min="1"
+                max="100"
+                value={tableNumber}
+                onChange={(e) => setTableNumber(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none text-sm font-bold text-[#112A1F]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">
+                Your Name
+              </label>
+              <input
+                required
+                type="text"
+                placeholder="e.g. Anish / Swetha"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none text-sm font-semibold text-[#112A1F]"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#112A1F] hover:bg-[#1E4A35] text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-md transition-all pt-4"
+            >
+              View Menu & Start Order →
+            </button>
+          </form>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FFF8EC] flex flex-col">
@@ -272,43 +430,64 @@ const TableMenuMode = ({ tableNumber }) => {
       </Helmet>
 
       {/* Header */}
-      <div className="bg-[#112A1F] px-4 py-4 sticky top-0 z-20">
+      <div className="bg-[#112A1F] px-4 py-4 sticky top-0 z-20 shadow-md">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-[#DCA145] font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Sri Mahalakshmi</p>
-            <p className="text-gray-400 text-[9px] uppercase tracking-widest">Table {tableNumber}</p>
+            <p className="text-[#DCA145] font-bold text-base" style={{ fontFamily: "'Playfair Display', serif" }}>Sri Mahalakshmi</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-gray-300 text-[10px] font-bold uppercase tracking-wider">
+                Table #{tableNumber} • {customerName}
+              </span>
+              <button 
+                onClick={() => setHasEnteredDetails(false)}
+                className="text-[9px] text-[#DCA145] underline font-semibold"
+              >
+                Change
+              </button>
+            </div>
           </div>
-          <button onClick={() => cartCount > 0 && setShowDrawer(true)}
-            className="relative w-10 h-10 rounded-full bg-[#DCA145] flex items-center justify-center">
-            <ShoppingCart size={18} color="#112A1F" strokeWidth={2.5}/>
+          <button 
+            onClick={() => cartCount > 0 && setShowDrawer(true)}
+            className="relative w-11 h-11 rounded-full bg-[#DCA145] flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+          >
+            <ShoppingCart size={20} color="#112A1F" strokeWidth={2.5}/>
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">{cartCount}</span>
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-600 text-white text-[10px] font-black flex items-center justify-center border-2 border-[#112A1F]">{cartCount}</span>
             )}
           </button>
         </div>
         <div className="relative">
-          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-          <input type="text" placeholder="Search dishes..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full bg-white/10 text-white placeholder-gray-400 text-xs rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:bg-white/20" />
+          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"/>
+          <input 
+            type="text" 
+            placeholder="Search delicious dishes..." 
+            value={search} 
+            onChange={e => setSearch(e.target.value)}
+            className="w-full bg-white/10 text-white placeholder-gray-400 text-xs rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:bg-white/20 transition-colors" 
+          />
         </div>
       </div>
 
       {/* Category tabs */}
-      <div className="flex gap-2 overflow-x-auto px-4 py-3 bg-white border-b border-gray-100 sticky top-[88px] z-10 hide-scrollbar">
+      <div className="flex gap-2 overflow-x-auto px-4 py-3 bg-white border-b border-gray-100 sticky top-[95px] z-10 hide-scrollbar shadow-2xs">
         {categories.map(cat => (
           <button key={cat} onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-1.5 rounded-full text-[10px] font-bold whitespace-nowrap transition-all border ${activeCategory === cat ? 'bg-[#112A1F] text-white border-[#112A1F]' : 'bg-white text-[#112A1F] border-gray-200'}`}>
+            className={`px-4 py-2 rounded-full text-[11px] font-bold whitespace-nowrap transition-all border ${activeCategory === cat ? 'bg-[#112A1F] text-white border-[#112A1F] shadow-xs' : 'bg-white text-[#112A1F] border-stone-200'}`}>
             {cat}
           </button>
         ))}
       </div>
 
       {/* Items */}
-      <div className="flex-1 px-4 py-3 space-y-2 pb-28">
+      <div className="flex-1 px-4 py-4 space-y-2.5 pb-28">
         {loading ? (
-          <LogoLoader size="sm" message="Loading Menu..." />
+          <LogoLoader size="sm" message="Loading Kitchen Menu..." />
         ) : filtered.length === 0 ? (
-          <p className="text-center py-10 text-gray-400 text-sm">No items found</p>
+          <div className="text-center py-16 text-stone-400">
+            <Utensils size={32} className="mx-auto mb-2 opacity-40" />
+            <p className="text-sm font-bold text-stone-600">No available dishes found</p>
+            <p className="text-xs text-stone-400 mt-1">Try another category or search term</p>
+          </div>
         ) : (
           <AnimatePresence>
             {filtered.map(item => <MiniCard key={item.id} item={item} />)}
@@ -319,11 +498,11 @@ const TableMenuMode = ({ tableNumber }) => {
       {/* Sticky "View Order" bottom bar */}
       {cartCount > 0 && (
         <motion.div initial={{ y: 80 }} animate={{ y: 0 }}
-          className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+          className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-30 shadow-[0_-4px_25px_rgba(0,0,0,0.1)]">
           <button onClick={() => setShowDrawer(true)}
-            className="w-full flex items-center justify-between bg-[#112A1F] text-white px-5 py-4 rounded-2xl font-bold text-sm shadow-lg hover:bg-[#1E4A35] transition-all">
-            <span className="flex items-center gap-2"><ShoppingCart size={16}/> View Order ({cartCount} items)</span>
-            <span className="text-[#DCA145]">₹{cartItems.reduce((s, i) => s + parseFloat(i.price) * i.quantity, 0).toFixed(0)}</span>
+            className="w-full flex items-center justify-between bg-[#112A1F] text-white px-5 py-4 rounded-2xl font-bold text-sm shadow-lg hover:bg-[#1E4A35] active:scale-[0.99] transition-all">
+            <span className="flex items-center gap-2"><ShoppingCart size={18}/> View Order ({cartCount} items)</span>
+            <span className="text-[#DCA145] font-black text-base">₹{cartItems.reduce((s, i) => s + parseFloat(i.price) * i.quantity, 0).toFixed(0)}</span>
           </button>
         </motion.div>
       )}
@@ -333,7 +512,10 @@ const TableMenuMode = ({ tableNumber }) => {
         open={showDrawer}
         onClose={() => setShowDrawer(false)}
         tableNumber={tableNumber}
+        customerName={customerName}
         cartItems={cartItems}
+        updateQuantity={updateQuantity}
+        removeFromCart={removeFromCart}
         onConfirm={handleConfirmOrder}
       />
     </div>
@@ -352,9 +534,9 @@ const AdminQRView = () => {
   const [search, setSearch] = useState('');
 
   const cartCount = cartItems.reduce((s, i) => s + i.quantity, 0);
-  const categories = ['All', ...Array.from(new Set(menuItems.map(i => i.category).filter(Boolean)))];
+  const categories = ['All', ...Array.from(new Set(menuItems.map(i => i.category || i.cat).filter(Boolean)))];
   const filtered = menuItems.filter(item => {
-    const matchCat = activeCategory === 'All' || item.category === activeCategory;
+    const matchCat = activeCategory === 'All' || (item.category || item.cat) === activeCategory;
     const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
