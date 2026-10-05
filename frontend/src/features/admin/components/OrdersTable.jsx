@@ -34,18 +34,18 @@ export const OrdersTable = ({
     <div className="bg-white rounded-2xl border-1.5 border-[#C4960A]/30 shadow-sm overflow-hidden">
 
       {/* Search & Filter Toolbar */}
-      <div className="p-4 sm:p-5 border-b border-stone-200 bg-[#FFF8EC]/40 flex flex-col gap-3">
+      <div className="p-3.5 sm:p-4 border-b border-stone-200 bg-[#FFF8EC]/40 flex flex-col gap-2.5">
         {/* Top Controls Row: Search Input & Status Pills */}
-        <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <div className="flex flex-col md:flex-row gap-2.5 md:items-center md:justify-between">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
-            <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search by Order ID, customer, phone, or dish..."
-              className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4731A] focus:border-transparent transition-all"
+              className="w-full pl-9 pr-3.5 py-1.5 text-xs sm:text-sm bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4731A] focus:border-transparent transition-all"
             />
             {searchQuery && (
               <button
@@ -58,10 +58,9 @@ export const OrdersTable = ({
           </div>
 
           {/* Status Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+          <div className="flex items-center gap-1 overflow-x-auto pb-1 md:pb-0">
             {[
               { id: 'ALL', label: 'All Orders' },
-              { id: 'TABLE_QR', label: '📱 Table QR Orders' },
               { id: 'PAID', label: 'Paid Online' },
               { id: 'COD', label: 'Cash on Delivery' },
               { id: 'PENDING', label: 'Pending' }
@@ -69,8 +68,8 @@ export const OrdersTable = ({
               <button
                 key={f.id}
                 onClick={() => onStatusFilterChange(f.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${statusFilter === f.id
-                  ? 'bg-[#1B4332] text-[#FFF8EC] shadow-xs border border-[#E0B030]'
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${statusFilter === f.id
+                  ? 'bg-[#1B4332] text-[#FFF8EC] shadow-2xs border border-[#E0B030]'
                   : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
                   }`}
               >
@@ -82,7 +81,7 @@ export const OrdersTable = ({
 
         {/* Bottom Controls Row: Small Calendar Date Filter */}
         {onDateChange && (
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-stone-200/70">
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-200/70">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-stone-600 flex items-center gap-1">
                 <Calendar size={13} className="text-[#D4731A]" />
@@ -109,18 +108,18 @@ export const OrdersTable = ({
         <table className="w-full text-left text-sm border-collapse">
           <thead>
             <tr className="bg-[#1B4332]/5 text-[#5C2D0E] uppercase text-[11px] font-bold tracking-wider border-b border-stone-200">
-              <th className="py-3 px-4">Order ID & Date</th>
-              <th className="py-3 px-4">Customer</th>
-              <th className="py-3 px-4">Items Summary</th>
-              <th className="py-3 px-4">Amount</th>
-              <th className="py-3 px-4">Payment</th>
-              <th className="py-3 px-4 text-right">Actions</th>
+              <th className="py-2.5 px-3.5">Order ID & Date</th>
+              <th className="py-2.5 px-3.5">Customer</th>
+              <th className="py-2.5 px-3.5">Items Summary</th>
+              <th className="py-2.5 px-3.5">Amount</th>
+              <th className="py-2.5 px-3.5">Payment</th>
+              <th className="py-2.5 px-3.5 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
             {isLoading && orders.length === 0 ? (
               <tr>
-                <td colSpan="6" className="py-12 text-center">
+                <td colSpan="6" className="py-10 text-center">
                   <LogoLoader
                     size="sm"
                     message="Syncing Live Orders..."
@@ -130,11 +129,11 @@ export const OrdersTable = ({
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td colSpan="6" className="py-12 text-center text-stone-400">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <Utensils size={32} className="text-stone-300" />
-                    <p className="font-semibold text-stone-600">No orders found matching your criteria</p>
-                    <p className="text-xs text-stone-400">Incoming customer orders will automatically appear here live.</p>
+                <td colSpan="6" className="py-10 text-center text-stone-400">
+                  <div className="flex flex-col items-center justify-center gap-1.5">
+                    <Utensils size={28} className="text-stone-300" />
+                    <p className="font-semibold text-stone-600 text-xs">No orders found matching your criteria</p>
+                    <p className="text-[11px] text-stone-400">Incoming customer orders will automatically appear here live.</p>
                   </div>
                 </td>
               </tr>
@@ -150,14 +149,14 @@ export const OrdersTable = ({
                     onClick={() => onSelectOrder(order)}
                   >
                     {/* Order ID & Date */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-2.5 px-3.5">
                       <div className="flex items-center gap-1.5">
                         <span className="font-mono font-bold text-sm text-[#1B4332] group-hover:text-[#D4731A] transition-colors">
                           #{order.orderId}
                         </span>
                         {(order.paymentMethod === 'Table QR Order' || (order.address && order.address.includes('Table'))) && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
-                            📱 Table Order
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                            📱 Table
                           </span>
                         )}
                       </div>
@@ -167,17 +166,17 @@ export const OrdersTable = ({
                     </td>
 
                     {/* Customer Info */}
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-[#2C1A00] flex items-center gap-1.5">
+                    <td className="py-2.5 px-3.5">
+                      <div className="font-semibold text-xs sm:text-sm text-[#2C1A00] flex items-center gap-1.5">
                         <span>{order.customerName || 'Guest'}</span>
                       </div>
                       {order.address && order.address.includes('Table') && (
-                        <span className="inline-block mt-0.5 text-xs font-bold text-[#D4731A] bg-stone-100 px-2 py-0.5 rounded">
+                        <span className="inline-block mt-0.5 text-xs font-bold text-[#D4731A] bg-stone-100 px-1.5 py-0.5 rounded">
                           {order.address.split('|')[0]}
                         </span>
                       )}
                       {order.phone && !order.phone.includes('Table') && (
-                        <div className="flex items-center gap-2 mt-1" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-2 mt-0.5" onClick={(e) => e.stopPropagation()}>
                           <a
                             href={`tel:${order.phone}`}
                             className="text-xs text-stone-500 hover:text-[#1B4332] flex items-center gap-1"
@@ -190,7 +189,7 @@ export const OrdersTable = ({
                             href={`https://wa.me/${waPhone}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="p-1 rounded bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all"
+                            className="p-0.5 rounded bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all"
                             title="WhatsApp message"
                           >
                             <MessageSquare size={11} />
@@ -200,7 +199,7 @@ export const OrdersTable = ({
                     </td>
 
                     {/* Items */}
-                    <td className="py-3.5 px-4 max-w-xs">
+                    <td className="py-2.5 px-3.5 max-w-xs">
                       <p className="text-xs text-stone-700 truncate font-medium">
                         {order.items || 'No item details'}
                       </p>
@@ -212,36 +211,33 @@ export const OrdersTable = ({
                     </td>
 
                     {/* Total Amount */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span className="font-heading font-extrabold text-base text-[#1B4332]">
+                    <td className="py-2.5 px-3.5 whitespace-nowrap">
+                      <span className="font-heading font-extrabold text-sm sm:text-base text-[#1B4332]">
                         ₹{Number(order.totalAmount).toLocaleString('en-IN')}
                       </span>
                     </td>
 
                     {/* Payment Status */}
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    <td className="py-2.5 px-3.5 whitespace-nowrap">
                       <OrderStatusBadge status={order.paymentStatus} method={order.paymentMethod} />
-                      <span className="block text-[11px] text-stone-400 mt-0.5 font-mono truncate max-w-[130px]">
-                        {order.paymentMethod}
-                      </span>
                     </td>
 
                     {/* Actions */}
-                    <td className="py-3.5 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                      <div className="inline-flex items-center gap-1.5">
+                    <td className="py-2.5 px-3.5 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <div className="inline-flex items-center gap-1">
                         <button
                           onClick={() => onPrintKOT(order, 'customer')}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1B4332] hover:bg-[#112A1F] text-[#FFF8EC] text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#1B4332] hover:bg-[#112A1F] text-[#FFF8EC] text-xs font-bold transition-all shadow-2xs cursor-pointer"
                           title="Print Customer Bill / Tax Invoice"
                         >
-                          <Printer size={13} className="text-[#E0B030]" /> Print Bill
+                          <Printer size={12} className="text-[#E0B030]" /> Print
                         </button>
                         <button
                           onClick={() => onSelectOrder(order)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FFF8EC] hover:bg-[#D4731A] text-[#1B4332] hover:text-white border border-[#C4960A]/40 text-xs font-semibold transition-all shadow-2xs cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[#FFF8EC] hover:bg-[#D4731A] text-[#1B4332] hover:text-white border border-[#C4960A]/40 text-xs font-semibold transition-all shadow-2xs cursor-pointer"
                           title="View Order Details"
                         >
-                          <Eye size={13} /> View
+                          <Eye size={12} /> View
                         </button>
                       </div>
                     </td>

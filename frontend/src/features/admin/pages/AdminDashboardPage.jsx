@@ -28,7 +28,8 @@ import {
   Users,
   Clock,
   Sparkles,
-  Sliders
+  Sliders,
+  Smartphone
 } from 'lucide-react';
 
 export const AdminDashboardPage = () => {
@@ -83,7 +84,8 @@ export const AdminDashboardPage = () => {
       <AdminSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        ordersCount={stats.totalOrders}
+        ordersCount={stats.foodOrdersCount}
+        tableQrCount={stats.tableQrOrders}
         diningCount={stats.pendingDining}
         cateringCount={stats.newCatering}
         soundEnabled={soundEnabled}
@@ -118,8 +120,10 @@ export const AdminDashboardPage = () => {
               <div className="flex items-center gap-2">
                 <h1 className="font-heading font-extrabold text-lg sm:text-xl text-[#1B4332] tracking-tight">
                   {activeTab === 'orders' && 'Food & Counter Orders'}
+                  {activeTab === 'table_qr' && '📱 Live On-Table QR Orders'}
                   {activeTab === 'dining' && 'Table Dining Reservations'}
                   {activeTab === 'catering' && 'Catering & Event Inquiries'}
+                  {activeTab === 'menu_sheet' && 'Menu Database Manager'}
                 </h1>
                 <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#D4731A]/15 text-[#D4731A] border border-[#D4731A]/30">
                   Super Admin Desk
@@ -133,11 +137,6 @@ export const AdminDashboardPage = () => {
 
           {/* Quick Bar Controls */}
           <div className="flex items-center gap-2">
-            {/* Live Status indicator */}
-            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-              <span>Sync: {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-            </div>
 
             {/* Audio Controls & Settings */}
             <div className="flex items-center bg-white border border-[#C4960A]/30 rounded-xl p-1 shadow-2xs">
@@ -163,16 +162,6 @@ export const AdminDashboardPage = () => {
               </button>
             </div>
 
-            {/* Sync Now */}
-            <button
-              onClick={refreshOrders}
-              disabled={isRefreshing}
-              className="p-2 sm:px-3 rounded-xl bg-[#1B4332] hover:bg-[#112A1F] text-[#FFF8EC] text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs disabled:opacity-50"
-              title="Refresh all data now"
-            >
-              <RefreshCw size={14} className={isRefreshing ? 'animate-spin text-[#E0B030]' : ''} />
-              <span className="hidden sm:inline">Refresh</span>
-            </button>
 
             {/* Kitchen Prep Sheet Quick Action */}
             <button
@@ -196,7 +185,17 @@ export const AdminDashboardPage = () => {
               }`}
           >
             <ShoppingBag size={14} />
-            <span>Orders ({stats.totalOrders})</span>
+            <span>Orders ({stats.foodOrdersCount})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('table_qr')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${activeTab === 'table_qr'
+              ? 'bg-amber-600 text-white'
+              : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
+          >
+            <Smartphone size={14} />
+            <span>Table QR ({stats.tableQrOrders})</span>
           </button>
           <button
             onClick={() => setActiveTab('dining')}
@@ -230,23 +229,88 @@ export const AdminDashboardPage = () => {
           </button>
         </div>
 
-        {/* Main Workspace Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 no-print max-w-7xl w-full mx-auto">
+        {/* Main Workspace Body - Optimized for 100% Viewport Zoom & Responsive Screen Sizes */}
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 no-print max-w-[1600px] w-full mx-auto overflow-x-hidden">
 
-          {/* Desk 1: Food Orders */}
+          {/* Desk 1: Food Orders (Counter & Online Orders Only) */}
           {activeTab === 'orders' && (
             <div className="space-y-6">
               {/* Financial & Volume Metrics */}
               <AdminStats stats={stats} />
 
-              {/* Orders Table */}
+              {/* Orders Table - Excludes Table QR Orders so they appear only once */}
               <OrdersTable
-                orders={orders}
+                orders={orders.filter(o => {
+                  const m = (o.paymentMethod || '').toLowerCase();
+                  const a = (o.address || '').toLowerCase();
+                  return !m.includes('table') && !a.includes('table');
+                })}
                 isLoading={isLoading}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 statusFilter={statusFilter}
                 onStatusFilterChange={setStatusFilter}
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
+                onSelectOrder={(order) => setSelectedOrder(order)}
+                onPrintKOT={(order, mode = 'customer') => setKotOrder({ ...order, printMode: mode })}
+              />
+            </div>
+          )}
+
+          {/* Desk 2: Table QR Live Orders */}
+          {activeTab === 'table_qr' && (
+            <div className="space-y-6">
+              {/* Highlight Cards for Table QR Orders */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white p-4 rounded-2xl border-1.5 border-[#C4960A]/30 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-[#6B4423]">Total QR Table Orders</p>
+                    <span className="p-2 rounded-xl bg-amber-100 text-amber-900">
+                      <Smartphone size={16} />
+                    </span>
+                  </div>
+                  <p className="text-2xl font-black text-[#1B4332] mt-2 font-heading">
+                    {stats.tableQrOrders}
+                  </p>
+                  <p className="text-[11px] text-stone-500 mt-0.5">Live customer table scans</p>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border-1.5 border-[#C4960A]/30 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-[#6B4423]">Active Tables Ordering</p>
+                    <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
+                      <UtensilsCrossed size={16} />
+                    </span>
+                  </div>
+                  <p className="text-2xl font-black text-emerald-800 mt-2 font-heading">
+                    {new Set(orders.filter(o => (o.paymentMethod || '').toLowerCase().includes('table') || (o.address || '').toLowerCase().includes('table')).map(o => o.address)).size}
+                  </p>
+                  <p className="text-[11px] text-stone-500 mt-0.5">Tables with placed orders</p>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border-1.5 border-[#C4960A]/30 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-[#6B4423]">Table Orders Revenue</p>
+                    <span className="p-2 rounded-xl bg-amber-100 text-[#D4731A]">
+                      <ShoppingBag size={16} />
+                    </span>
+                  </div>
+                  <p className="text-2xl font-black text-[#D4731A] mt-2 font-heading">
+                    ₹{Number(stats.tableQrRevenue).toLocaleString('en-IN')}
+                  </p>
+                  <p className="text-[11px] text-stone-500 mt-0.5">Dine-in QR sales revenue</p>
+                </div>
+              </div>
+
+              {/* Table QR Orders Table */}
+              <OrdersTable
+                orders={orders.filter(o => (o.paymentMethod || '').toLowerCase().includes('table') || (o.address || '').toLowerCase().includes('table'))}
+                isLoading={isLoading}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                statusFilter="ALL"
+                onStatusFilterChange={() => {}}
                 selectedDate={selectedDate}
                 onDateChange={setSelectedDate}
                 onSelectOrder={(order) => setSelectedOrder(order)}

@@ -104,15 +104,15 @@ export const MenuManagerPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-5">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl shadow-xs border border-stone-200">
         <div>
-          <h2 className="text-xl font-extrabold text-[#1B4332] flex items-center gap-2">
+          <h2 className="text-lg sm:text-xl font-extrabold text-[#1B4332] flex items-center gap-2">
             Menu Database Manager
           </h2>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs text-stone-500 mt-0.5">
             Live synchronization with your Google Sheet CMS ({menuItems.length} items loaded • {menuItems.filter(i => i.available !== false).length} Active on Website)
           </p>
         </div>
@@ -123,48 +123,48 @@ export const MenuManagerPage = () => {
               toast.success('Re-syncing menu with Google Sheet...');
             }}
             title="Refresh latest items from Google Sheet"
-            className="bg-stone-100 hover:bg-stone-200 text-[#1B4332] px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 border border-stone-200"
+            className="bg-stone-100 hover:bg-stone-200 text-[#1B4332] px-3.5 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 border border-stone-200"
           >
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Sync Sheet
+            <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Sync Sheet
           </button>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-[#DCA145] hover:bg-[#B05D10] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all flex items-center gap-2"
+            className="bg-[#DCA145] hover:bg-[#B05D10] text-white px-4 py-2 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center gap-1.5"
           >
-            <Plus size={16} /> Add New Dish
+            <Plus size={15} /> Add New Dish
           </button>
         </div>
       </div>
 
       {/* Setup Instructions Warning */}
       {!import.meta.env.VITE_GOOGLE_APPS_SCRIPT_URL && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-amber-800 text-sm">
-          <AlertCircle size={20} className="shrink-0 text-amber-600" />
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex gap-2.5 text-amber-800 text-xs sm:text-sm">
+          <AlertCircle size={18} className="shrink-0 text-amber-600 mt-0.5" />
           <div>
-            <p className="font-bold mb-1">Write access is not yet configured</p>
-            <p className="opacity-90 leading-relaxed">
-              To allow this admin panel to add items directly to your Google Sheet, you need to create a Google Apps Script deployment and add the URL to your <code className="bg-amber-100 px-1 rounded">.env</code> file as <code className="bg-amber-100 px-1 rounded">VITE_GOOGLE_APPS_SCRIPT_URL</code>.
+            <p className="font-bold mb-0.5">Write access is not yet configured</p>
+            <p className="opacity-90 leading-relaxed text-xs">
+              To allow this admin panel to add items directly to your Google Sheet, add <code className="bg-amber-100 px-1 rounded">VITE_GOOGLE_APPS_SCRIPT_URL</code> to your <code className="bg-amber-100 px-1 rounded">.env</code> file.
             </p>
           </div>
         </div>
       )}
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row gap-2.5">
         <div className="relative flex-1">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
           <input 
             type="text" 
             placeholder="Search by dish name..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-sm"
+            className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-white rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-xs"
           />
         </div>
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-4 py-3 rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-sm bg-white text-stone-700 min-w-[180px]"
+          className="px-3 py-2 text-xs sm:text-sm rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-xs bg-white text-stone-700 min-w-[150px]"
         >
           {categories.map(cat => (
             <option key={cat} value={cat}>{cat}</option>
@@ -173,7 +173,7 @@ export const MenuManagerPage = () => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-3 rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-sm bg-white text-stone-700 min-w-[180px]"
+          className="px-3 py-2 text-xs sm:text-sm rounded-xl border border-stone-200 focus:border-[#DCA145] focus:ring-2 focus:ring-[#DCA145]/20 outline-none transition-all shadow-xs bg-white text-stone-700 min-w-[170px]"
         >
           <option value="All">All Status (Active & OFF)</option>
           <option value="Active">🟢 Active / Available Only</option>
@@ -182,21 +182,21 @@ export const MenuManagerPage = () => {
       </div>
 
       {/* Menu Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-xs border border-stone-200 overflow-hidden">
         {loading ? (
-          <div className="p-12 flex justify-center">
+          <div className="p-10 flex justify-center">
             <LogoLoader size="sm" message="Loading Google Sheet..." />
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-stone-50 border-b border-stone-200 text-stone-500 text-xs uppercase tracking-wider font-bold">
-                  <th className="p-4 pl-6 font-semibold">Image</th>
-                  <th className="p-4 font-semibold">Dish Name</th>
-                  <th className="p-4 font-semibold">Category</th>
-                  <th className="p-4 font-semibold">Price (₹)</th>
-                  <th className="p-4 font-semibold text-center">Website Availability (Toggle ON/OFF)</th>
+                <tr className="bg-stone-50 border-b border-stone-200 text-stone-500 text-[11px] uppercase tracking-wider font-bold">
+                  <th className="py-2.5 px-3.5 pl-5 font-semibold">Image</th>
+                  <th className="py-2.5 px-3.5 font-semibold">Dish Name</th>
+                  <th className="py-2.5 px-3.5 font-semibold">Category</th>
+                  <th className="py-2.5 px-3.5 font-semibold">Price (₹)</th>
+                  <th className="py-2.5 px-3.5 font-semibold text-center">Website Availability (Toggle ON/OFF)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
@@ -204,38 +204,38 @@ export const MenuManagerPage = () => {
                   const isAvailable = item.available !== false;
                   return (
                     <tr key={item.id || idx} className="hover:bg-stone-50/50 transition-colors">
-                      <td className="p-4 pl-6">
+                      <td className="py-2.5 px-3.5 pl-5">
                         {item.img ? (
-                          <div className="w-12 h-12 rounded-lg overflow-hidden border border-stone-200 shadow-sm bg-stone-100">
+                          <div className="w-10 h-10 rounded-lg overflow-hidden border border-stone-200 shadow-2xs bg-stone-100">
                             <img src={item.img} alt={item.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           </div>
                         ) : (
-                          <div className="w-12 h-12 rounded-lg border border-dashed border-stone-300 bg-stone-50 flex items-center justify-center text-stone-400">
-                            <ImageIcon size={18} />
+                          <div className="w-10 h-10 rounded-lg border border-dashed border-stone-300 bg-stone-50 flex items-center justify-center text-stone-400">
+                            <ImageIcon size={16} />
                           </div>
                         )}
                       </td>
-                      <td className="p-4">
-                        <p className="font-bold text-[#1B4332]">{item.name}</p>
+                      <td className="py-2.5 px-3.5">
+                        <p className="font-bold text-sm text-[#1B4332]">{item.name}</p>
                       </td>
-                      <td className="p-4">
-                        <span className="px-2.5 py-1 bg-stone-100 text-stone-600 rounded-lg text-xs font-semibold">
+                      <td className="py-2.5 px-3.5">
+                        <span className="px-2 py-0.5 bg-stone-100 text-stone-600 rounded-md text-[11px] font-semibold">
                           {item.category || item.cat}
                         </span>
                       </td>
-                      <td className="p-4">
-                        <p className="font-black text-[#DCA145]">₹{item.price}</p>
+                      <td className="py-2.5 px-3.5">
+                        <p className="font-black text-[#DCA145] text-sm">₹{item.price}</p>
                       </td>
-                      <td className="p-4 text-center">
+                      <td className="py-2.5 px-3.5 text-center">
                         <button
                           onClick={() => handleToggle(item.name)}
-                          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 mx-auto border ${
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-1.5 mx-auto border ${
                             isAvailable
                               ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
                               : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
                           }`}
                         >
-                          <span className={`w-2.5 h-2.5 rounded-full ${isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                          <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
                           {isAvailable ? 'ACTIVE (Shown on Website)' : 'TURNED OFF (Hidden)'}
                         </button>
                       </td>

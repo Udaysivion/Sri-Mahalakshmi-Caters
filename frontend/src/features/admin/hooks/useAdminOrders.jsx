@@ -306,6 +306,11 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
   // Analytics computation
   const stats = {
     totalOrders: orders.length,
+    foodOrdersCount: orders.filter(o => {
+      const m = (o.paymentMethod || '').toLowerCase();
+      const a = (o.address || '').toLowerCase();
+      return !m.includes('table') && !a.includes('table');
+    }).length,
     totalRevenue: orders.reduce((sum, o) => sum + (Number(o.totalAmount) || 0), 0),
     paidOrders: orders.filter(o => {
       const s = (o.paymentStatus || '').toLowerCase();
@@ -320,7 +325,17 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
       return new Date(o.timestamp).toDateString() === new Date().toDateString();
     }).length,
     pendingDining: diningReservations.filter(d => (d.status || 'Pending').toLowerCase() === 'pending').length,
-    newCatering: cateringInquiries.filter(c => (c.status || 'New').toLowerCase() === 'new').length
+    newCatering: cateringInquiries.filter(c => (c.status || 'New').toLowerCase() === 'new').length,
+    tableQrOrders: orders.filter(o => {
+      const m = (o.paymentMethod || '').toLowerCase();
+      const a = (o.address || '').toLowerCase();
+      return m.includes('table') || a.includes('table');
+    }).length,
+    tableQrRevenue: orders.filter(o => {
+      const m = (o.paymentMethod || '').toLowerCase();
+      const a = (o.address || '').toLowerCase();
+      return m.includes('table') || a.includes('table');
+    }).reduce((sum, o) => sum + (Number(o.totalAmount) || 0), 0)
   };
 
   return {
