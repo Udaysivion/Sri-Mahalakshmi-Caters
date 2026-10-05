@@ -7,6 +7,7 @@ import { useMenuData } from '../hooks/useMenuData';
 import LogoLoader from '../components/common/LogoLoader';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'react-router-dom';
+import { submitOrderToDatabase } from '../services/orderService';
 
 const SITE_URL = window.location.origin;
 
@@ -343,7 +344,25 @@ const TableMenuMode = ({ tableNumber: initialTableNumber }) => {
     toast.success(`Welcome ${customerName}! You can now browse & order.`);
   };
 
-  const handleConfirmOrder = (specialNote) => {
+  const handleConfirmOrder = async (specialNote) => {
+    const totalAmount = cartItems.reduce((s, i) => s + parseFloat(i.price) * i.quantity, 0);
+    const orderPayload = {
+      orderId: `TBL-${tableNumber}-${Date.now().toString().slice(-4)}`,
+      customerName: `${customerName} (Table ${tableNumber})`,
+      phone: `Table ${tableNumber}`,
+      address: `Table #${tableNumber}${specialNote ? ` | Note: ${specialNote}` : ''}`,
+      items: cartItems,
+      totalAmount: totalAmount,
+      paymentMethod: 'Table QR Order',
+      paymentStatus: 'Pending Kitchen'
+    };
+
+    try {
+      await submitOrderToDatabase(orderPayload);
+    } catch (err) {
+      console.warn('Order submit notice:', err);
+    }
+
     setShowDrawer(false);
     setOrdered(true);
     toast.success(`Order placed for Table ${tableNumber} (${customerName})!`);

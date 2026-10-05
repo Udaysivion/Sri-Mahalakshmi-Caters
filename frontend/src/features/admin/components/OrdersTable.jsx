@@ -61,6 +61,7 @@ export const OrdersTable = ({
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
             {[
               { id: 'ALL', label: 'All Orders' },
+              { id: 'TABLE_QR', label: '📱 Table QR Orders' },
               { id: 'PAID', label: 'Paid Online' },
               { id: 'COD', label: 'Cash on Delivery' },
               { id: 'PENDING', label: 'Pending' }
@@ -69,7 +70,7 @@ export const OrdersTable = ({
                 key={f.id}
                 onClick={() => onStatusFilterChange(f.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${statusFilter === f.id
-                  ? 'bg-[#1B4332] text-[#FFF8EC] shadow-xs'
+                  ? 'bg-[#1B4332] text-[#FFF8EC] shadow-xs border border-[#E0B030]'
                   : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
                   }`}
               >
@@ -150,8 +151,15 @@ export const OrdersTable = ({
                   >
                     {/* Order ID & Date */}
                     <td className="py-3.5 px-4">
-                      <div className="font-mono font-bold text-sm text-[#1B4332] group-hover:text-[#D4731A] transition-colors">
-                        #{order.orderId}
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-bold text-sm text-[#1B4332] group-hover:text-[#D4731A] transition-colors">
+                          #{order.orderId}
+                        </span>
+                        {(order.paymentMethod === 'Table QR Order' || (order.address && order.address.includes('Table'))) && (
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                            📱 Table Order
+                          </span>
+                        )}
                       </div>
                       <div className="text-[11px] text-stone-500 mt-0.5">
                         {order.timestamp || 'N/A'}
@@ -160,10 +168,15 @@ export const OrdersTable = ({
 
                     {/* Customer Info */}
                     <td className="py-3.5 px-4">
-                      <div className="font-semibold text-[#2C1A00]">
-                        {order.customerName || 'Guest'}
+                      <div className="font-semibold text-[#2C1A00] flex items-center gap-1.5">
+                        <span>{order.customerName || 'Guest'}</span>
                       </div>
-                      {order.phone && (
+                      {order.address && order.address.includes('Table') && (
+                        <span className="inline-block mt-0.5 text-xs font-bold text-[#D4731A] bg-stone-100 px-2 py-0.5 rounded">
+                          {order.address.split('|')[0]}
+                        </span>
+                      )}
+                      {order.phone && !order.phone.includes('Table') && (
                         <div className="flex items-center gap-2 mt-1" onClick={(e) => e.stopPropagation()}>
                           <a
                             href={`tel:${order.phone}`}

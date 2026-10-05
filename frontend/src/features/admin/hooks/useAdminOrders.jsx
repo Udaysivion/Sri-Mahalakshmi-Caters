@@ -278,8 +278,11 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
     if (statusFilter !== 'ALL') {
       const pMethod = (order.paymentMethod || '').toLowerCase();
       const pStatus = (order.paymentStatus || '').toLowerCase();
+      const addr = (order.address || '').toLowerCase();
 
-      if (statusFilter === 'PAID') {
+      if (statusFilter === 'TABLE_QR') {
+        if (!pMethod.includes('table') && !addr.includes('table')) return false;
+      } else if (statusFilter === 'PAID') {
         if (!pStatus.includes('completed') && !pStatus.includes('paid')) return false;
       } else if (statusFilter === 'COD') {
         if (!pMethod.includes('cash') && !pMethod.includes('cod')) return false;
