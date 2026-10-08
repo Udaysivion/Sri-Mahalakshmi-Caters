@@ -4,3 +4,4 @@
  */
 
 export { submitOrderToDatabase } from './services/orderService';
+export { initiateRazorpayCheckout } from './services/razorpayService';

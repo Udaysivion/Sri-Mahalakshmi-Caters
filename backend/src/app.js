@@ -14,6 +14,7 @@ const orderRoutes = require('./domains/orders/order.routes');
 const diningRoutes = require('./domains/dining/dining.routes');
 const cateringRoutes = require('./domains/catering/catering.routes');
 const adminRoutes = require('./domains/admin/admin.routes');
+const paymentRoutes = require('./domains/payment/payment.routes');
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/dining', diningRoutes);
 app.use('/api/catering', cateringRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // 404 Route Handler
 app.use((req, res) => {

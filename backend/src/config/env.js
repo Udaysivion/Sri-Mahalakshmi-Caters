@@ -17,11 +17,19 @@ const env = {
     username: process.env.ADMIN_USERNAME,
     password: process.env.ADMIN_PASSWORD,
     altPassword: process.env.ADMIN_ALT_PASSWORD
+  },
+  razorpay: {
+    keyId: process.env.RAZORPAY_KEY_ID,
+    keySecret: process.env.RAZORPAY_KEY_SECRET
   }
 };
 
 if (!env.databaseUrl) {
   console.warn('⚠️ WARNING: DATABASE_URL is not defined in environment variables!');
+}
+
+if (!env.razorpay.keyId || !env.razorpay.keySecret) {
+  console.warn('⚠️ WARNING: RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is not defined in environment variables!');
 }
 
 module.exports = env;

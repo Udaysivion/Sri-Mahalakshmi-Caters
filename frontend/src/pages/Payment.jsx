@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -21,6 +21,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { submitOrderToDatabase } from '../services/orderService';
+import { initiateRazorpayCheckout } from '../features/orders/services/razorpayService';
 import toast from 'react-hot-toast';
 
 const Payment = () => {
@@ -35,30 +36,15 @@ const Payment = () => {
   const [orderComplete, setOrderComplete] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
 
-  // Read credentials, contacts, and configuration exclusively from environment variables
-  const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
+  // Read configuration exclusively from environment variables
   const restaurantPhone = import.meta.env.VITE_RESTAURANT_PHONE || '';
   const upiId = import.meta.env.VITE_RESTAURANT_UPI_ID || '';
-  const restaurantName = import.meta.env.VITE_RESTAURANT_NAME || '';
+  const restaurantName = import.meta.env.VITE_RESTAURANT_NAME || 'Sri Mahalakshmi Caters';
 
-  // Dynamic UPI URL for QR code & Deep Links
+  // Order ID & UPI deep links — generated once per page mount
   const generatedOrderId = `SMK-${Math.floor(100000 + Math.random() * 900000)}`;
   const upiDeepLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${cartTotal}&cu=INR&tn=${encodeURIComponent(`Order ${generatedOrderId}`)}`;
-  const gpayDeepLink = `tez://upi/pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${cartTotal}&cu=INR&tn=${encodeURIComponent(`Order ${generatedOrderId}`)}`;
-  const phonepeDeepLink = `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${cartTotal}&cu=INR&tn=${encodeURIComponent(`Order ${generatedOrderId}`)}`;
-  const paytmDeepLink = `paytmmp://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${cartTotal}&cu=INR&tn=${encodeURIComponent(`Order ${generatedOrderId}`)}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiDeepLink)}&margin=8`;
-
-  // Dynamically load Razorpay SDK
-  useEffect(() => {
-    if (!document.getElementById('razorpay-sdk')) {
-      const script = document.createElement('script');
-      script.id = 'razorpay-sdk';
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
 
   const handleCopyUpi = () => {
     navigator.clipboard.writeText(upiId);
@@ -113,51 +99,28 @@ const Payment = () => {
     }
   };
 
-  // 1. Razorpay Handler
-  const handleRazorpayPayment = () => {
-    if (window.Razorpay && razorpayKey) {
-      const options = {
-        key: razorpayKey,
-        amount: cartTotal * 100, // amount in paise
-        currency: 'INR',
-        name: restaurantName,
-        description: `Order ${generatedOrderId}`,
-        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=120',
-        handler: function (response) {
-          finalizeOrder('Razorpay', 'Paid', response.razorpay_payment_id);
-        },
-        prefill: {
-          name: checkoutDetails.name || '',
-          contact: checkoutDetails.phone || ''
-        },
-        theme: {
-          color: '#1B4332'
-        },
-        modal: {
-          ondismiss: function () {
-            setIsProcessing(false);
-            toast('Payment cancelled or closed.', { icon: 'ℹ️' });
-          }
-        }
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', function (response) {
-        setIsProcessing(false);
-        toast.error(`Payment failed: ${response.error?.description || 'Transaction unsuccessful'}`);
-      });
-      rzp.open();
-    } else {
-      // Demo / Test Gateway Mode if API key is not yet set
-      simulateInstantPayment();
-    }
-  };
-
-  const simulateInstantPayment = () => {
+  // 1. Razorpay Standard Checkout Handler (create order → modal → verify signature)
+  const handleRazorpayPayment = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
-      finalizeOrder('Razorpay (Test Simulation)', 'Paid', `pay_test_${Math.random().toString(36).substring(7)}`);
-    }, 800);
+    try {
+      const paymentResponse = await initiateRazorpayCheckout({
+        amountInRupees: cartTotal,
+        orderId: generatedOrderId,
+        customerName: checkoutDetails.name || '',
+        customerPhone: checkoutDetails.phone || '',
+        restaurantName
+      });
+      // Payment verified by backend — finalize the order
+      await finalizeOrder('Razorpay', 'Paid', paymentResponse.razorpay_payment_id);
+    } catch (err) {
+      setIsProcessing(false);
+      const msg = err?.message || '';
+      if (msg.toLowerCase().includes('cancelled') || msg.toLowerCase().includes('dismiss')) {
+        toast('Payment cancelled.', { icon: 'ℹ️' });
+      } else {
+        toast.error(msg || 'Payment failed. Please try again.');
+      }
+    }
   };
 
   // 2. UPI Verification Handler
