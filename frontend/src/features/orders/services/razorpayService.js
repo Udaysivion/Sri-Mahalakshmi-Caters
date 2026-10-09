@@ -11,10 +11,9 @@
  * The KEY_SECRET never touches the browser.
  */
 
-let BACKEND_URL = (import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001/api').replace(/\/+$/, '');
+let BACKEND_URL = (import.meta.env.VITE_BACKEND_API_URL).replace(/\/+$/, '');
 if (!BACKEND_URL.endsWith('/api')) { BACKEND_URL += '/api'; }
 
-const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
 
 /**
  * Dynamically loads the Razorpay checkout.js SDK if not already present.
@@ -38,6 +37,18 @@ const loadRazorpaySDK = () =>
     script.onerror = () => reject(new Error('Failed to load Razorpay SDK'));
     document.body.appendChild(script);
   });
+
+/**
+ * Step 0: Fetch Razorpay Key ID from backend
+ */
+const getRazorpayKey = async () => {
+  const response = await fetch(`${BACKEND_URL}/payment/razorpay-key`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch Razorpay key');
+  }
+  const data = await response.json();
+  return data.key;
+};
 
 /**
  * Step 1: Ask the backend to create a Razorpay order.
@@ -108,6 +119,9 @@ export const initiateRazorpayCheckout = async ({
 
   // Load SDK
   await loadRazorpaySDK();
+
+  // Fetch Key ID from backend
+  const RAZORPAY_KEY_ID = await getRazorpayKey();
 
   // Create server-side Razorpay order
   const orderData = await createBackendOrder(amountInPaise, orderId);

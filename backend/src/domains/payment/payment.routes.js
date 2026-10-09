@@ -10,5 +10,6 @@ const paymentController = require('./payment.controller');
 
 router.post('/create-order', (req, res, next) => paymentController.createOrder(req, res, next));
 router.post('/verify-payment', (req, res, next) => paymentController.verifyPayment(req, res, next));
+router.get('/razorpay-key', (req, res) => paymentController.getKey(req, res));
 
 module.exports = router;

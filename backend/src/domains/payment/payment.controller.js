@@ -44,6 +44,14 @@ class PaymentController {
       next(err);
     }
   }
+
+  /**
+   * GET /api/payment/razorpay-key
+   * Returns the Razorpay Key ID
+   */
+  getKey(req, res) {
+    res.json({ key: process.env.RAZORPAY_KEY_ID });
+  }
 }
 
 module.exports = new PaymentController();
