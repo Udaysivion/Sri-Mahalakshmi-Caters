@@ -5,7 +5,6 @@ import {
   ShieldCheck, 
   CreditCard, 
   Smartphone, 
-  Banknote, 
   CheckCircle, 
   ArrowLeft, 
   Clock, 
@@ -16,17 +15,21 @@ import {
   Check, 
   ExternalLink,
   Receipt,
-  Utensils
+  Utensils,
+  Navigation,
+  Loader2,
+  Edit2
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { submitOrderToDatabase } from '../services/orderService';
 import { initiateRazorpayCheckout } from '../features/orders/services/razorpayService';
+import { findCurrentLocation } from '../utils/locationService';
 import toast from 'react-hot-toast';
 
 const Payment = () => {
   const navigate = useNavigate();
-  const { cartItems, cartTotal, checkoutDetails, clearCart, saveLastOrder, lastOrder } = useCart();
+  const { cartItems, cartTotal, checkoutDetails, clearCart, saveLastOrder, lastOrder, updateCheckoutDetails } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState('razorpay'); // default to automated online payment (GPay / PhonePe / Cards / UPI)
   const [upiRefId, setUpiRefId] = useState('');
@@ -35,6 +38,9 @@ const Payment = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
+  const [isLocatingAddress, setIsLocatingAddress] = useState(false);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [editedAddress, setEditedAddress] = useState(checkoutDetails?.address || '');
 
   // Read configuration exclusively from environment variables
   const restaurantPhone = import.meta.env.VITE_RESTAURANT_PHONE || '';
@@ -60,15 +66,63 @@ const Payment = () => {
     setTimeout(() => setCopiedPhone(false), 2500);
   };
 
+  const handleDetectLocationOnPayment = async () => {
+    setIsLocatingAddress(true);
+    const toastId = toast.loading('Acquiring high-accuracy GPS position...');
+    try {
+      const loc = await findCurrentLocation();
+      const cleanAddr = loc.cleanAddress;
+      updateCheckoutDetails({
+        address: cleanAddr,
+        mapsUrl: loc.mapsUrl,
+        coordinates: { latitude: loc.latitude, longitude: loc.longitude }
+      });
+      setEditedAddress(cleanAddr);
+      if (loc.accuracy && loc.accuracy <= 50) {
+        toast.success(`📍 Pinned: ${loc.shortArea} (±${loc.accuracy}m)`, { id: toastId });
+      } else {
+        toast.success(`📍 Location updated (${loc.shortArea})!`, { id: toastId });
+      }
+    } catch (err) {
+      console.error('Location detection error:', err);
+      toast.error(err.message || 'Unable to detect current location.', { id: toastId });
+    } finally {
+      setIsLocatingAddress(false);
+    }
+  };
+
+  const handleSaveAddress = (e) => {
+    e.preventDefault();
+    const cleanAddr = editedAddress
+      .replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '')
+      .replace(/https?:\/\/[^\s]+/gi, '')
+      .trim();
+
+    if (!cleanAddr) {
+      toast.error('Address cannot be empty.');
+      return;
+    }
+    updateCheckoutDetails({ address: cleanAddr });
+    setEditedAddress(cleanAddr);
+    setIsEditingAddress(false);
+    toast.success('Delivery address updated!');
+  };
+
   // Complete and record order
   const finalizeOrder = async (methodName, statusText, paymentRef) => {
     setIsProcessing(true);
+
+    const activeMaps = checkoutDetails.mapsUrl || 
+      (checkoutDetails?.coordinates?.latitude ? `https://www.google.com/maps?q=${checkoutDetails.coordinates.latitude},${checkoutDetails.coordinates.longitude}` : 
+      (checkoutDetails?.address?.trim() ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(checkoutDetails.address.replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '').replace(/https?:\/\/[^\s]+/gi, '').trim())}` : ''));
 
     const orderPayload = {
       orderId: generatedOrderId,
       customerName: checkoutDetails.name || 'Valued Customer',
       phone: checkoutDetails.phone || '',
       address: checkoutDetails.address || '',
+      mapsUrl: activeMaps,
+      coordinates: checkoutDetails.coordinates || null,
       notes: checkoutDetails.notes || '',
       items: cartItems,
       totalAmount: cartTotal,
@@ -85,7 +139,7 @@ const Payment = () => {
       clearCart();
       setOrderComplete(true);
 
-      toast.success('Order confirmed & saved to database!', {
+      toast.success('Order confirmed successfully!', {
         icon: '✅',
         style: { background: '#112A1F', color: '#FFF8EC' }
       });
@@ -129,10 +183,6 @@ const Payment = () => {
     finalizeOrder('Direct UPI (QR)', 'Pending Verification', upiRefId || `UPI-TXN-${Date.now().toString().slice(-6)}`);
   };
 
-  // 3. Cash on Delivery Handler
-  const handleCodPayment = () => {
-    finalizeOrder('Cash on Delivery', 'Pending (COD)', 'CASH-ON-DELIVERY');
-  };
 
   // Order Success View
   if (orderComplete && confirmedOrder) {
@@ -164,7 +214,32 @@ const Payment = () => {
                 <p className="text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Delivery Address</p>
                 <p className="text-sm font-semibold text-[#112A1F]">{confirmedOrder.customerName}</p>
                 <p className="text-sm text-gray-600">{confirmedOrder.phone}</p>
-                <p className="text-sm text-gray-600 whitespace-pre-line mt-1">{confirmedOrder.address}</p>
+                <p className="text-sm text-gray-600 whitespace-pre-line mt-1">
+                  {(confirmedOrder.address || '')
+                    .replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '')
+                    .replace(/https?:\/\/[^\s]+/gi, '')
+                    .trim()}
+                </p>
+                {(() => {
+                  const receiptMapsUrl = confirmedOrder.mapsUrl || 
+                    (confirmedOrder.coordinates?.latitude ? `https://www.google.com/maps?q=${confirmedOrder.coordinates.latitude},${confirmedOrder.coordinates.longitude}` : 
+                    (confirmedOrder.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(confirmedOrder.address.replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '').replace(/https?:\/\/[^\s]+/gi, '').trim())}` : null));
+                  
+                  if (!receiptMapsUrl) return null;
+                  return (
+                    <a
+                      href={receiptMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-xs font-bold text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors mt-2"
+                      title="View delivery location on Google Maps"
+                    >
+                      <Navigation size={12} className="text-[#D4731A]" />
+                      <span>View Location on Google Maps</span>
+                      <ExternalLink size={11} />
+                    </a>
+                  );
+                })()}
               </div>
               <div className="sm:border-l sm:border-gray-200 sm:pl-4">
                 <p className="text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Payment Summary</p>
@@ -173,14 +248,6 @@ const Payment = () => {
                 <p className="text-sm font-bold text-[#1B4332] mt-2">Status: <span className="text-emerald-700">{confirmedOrder.paymentStatus}</span></p>
                 <p className="text-lg font-black text-[#D4731A] mt-1">₹{confirmedOrder.totalAmount}</p>
               </div>
-            </div>
-
-            {/* Database Storage Confirmation */}
-            <div className="flex items-center gap-2.5 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800">
-              <CheckCircle size={16} className="text-emerald-600 shrink-0" />
-              <span className="font-semibold">
-                Order successfully verified and recorded into the database!
-              </span>
             </div>
 
             {/* Action buttons */}
@@ -255,22 +322,113 @@ const Payment = () => {
             
             {/* Delivery Recipient Box */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#1B4332]/10">
-              <h2 className="text-base font-bold text-[#112A1F] uppercase tracking-wider mb-4 flex items-center gap-2" style={{ fontFamily: "'Playfair Display', serif" }}>
-                <MapPin size={18} className="text-[#D4731A]" /> Delivering To
-              </h2>
-              <div className="grid sm:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-xl">
-                <div>
-                  <p className="text-xs text-gray-400 font-bold uppercase">Customer</p>
-                  <p className="font-semibold text-[#112A1F]">{checkoutDetails.name || 'Valued Guest'}</p>
-                  <p className="text-gray-600 mt-1">{checkoutDetails.phone || 'Phone not provided'}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400 font-bold uppercase">Address</p>
-                  <p className="text-gray-700 whitespace-pre-line leading-relaxed">
-                    {checkoutDetails.address || 'Address provided at delivery'}
-                  </p>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4 pb-2 border-b border-gray-100">
+                <h2 className="text-base font-bold text-[#112A1F] uppercase tracking-wider flex items-center gap-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  <MapPin size={18} className="text-[#D4731A]" /> Delivering To
+                </h2>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDetectLocationOnPayment}
+                    disabled={isLocatingAddress}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#112A1F] bg-[#FFF8EC] hover:bg-[#D4731A] hover:text-white border border-[#D4731A]/40 rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                    title="Find current GPS delivery location"
+                  >
+                    {isLocatingAddress ? (
+                      <>
+                        <Loader2 size={13} className="animate-spin text-[#D4731A]" />
+                        <span>Locating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Navigation size={13} className="text-[#D4731A]" />
+                        <span>Find Location</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditedAddress(checkoutDetails.address || '');
+                      setIsEditingAddress(!isEditingAddress);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-700 hover:text-[#112A1F] bg-gray-100 hover:bg-gray-200 rounded-xl transition-all cursor-pointer"
+                  >
+                    <Edit2 size={13} />
+                    <span>{isEditingAddress ? 'Cancel' : 'Edit'}</span>
+                  </button>
                 </div>
               </div>
+
+              {isEditingAddress ? (
+                <form onSubmit={handleSaveAddress} className="space-y-3 bg-[#FFF8EC]/50 p-4 rounded-xl border border-[#D4731A]/20">
+                  <label className="block text-xs font-bold text-[#112A1F]">
+                    Edit Delivery Address:
+                  </label>
+                  <textarea
+                    rows="3"
+                    value={editedAddress}
+                    onChange={(e) => setEditedAddress(e.target.value)}
+                    placeholder="Enter complete address, house/flat no, landmark..."
+                    className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A]"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingAddress(false)}
+                      className="px-3 py-1.5 text-xs font-bold text-gray-600 hover:text-gray-900 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-1.5 bg-[#112A1F] text-white rounded-lg text-xs font-bold hover:bg-[#1E4A35] transition-all shadow-xs cursor-pointer"
+                    >
+                      Save Address
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-xl">
+                  <div>
+                    <p className="text-xs text-gray-400 font-bold uppercase">Customer</p>
+                    <p className="font-semibold text-[#112A1F]">{checkoutDetails.name || 'Valued Guest'}</p>
+                    <p className="text-gray-600 mt-1">{checkoutDetails.phone || 'Phone not provided'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-bold uppercase">Address</p>
+                    <p className="text-gray-700 whitespace-pre-line leading-relaxed font-medium">
+                      {(checkoutDetails.address || '')
+                        .replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '')
+                        .replace(/https?:\/\/[^\s]+/gi, '')
+                        .trim() || 'Address provided at delivery'}
+                    </p>
+                    {(() => {
+                      const reviewMapsUrl = checkoutDetails.mapsUrl || 
+                        (checkoutDetails?.coordinates?.latitude ? `https://www.google.com/maps?q=${checkoutDetails.coordinates.latitude},${checkoutDetails.coordinates.longitude}` : 
+                        (checkoutDetails.address?.trim() ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(checkoutDetails.address.replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '').replace(/https?:\/\/[^\s]+/gi, '').trim())}` : null));
+                      
+                      if (!reviewMapsUrl) return null;
+                      return (
+                        <div className="mt-2.5">
+                          <a
+                            href={reviewMapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-xs font-bold text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                            title="Open and view delivery location in Google Maps"
+                          >
+                            <Navigation size={12} className="text-[#D4731A]" />
+                            <span>View Location on Google Maps</span>
+                            <ExternalLink size={11} />
+                          </a>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* E-Commerce Payment Method Selector */}
@@ -307,7 +465,7 @@ const Payment = () => {
                         <span className="font-bold text-sm text-[#112A1F]">Online Payment (Google Pay, PhonePe, Cards, UPI)</span>
                         <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-800 text-white">Automated</span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-0.5">Real-time instant bank verification • No manual UTR needed</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Instant checkout via UPI, Cards, or NetBanking</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
@@ -323,64 +481,32 @@ const Payment = () => {
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="p-4.5 pt-0 border-t border-gray-100 space-y-4">
                     <div className="p-3.5 bg-white rounded-xl border border-gray-200 space-y-2 text-xs">
                       <div className="flex items-center justify-between text-emerald-800 font-bold">
-                        <span className="flex items-center gap-1.5"><ShieldCheck size={16} /> 100% Real-Time Automated Verification</span>
-                        <span className="text-[10px] bg-emerald-100 px-2 py-0.5 rounded">Bank Protected</span>
+                        <span className="flex items-center gap-1.5"><ShieldCheck size={16} /> Instant Razorpay Checkout</span>
+                        <span className="text-[10px] bg-emerald-100 px-2 py-0.5 rounded">100% Secure</span>
                       </div>
                       <p className="text-gray-600 leading-relaxed text-[11px]">
-                        Pay directly via <strong>Google Pay</strong>, <strong>PhonePe</strong>, <strong>UPI QR</strong>, <strong>Cards (Debit/Credit)</strong>, or <strong>Net Banking</strong>. The system automatically confirms your payment with the bank in real time — you don't need to enter any transaction ID manually.
+                        Pay directly via <strong>Google Pay</strong>, <strong>PhonePe</strong>, <strong>Paytm</strong>, <strong>UPI QR</strong>, <strong>Debit / Credit Cards</strong>, or <strong>Net Banking</strong>.
                       </p>
                     </div>
 
                     <button
                       onClick={handleRazorpayPayment}
                       disabled={isProcessing}
-                      className="w-full py-4 bg-[#D4731A] hover:bg-[#B05D10] text-white font-bold text-sm uppercase tracking-wider rounded-xl transition-all shadow-md flex justify-center items-center gap-2"
+                      className="w-full py-4 bg-[#D4731A] hover:bg-[#B05D10] text-white font-bold text-sm uppercase tracking-wider rounded-xl transition-all shadow-md flex justify-center items-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-wait"
                     >
-                      {isProcessing ? 'Connecting to Bank...' : `Pay ₹${cartTotal} Online (GPay / PhonePe / Card)`}
+                      {isProcessing ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin" />
+                          Opening Razorpay...
+                        </>
+                      ) : (
+                        `Pay ₹${cartTotal} Online (Razorpay / UPI / Cards)`
+                      )}
                     </button>
                   </motion.div>
                 )}
               </div>
 
-              {/* OPTION 2: CASH ON DELIVERY (COD) */}
-              <div className={`rounded-2xl border-2 transition-all overflow-hidden ${paymentMethod === 'cod' ? 'border-[#1B4332] bg-emerald-50/20 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                {/* Header / Radio */}
-                <div 
-                  onClick={() => setPaymentMethod('cod')}
-                  className="p-4.5 flex items-center justify-between cursor-pointer"
-                >
-                  <div className="flex items-center gap-3.5">
-                    <input 
-                      type="radio" 
-                      name="payment_method" 
-                      checked={paymentMethod === 'cod'} 
-                      onChange={() => setPaymentMethod('cod')}
-                      className="w-4 h-4 accent-[#1B4332] cursor-pointer" 
-                    />
-                    <div>
-                      <span className="font-bold text-sm text-[#112A1F]">Cash on Delivery (COD)</span>
-                      <p className="text-xs text-gray-500 mt-0.5">Pay in cash or UPI when your food arrives at your doorstep</p>
-                    </div>
-                  </div>
-                  <Banknote size={20} className="text-gray-600 shrink-0" />
-                </div>
-
-                {/* Expanded Details */}
-                {paymentMethod === 'cod' && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="p-4.5 pt-0 border-t border-gray-100 space-y-3">
-                    <p className="text-xs text-gray-600 bg-white p-3.5 rounded-xl border border-gray-200 leading-relaxed">
-                      You can pay <strong>₹{cartTotal}</strong> to our delivery partner in cash or by scanning their UPI QR code upon food delivery.
-                    </p>
-                    <button
-                      onClick={handleCodPayment}
-                      disabled={isProcessing}
-                      className="w-full py-3.5 bg-[#112A1F] hover:bg-[#1E4A35] text-white font-bold text-sm uppercase tracking-wider rounded-xl transition-all shadow-md flex justify-center items-center gap-2"
-                    >
-                      {isProcessing ? 'Confirming Order...' : `Place Cash on Delivery Order • ₹${cartTotal}`}
-                    </button>
-                  </motion.div>
-                )}
-              </div>
 
             </div>
           </div>

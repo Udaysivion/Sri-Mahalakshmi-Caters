@@ -31,7 +31,6 @@ export const AdminSidebar = ({
   onOpenSoundSettings,
   onRefresh,
   isRefreshing,
-  onExportCSV,
   onOpenKitchenSheet,
   onLogout,
   isOpenMobile,
@@ -156,8 +155,8 @@ export const AdminSidebar = ({
                 </div>
               </div>
 
-              {typeof item.count === 'number' && (
-                <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shadow-xs shrink-0 ml-1 ${item.badgeColor}`}>
+              {typeof item.count === 'number' && item.count > 0 && (
+                <span className={`px-2 py-0.5 rounded-full text-[11px] font-black shadow-xs shrink-0 ml-1 ${item.badgeColor} animate-pulse`} title={`${item.count} new unviewed`}>
                   {item.count}
                 </span>
               )}
@@ -217,13 +216,6 @@ export const AdminSidebar = ({
             <span>Rings: {soundSettings?.repeatCount || 2}x</span>
           </div>
         </div>
-
-        <button
-          onClick={onExportCSV}
-          className="w-full py-1.5 px-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-xs font-bold flex items-center justify-center gap-1.5 text-[#FFF8EC] transition-all cursor-pointer"
-        >
-          <Download size={12} className="text-[#E0B030]" /> Export Data to CSV
-        </button>
 
         <div className="pt-0.5 flex items-center justify-between">
           <Link

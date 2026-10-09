@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Phone, MessageSquare, Eye, Utensils, AlertCircle, Printer, ChefHat, Calendar } from 'lucide-react';
+import { Search, Phone, MessageSquare, Eye, Utensils, AlertCircle, Printer, ChefHat, Calendar, Download, Navigation, ExternalLink } from 'lucide-react';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { AdminPagination } from './AdminPagination';
 import { AdminDateFilter } from './AdminDateFilter';
@@ -15,7 +15,9 @@ export const OrdersTable = ({
   selectedDate = '',
   onDateChange,
   onSelectOrder,
-  onPrintKOT
+  onPrintKOT,
+  onExportCSV,
+  channelName = ''
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -94,11 +96,23 @@ export const OrdersTable = ({
               />
             </div>
 
-            {selectedDate && (
-              <span className="text-[11px] text-stone-500 font-medium">
-                Showing date-filtered results ({orders.length} orders found)
-              </span>
-            )}
+            <div className="flex items-center gap-3">
+              {selectedDate && (
+                <span className="text-[11px] text-stone-500 font-medium">
+                  Showing date-filtered results ({orders.length} orders found)
+                </span>
+              )}
+              {onExportCSV && (
+                <button
+                  onClick={() => onExportCSV(orders)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#1B4332] hover:bg-[#112A1F] text-[#FFF8EC] text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                  title={`Export only these ${orders.length} ${channelName ? channelName + ' ' : ''}orders to CSV`}
+                >
+                  <Download size={13} className="text-[#E0B030]" />
+                  <span>Export {channelName ? `${channelName} ` : ''}CSV</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -123,7 +137,7 @@ export const OrdersTable = ({
                   <LogoLoader
                     size="sm"
                     message="Syncing Live Orders..."
-                    subtext="Connecting to PostgreSQL Database"
+                    subtext="Syncing live orders..."
                   />
                 </td>
               </tr>
@@ -142,6 +156,10 @@ export const OrdersTable = ({
                 const cleanPhone = (order.phone || '').replace(/[^0-9]/g, '');
                 const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
                 const waText = `Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters.\n\n📦 Order #${order.orderId} Details:\n🍲 Items: ${order.items || 'Food Items'}\n💰 Total Amount: ₹${Number(order.totalAmount || 0).toLocaleString('en-IN')}\n\nThank you for choosing Sri Mahalakshmi Caters! 🙏`;
+
+                const orderMapsUrl = order.mapsUrl || 
+                  (order.coordinates?.latitude ? `https://www.google.com/maps?q=${order.coordinates.latitude},${order.coordinates.longitude}` : 
+                  (order.address && !order.address.includes('Table') ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address.replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '').replace(/https?:\/\/[^\s]+/gi, '').trim())}` : null));
 
                 return (
                   <tr
@@ -195,6 +213,19 @@ export const OrdersTable = ({
                           >
                             <MessageSquare size={11} />
                           </a>
+                          {orderMapsUrl && (
+                            <a
+                              href={orderMapsUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 hover:bg-[#D4731A] hover:text-white border border-emerald-200 transition-all text-[10px] font-bold"
+                              title="View Delivery Location on Google Maps"
+                            >
+                              <Navigation size={10} className="text-[#D4731A]" />
+                              <span>Map</span>
+                              <ExternalLink size={8} />
+                            </a>
+                          )}
                         </div>
                       )}
                     </td>
@@ -257,7 +288,7 @@ export const OrdersTable = ({
             <LogoLoader
               size="sm"
               message="Syncing Live Orders..."
-              subtext="Connecting to PostgreSQL Database"
+              subtext="Syncing live orders..."
             />
           </div>
         ) : orders.length === 0 ? (
@@ -270,6 +301,9 @@ export const OrdersTable = ({
             const cleanPhone = (order.phone || '').replace(/[^0-9]/g, '');
             const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
             const waTextMobile = `Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters.\n\n📦 Order #${order.orderId} Details:\n🍲 Items: ${order.items || 'Food Items'}\n💰 Total Amount: ₹${Number(order.totalAmount || 0).toLocaleString('en-IN')}\n\nThank you for choosing Sri Mahalakshmi Caters! 🙏`;
+            const orderMapsUrlMobile = order.mapsUrl || 
+              (order.coordinates?.latitude ? `https://www.google.com/maps?q=${order.coordinates.latitude},${order.coordinates.longitude}` : 
+              (order.address && !order.address.includes('Table') ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address.replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '').replace(/https?:\/\/[^\s]+/gi, '').trim())}` : null));
 
             return (
               <div
@@ -316,6 +350,17 @@ export const OrdersTable = ({
                           <MessageSquare size={13} />
                         </a>
                       </>
+                    )}
+                    {orderMapsUrlMobile && (
+                      <a
+                        href={orderMapsUrlMobile}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-all flex items-center gap-1 text-xs font-bold"
+                        title="View Delivery Location on Google Maps"
+                      >
+                        <Navigation size={12} className="text-[#D4731A]" />
+                      </a>
                     )}
                     <button
                       onClick={() => onPrintKOT(order, 'customer')}

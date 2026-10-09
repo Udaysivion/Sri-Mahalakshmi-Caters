@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minus, Plus, ShoppingBag, ArrowLeft, ArrowRight, CheckCircle, MapPin, Phone, User, CreditCard, Utensils } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, ArrowLeft, ArrowRight, CheckCircle, MapPin, Phone, User, CreditCard, Utensils, Navigation, Loader2, ExternalLink } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { findCurrentLocation } from '../../utils/locationService';
 
 const CartDrawer = () => {
   const navigate = useNavigate();
@@ -21,9 +23,65 @@ const CartDrawer = () => {
   const [formData, setFormData] = useState({
     name: checkoutDetails?.name || '',
     phone: checkoutDetails?.phone || '',
-    address: checkoutDetails?.address || '',
+    address: (checkoutDetails?.address || '').replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '').replace(/https?:\/\/[^\s]+/gi, '').trim(),
     notes: checkoutDetails?.notes || ''
   });
+  const [isLocating, setIsLocating] = useState(false);
+
+  useEffect(() => {
+    if (checkoutDetails) {
+      const cleanAddr = (checkoutDetails.address || '')
+        .replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '')
+        .replace(/https?:\/\/[^\s]+/gi, '')
+        .trim();
+
+      setFormData(prev => ({
+        name: prev.name || checkoutDetails.name || '',
+        phone: prev.phone || checkoutDetails.phone || '',
+        address: prev.address || cleanAddr || '',
+        notes: prev.notes || checkoutDetails.notes || ''
+      }));
+    }
+  }, [checkoutDetails, isCartOpen]);
+
+  const handleGetLocation = async () => {
+    setIsLocating(true);
+    const toastId = toast.loading('Acquiring high-accuracy GPS position...');
+    try {
+      const loc = await findCurrentLocation();
+      const cleanAddr = loc.cleanAddress;
+
+      setFormData(prev => {
+        const existing = (prev.address || '').trim();
+        const flatMatch = existing.match(/^(?:flat|apt|apartment|door|d\.no|plot|house|villa|#)\s*[^,\n]+/i);
+        let finalAddr = cleanAddr;
+        if (flatMatch && !cleanAddr.toLowerCase().includes(flatMatch[0].toLowerCase())) {
+          finalAddr = `${flatMatch[0]}, ${cleanAddr}`;
+        }
+        return {
+          ...prev,
+          address: finalAddr
+        };
+      });
+
+      updateCheckoutDetails({
+        address: cleanAddr,
+        coordinates: { latitude: loc.latitude, longitude: loc.longitude },
+        mapsUrl: loc.mapsUrl
+      });
+
+      if (loc.accuracy && loc.accuracy <= 50) {
+        toast.success(`📍 Pinned: ${loc.shortArea} (±${loc.accuracy}m)`, { id: toastId });
+      } else {
+        toast.success(`📍 Detected: ${loc.shortArea}. Please add Flat / House No.`, { id: toastId });
+      }
+    } catch (err) {
+      console.error('Location detection error:', err);
+      toast.error(err.message || 'Unable to detect current location.', { id: toastId });
+    } finally {
+      setIsLocating(false);
+    }
+  };
 
   const handleClose = () => {
     setIsCartOpen(false);
@@ -32,7 +90,20 @@ const CartDrawer = () => {
 
   const handleProceedToPayment = (e) => {
     e.preventDefault();
-    updateCheckoutDetails(formData);
+    const finalAddress = (formData.address || '')
+      .replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '')
+      .replace(/https?:\/\/[^\s]+/gi, '')
+      .trim();
+
+    if (!finalAddress) {
+      toast.error('Please enter complete delivery address.');
+      return;
+    }
+
+    updateCheckoutDetails({
+      ...formData,
+      address: finalAddress
+    });
     setIsCartOpen(false);
     navigate('/payment');
   };
@@ -173,25 +244,72 @@ const CartDrawer = () => {
                         />
                       </div>
                       
-                      <div className="relative">
-                        <MapPin size={18} className="absolute left-4 top-3.5 text-gray-400" />
-                        <textarea 
-                          required 
-                          placeholder="Complete Delivery Address (House/Flat No, Street, Landmark)" 
-                          rows="3" 
-                          value={formData.address}
-                          onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                          className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A] transition-all text-sm resize-none"
-                        ></textarea>
-                      </div>
+                      {/* Delivery Address Field with Find My Location */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-bold text-[#112A1F] flex items-center gap-1.5">
+                            <MapPin size={15} className="text-[#D4731A]" />
+                            Delivery Address <span className="text-red-500">*</span>
+                          </label>
+                          <button
+                            type="button"
+                            onClick={handleGetLocation}
+                            disabled={isLocating}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#112A1F] bg-[#FFF8EC] hover:bg-[#D4731A] hover:text-white border border-[#D4731A]/40 rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                            title="Automatically detect current GPS location"
+                          >
+                            {isLocating ? (
+                              <>
+                                <Loader2 size={13} className="animate-spin text-[#D4731A]" />
+                                <span>Locating...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Navigation size={13} className="text-[#D4731A]" />
+                                <span>Find My Location</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
 
-                      <div className="p-3.5 bg-[#FFF8EC] rounded-xl border border-[#D4731A]/30">
-                        <p className="text-xs font-bold text-[#112A1F] flex items-center gap-1.5 mb-1">
-                          <CreditCard size={14} className="text-[#D4731A]" /> Payment on Next Page
-                        </p>
-                        <p className="text-[11px] text-gray-600 leading-relaxed">
-                          You will be able to pay via <strong>Razorpay (Cards/Netbanking)</strong>, <strong>UPI QR Code</strong>, or <strong>Cash on Delivery (COD)</strong>.
-                        </p>
+                        <div className="relative">
+                          <textarea 
+                            required 
+                            placeholder="Flat/House No, Building, Street, Area, Landmark..." 
+                            rows="3" 
+                            value={formData.address}
+                            onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-3.5 focus:outline-none focus:border-[#D4731A] focus:ring-1 focus:ring-[#D4731A] transition-all text-sm resize-none"
+                          ></textarea>
+                        </div>
+
+                        {(() => {
+                          const activeMapsUrl = checkoutDetails?.mapsUrl || 
+                            (checkoutDetails?.coordinates?.latitude ? `https://www.google.com/maps?q=${checkoutDetails.coordinates.latitude},${checkoutDetails.coordinates.longitude}` : 
+                            (formData.address?.trim() ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formData.address.trim())}` : null));
+                          
+                          if (!activeMapsUrl) return null;
+
+                          return (
+                            <div className="flex items-center justify-between pt-1 px-1">
+                              <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                                <CheckCircle size={12} className="text-emerald-600" />
+                                {checkoutDetails?.mapsUrl ? 'GPS Location Pinned' : 'Address Identified'}
+                              </span>
+                              <a
+                                href={activeMapsUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] font-bold text-[#1B4332] hover:text-[#D4731A] transition-colors"
+                                title="Open and verify in Google Maps"
+                              >
+                                <Navigation size={11} className="text-[#D4731A]" />
+                                <span>View on Google Maps</span>
+                                <ExternalLink size={10} />
+                              </a>
+                            </div>
+                          );
+                        })()}
                       </div>
 
                     </form>

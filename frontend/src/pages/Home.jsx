@@ -664,6 +664,7 @@ const Home = () => {
       <Helmet>
         <title>Home | Sri Mahalakshmi Kitchen & Caterers</title>
         <meta name="description" content="Authentic South Indian Cuisine & Premium Catering Services." />
+        <meta name="google-site-verification" content="_9X0vCz6HBQ7r_dZ8P6aYRkbXpcq-HqXfN3NcA3DaRw" />
       </Helmet>
       
       <Hero />

@@ -34,6 +34,7 @@ const AdminLoginPage = lazy(() => import('./features/admin/pages/AdminLoginPage'
 
 // Common UI Components
 import LogoLoader from './components/common/LogoLoader';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 const Loader = () => (
   <LogoLoader 
@@ -89,9 +90,11 @@ const AppLayout = () => {
       />
       {!isAdminRoute && !isDigitalMenuRoute && <Navbar />}
       <main className="flex-grow">
-        <Suspense fallback={<Loader />}>
-          <AnimatedRoutes />
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<Loader />}>
+            <AnimatedRoutes />
+          </Suspense>
+        </ErrorBoundary>
       </main>
       {!isAdminRoute && !isDigitalMenuRoute && <Footer />}
       {!isAdminRoute && !isDigitalMenuRoute && <FloatingButtons />}

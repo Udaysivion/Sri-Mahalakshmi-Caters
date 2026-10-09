@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 import { useAdminOrders } from '../hooks/useAdminOrders';
-import { exportOrdersToCSV } from '../services/adminOrderService';
+import { exportOrdersToCSV, exportDiningToCSV, exportCateringToCSV } from '../services/adminOrderService';
 import { AdminSidebar } from '../components/AdminSidebar';
 import { AdminStats } from '../components/AdminStats';
 import { OrdersTable } from '../components/OrdersTable';
@@ -11,8 +11,10 @@ import { CateringInquiriesTable } from '../components/CateringInquiriesTable';
 import { OrderDetailsModal } from '../components/OrderDetailsModal';
 import { KitchenTicketPrint } from '../components/KitchenTicketPrint';
 import { DailyKitchenSummaryModal } from '../components/DailyKitchenSummaryModal';
+import { ExportOrdersModal } from '../components/ExportOrdersModal';
 import SoundSettingsModal from '../components/SoundSettingsModal';
 import { MenuManagerPage } from './MenuManagerPage';
+import ErrorBoundary from '../../../components/common/ErrorBoundary';
 import {
   Menu,
   RefreshCw,
@@ -37,6 +39,7 @@ export const AdminDashboardPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [kotOrder, setKotOrder] = useState(null);
   const [showDailyKitchenModal, setShowDailyKitchenModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Hook handles auto-reloading every 6s, audio chime on new orders/dining/catering, and storage sync
@@ -66,7 +69,8 @@ export const AdminDashboardPage = () => {
     handleUpdateOrderStatus,
     handleUpdateDiningStatus,
     handleUpdateCateringStatus,
-    stats
+    stats,
+    unviewedCounts
   } = useAdminOrders(6000);
 
   // If not authenticated, redirect to admin login
@@ -75,7 +79,7 @@ export const AdminDashboardPage = () => {
   }
 
   const handleExportCSV = () => {
-    exportOrdersToCSV(rawOrders);
+    setShowExportModal(true);
   };
 
   return (
@@ -84,17 +88,16 @@ export const AdminDashboardPage = () => {
       <AdminSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        ordersCount={stats.foodOrdersCount}
-        tableQrCount={stats.tableQrOrders}
-        diningCount={stats.pendingDining}
-        cateringCount={stats.newCatering}
+        ordersCount={unviewedCounts?.foodOrders || 0}
+        tableQrCount={unviewedCounts?.tableQr || 0}
+        diningCount={unviewedCounts?.dining || 0}
+        cateringCount={unviewedCounts?.catering || 0}
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled(!soundEnabled)}
         soundSettings={soundSettings}
         onOpenSoundSettings={() => setIsSoundModalOpen(true)}
         onRefresh={refreshOrders}
         isRefreshing={isRefreshing}
-        onExportCSV={handleExportCSV}
         onOpenKitchenSheet={() => setShowDailyKitchenModal(true)}
         onLogout={logout}
         isOpenMobile={mobileSidebarOpen}
@@ -163,6 +166,17 @@ export const AdminDashboardPage = () => {
             </div>
 
 
+            {/* Export Range Reports Quick Action */}
+            <button
+              onClick={() => setShowExportModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-[#1B4332] text-[#FFF8EC] hover:bg-[#112A1F] transition-all shadow-xs cursor-pointer"
+              title="Export Orders by Range (Day / Month / Custom)"
+            >
+              <Download size={14} className="text-[#E0B030]" />
+              <span className="hidden sm:inline">Export Range CSV</span>
+              <span className="sm:hidden">Export</span>
+            </button>
+
             {/* Kitchen Prep Sheet Quick Action */}
             <button
               onClick={() => setShowDailyKitchenModal(true)}
@@ -185,7 +199,7 @@ export const AdminDashboardPage = () => {
               }`}
           >
             <ShoppingBag size={14} />
-            <span>Orders ({stats.foodOrdersCount})</span>
+            <span>Orders {unviewedCounts?.foodOrders > 0 ? `(${unviewedCounts.foodOrders})` : ''}</span>
           </button>
           <button
             onClick={() => setActiveTab('table_qr')}
@@ -195,7 +209,7 @@ export const AdminDashboardPage = () => {
               }`}
           >
             <Smartphone size={14} />
-            <span>Table QR ({stats.tableQrOrders})</span>
+            <span>Table QR {unviewedCounts?.tableQr > 0 ? `(${unviewedCounts.tableQr})` : ''}</span>
           </button>
           <button
             onClick={() => setActiveTab('dining')}
@@ -205,7 +219,7 @@ export const AdminDashboardPage = () => {
               }`}
           >
             <UtensilsCrossed size={14} />
-            <span>Dining ({stats.pendingDining})</span>
+            <span>Dining {unviewedCounts?.dining > 0 ? `(${unviewedCounts.dining})` : ''}</span>
           </button>
           <button
             onClick={() => setActiveTab('catering')}
@@ -215,7 +229,7 @@ export const AdminDashboardPage = () => {
               }`}
           >
             <PartyPopper size={14} />
-            <span>Catering ({stats.newCatering})</span>
+            <span>Catering {unviewedCounts?.catering > 0 ? `(${unviewedCounts.catering})` : ''}</span>
           </button>
           <button
             onClick={() => setActiveTab('menu_sheet')}
@@ -240,6 +254,7 @@ export const AdminDashboardPage = () => {
 
               {/* Orders Table - Excludes Table QR Orders so they appear only once */}
               <OrdersTable
+                channelName="Counter & Delivery"
                 orders={orders.filter(o => {
                   const m = (o.paymentMethod || '').toLowerCase();
                   const a = (o.address || '').toLowerCase();
@@ -254,6 +269,13 @@ export const AdminDashboardPage = () => {
                 onDateChange={setSelectedDate}
                 onSelectOrder={(order) => setSelectedOrder(order)}
                 onPrintKOT={(order, mode = 'customer') => setKotOrder({ ...order, printMode: mode })}
+                onExportCSV={(tableOrders) => {
+                  const dateStr = new Date().toISOString().slice(0, 10);
+                  exportOrdersToCSV(
+                    tableOrders,
+                    `Sri_Mahalakshmi_Counter_Delivery_Orders_${dateStr}.csv`
+                  );
+                }}
               />
             </div>
           )}
@@ -305,6 +327,7 @@ export const AdminDashboardPage = () => {
 
               {/* Table QR Orders Table */}
               <OrdersTable
+                channelName="Table QR"
                 orders={orders.filter(o => (o.paymentMethod || '').toLowerCase().includes('table') || (o.address || '').toLowerCase().includes('table'))}
                 isLoading={isLoading}
                 searchQuery={searchQuery}
@@ -315,6 +338,13 @@ export const AdminDashboardPage = () => {
                 onDateChange={setSelectedDate}
                 onSelectOrder={(order) => setSelectedOrder(order)}
                 onPrintKOT={(order, mode = 'customer') => setKotOrder({ ...order, printMode: mode })}
+                onExportCSV={(tableOrders) => {
+                  const dateStr = new Date().toISOString().slice(0, 10);
+                  exportOrdersToCSV(
+                    tableOrders,
+                    `Sri_Mahalakshmi_Table_QR_Orders_${dateStr}.csv`
+                  );
+                }}
               />
             </div>
           )}
@@ -369,6 +399,13 @@ export const AdminDashboardPage = () => {
                 reservations={diningReservations}
                 isLoading={isLoading}
                 onUpdateStatus={handleUpdateDiningStatus}
+                onExportCSV={(filteredReservations) => {
+                  const dateStr = new Date().toISOString().slice(0, 10);
+                  exportDiningToCSV(
+                    filteredReservations,
+                    `Sri_Mahalakshmi_Dining_Reservations_${dateStr}.csv`
+                  );
+                }}
               />
             </div>
           )}
@@ -423,6 +460,13 @@ export const AdminDashboardPage = () => {
                 inquiries={cateringInquiries}
                 isLoading={isLoading}
                 onUpdateStatus={handleUpdateCateringStatus}
+                onExportCSV={(filteredInquiries) => {
+                  const dateStr = new Date().toISOString().slice(0, 10);
+                  exportCateringToCSV(
+                    filteredInquiries,
+                    `Sri_Mahalakshmi_Catering_Inquiries_${dateStr}.csv`
+                  );
+                }}
               />
             </div>
           )}
@@ -436,20 +480,24 @@ export const AdminDashboardPage = () => {
 
         {/* Order Details Modal */}
         {selectedOrder && (
-          <OrderDetailsModal
-            order={selectedOrder}
-            onClose={() => setSelectedOrder(null)}
-            onPrintKOT={(order, mode = 'customer') => setKotOrder({ ...order, printMode: mode })}
-          />
+          <ErrorBoundary onReset={() => setSelectedOrder(null)}>
+            <OrderDetailsModal
+              order={selectedOrder}
+              onClose={() => setSelectedOrder(null)}
+              onPrintKOT={(order, mode = 'customer') => setKotOrder({ ...order, printMode: mode })}
+            />
+          </ErrorBoundary>
         )}
 
         {/* Real-time Order Receipt & Kitchen KOT Print Modal */}
         {kotOrder && (
-          <KitchenTicketPrint
-            order={kotOrder}
-            initialMode={kotOrder.printMode || 'customer'}
-            onClose={() => setKotOrder(null)}
-          />
+          <ErrorBoundary onReset={() => setKotOrder(null)}>
+            <KitchenTicketPrint
+              order={kotOrder}
+              initialMode={kotOrder.printMode || 'customer'}
+              onClose={() => setKotOrder(null)}
+            />
+          </ErrorBoundary>
         )}
 
         {/* Master Daily Kitchen Prep & Production Sheet Modal */}
@@ -458,6 +506,20 @@ export const AdminDashboardPage = () => {
             orders={orders}
             onClose={() => setShowDailyKitchenModal(false)}
           />
+        )}
+
+        {/* Range-Based Orders CSV Export Modal (Day / Month / Custom) */}
+        {showExportModal && (
+          <ErrorBoundary onReset={() => setShowExportModal(false)}>
+            <ExportOrdersModal
+              isOpen={showExportModal}
+              onClose={() => setShowExportModal(false)}
+              orders={rawOrders}
+              diningReservations={diningReservations}
+              cateringInquiries={cateringInquiries}
+              initialChannel={activeTab === 'table_qr' ? 'table' : activeTab === 'dining' ? 'dining' : activeTab === 'catering' ? 'catering' : activeTab === 'orders' ? 'delivery' : 'all'}
+            />
+          </ErrorBoundary>
         )}
 
         {/* Audio Alert Customization Modal */}

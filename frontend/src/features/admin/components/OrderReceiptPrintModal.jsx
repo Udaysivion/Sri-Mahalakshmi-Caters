@@ -14,6 +14,7 @@ import {
   Scissors
 } from 'lucide-react';
 import { parseOrderItems } from './KitchenTicketPrint';
+import { printThermalReceipt } from '../../../utils/printReceiptService';
 
 export const OrderReceiptPrintModal = ({ order, initialMode = 'customer', onClose }) => {
   const [printMode, setPrintMode] = useState(initialMode); // 'customer', 'kitchen', 'both'
@@ -28,7 +29,10 @@ export const OrderReceiptPrintModal = ({ order, initialMode = 'customer', onClos
     : 1;
 
   const handleTriggerPrint = () => {
-    window.print();
+    printThermalReceipt('dual-order-slip', {
+      paperWidth,
+      title: `Order_${order.orderId}_${printMode === 'kitchen' ? 'KOT' : 'Invoice'}`
+    });
   };
 
   const restaurantPhone = import.meta.env.VITE_RESTAURANT_PHONE || '8125940023';

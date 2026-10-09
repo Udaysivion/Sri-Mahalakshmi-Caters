@@ -13,6 +13,41 @@ import {
   saveSoundSettings 
 } from '../utils/audioAlerts';
 
+const isTableOrder = (order) => {
+  if (!order) return false;
+  const id = String(order.orderId || '');
+  if (id.startsWith('TBL-') || id.includes('TBL')) return true;
+  const method = String(order.paymentMethod || '').toLowerCase();
+  if (method.includes('table')) return true;
+  const phone = String(order.phone || '').toLowerCase();
+  if (phone.startsWith('table')) return true;
+  const name = String(order.customerName || '').toLowerCase();
+  if (name.includes('table')) return true;
+  const addr = String(order.address || '').toLowerCase();
+  if (/\btable\s*#?\s*\d+/i.test(addr) || addr.startsWith('table')) return true;
+  return false;
+};
+
+const STORAGE_PREFIX = 'smk_viewed_';
+
+const getViewedIds = (type) => {
+  try {
+    const raw = localStorage.getItem(`${STORAGE_PREFIX}${type}`);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+};
+
+const saveViewedIds = (type, idSet) => {
+  try {
+    const arr = Array.from(idSet).slice(-500);
+    localStorage.setItem(`${STORAGE_PREFIX}${type}`, JSON.stringify(arr));
+  } catch (e) {
+    console.warn(`Failed to save viewed IDs for ${type}:`, e);
+  }
+};
+
 export const useAdminOrders = (pollingIntervalMs = 6000) => {
   // Food Orders
   const [orders, setOrders] = useState([]);
@@ -45,7 +80,19 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedDate, setSelectedDate] = useState(''); // 'YYYY-MM-DD' or '' for all
-  const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'dining', 'catering'
+  const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'table_qr', 'dining', 'catering'
+
+  // Viewed tracking sets to ensure badges only show NEW unviewed orders
+  const viewedOrderIdsRef = useRef(getViewedIds('orders'));
+  const viewedDiningIdsRef = useRef(getViewedIds('dining'));
+  const viewedCateringIdsRef = useRef(getViewedIds('catering'));
+
+  const [unviewedCounts, setUnviewedCounts] = useState({
+    foodOrders: 0,
+    tableQr: 0,
+    dining: 0,
+    catering: 0
+  });
 
   // Refs for change tracking
   const prevOrdersCountRef = useRef(null);
@@ -201,13 +248,55 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
       setDiningReservations(diningData);
       setCateringInquiries(cateringData);
       setLastSyncTime(new Date());
+
+      // ─────────────────────────────────────────────────────────
+      // Unviewed badges tracking: only show count for NEW items
+      // ─────────────────────────────────────────────────────────
+      // On very first run on this browser, treat all existing records as viewed
+      if (!localStorage.getItem('smk_admin_initialized')) {
+        ordersData.forEach(o => { if (o.orderId) viewedOrderIdsRef.current.add(o.orderId); });
+        diningData.forEach(d => { if (d.bookingId) viewedDiningIdsRef.current.add(d.bookingId); });
+        cateringData.forEach(c => { if (c.inquiryId) viewedCateringIdsRef.current.add(c.inquiryId); });
+        saveViewedIds('orders', viewedOrderIdsRef.current);
+        saveViewedIds('dining', viewedDiningIdsRef.current);
+        saveViewedIds('catering', viewedCateringIdsRef.current);
+        localStorage.setItem('smk_admin_initialized', 'true');
+      }
+
+      // Mark the currently active tab items as viewed immediately
+      if (activeTab === 'orders') {
+        ordersData.filter(o => !isTableOrder(o)).forEach(o => { if (o.orderId) viewedOrderIdsRef.current.add(o.orderId); });
+        saveViewedIds('orders', viewedOrderIdsRef.current);
+      } else if (activeTab === 'table_qr') {
+        ordersData.filter(o => isTableOrder(o)).forEach(o => { if (o.orderId) viewedOrderIdsRef.current.add(o.orderId); });
+        saveViewedIds('orders', viewedOrderIdsRef.current);
+      } else if (activeTab === 'dining') {
+        diningData.forEach(d => { if (d.bookingId) viewedDiningIdsRef.current.add(d.bookingId); });
+        saveViewedIds('dining', viewedDiningIdsRef.current);
+      } else if (activeTab === 'catering') {
+        cateringData.forEach(c => { if (c.inquiryId) viewedCateringIdsRef.current.add(c.inquiryId); });
+        saveViewedIds('catering', viewedCateringIdsRef.current);
+      }
+
+      // Compute unviewed counts for non-active tabs
+      const unviewedFood = activeTab === 'orders' ? 0 : ordersData.filter(o => !isTableOrder(o) && !viewedOrderIdsRef.current.has(o.orderId)).length;
+      const unviewedTable = activeTab === 'table_qr' ? 0 : ordersData.filter(o => isTableOrder(o) && !viewedOrderIdsRef.current.has(o.orderId)).length;
+      const unviewedDin = activeTab === 'dining' ? 0 : diningData.filter(d => !viewedDiningIdsRef.current.has(d.bookingId)).length;
+      const unviewedCat = activeTab === 'catering' ? 0 : cateringData.filter(c => !viewedCateringIdsRef.current.has(c.inquiryId)).length;
+
+      setUnviewedCounts({
+        foodOrders: unviewedFood,
+        tableQr: unviewedTable,
+        dining: unviewedDin,
+        catering: unviewedCat
+      });
     } catch (err) {
       console.error('Failed to load admin data:', err);
     } finally {
       setIsLoading(false);
       if (isManual) setIsRefreshing(false);
     }
-  }, [soundEnabled]);
+  }, [soundEnabled, activeTab]);
 
   // Initial load & Polling loop
   useEffect(() => {
@@ -256,6 +345,28 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
     setCateringInquiries(prev => prev.map(c => c.inquiryId === inquiryId ? { ...c, status: newStatus } : c));
     toast.success(`Catering Inquiry #${inquiryId} marked as ${newStatus}`);
   };
+
+  // Handle tab switching & immediately clear badge for viewed desk
+  const handleSetActiveTab = useCallback((newTab) => {
+    setActiveTab(newTab);
+    if (newTab === 'orders') {
+      orders.filter(o => !isTableOrder(o)).forEach(o => { if (o.orderId) viewedOrderIdsRef.current.add(o.orderId); });
+      saveViewedIds('orders', viewedOrderIdsRef.current);
+      setUnviewedCounts(prev => ({ ...prev, foodOrders: 0 }));
+    } else if (newTab === 'table_qr') {
+      orders.filter(o => isTableOrder(o)).forEach(o => { if (o.orderId) viewedOrderIdsRef.current.add(o.orderId); });
+      saveViewedIds('orders', viewedOrderIdsRef.current);
+      setUnviewedCounts(prev => ({ ...prev, tableQr: 0 }));
+    } else if (newTab === 'dining') {
+      diningReservations.forEach(d => { if (d.bookingId) viewedDiningIdsRef.current.add(d.bookingId); });
+      saveViewedIds('dining', viewedDiningIdsRef.current);
+      setUnviewedCounts(prev => ({ ...prev, dining: 0 }));
+    } else if (newTab === 'catering') {
+      cateringInquiries.forEach(c => { if (c.inquiryId) viewedCateringIdsRef.current.add(c.inquiryId); });
+      saveViewedIds('catering', viewedCateringIdsRef.current);
+      setUnviewedCounts(prev => ({ ...prev, catering: 0 }));
+    }
+  }, [orders, diningReservations, cateringInquiries]);
 
   // Filtered orders list
   const filteredOrders = orders.filter(order => {
@@ -340,7 +451,8 @@ export const useAdminOrders = (pollingIntervalMs = 6000) => {
 
   return {
     activeTab,
-    setActiveTab,
+    setActiveTab: handleSetActiveTab,
+    unviewedCounts,
     orders: filteredOrders,
     rawOrders: orders,
     diningReservations,

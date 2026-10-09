@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MessageSquare, Calendar, Users, MapPin, CheckCircle, Clock3, XCircle, Search, Sparkles } from 'lucide-react';
+import { Phone, MessageSquare, Calendar, Users, MapPin, CheckCircle, Clock3, XCircle, Search, Sparkles, Download } from 'lucide-react';
 import { AdminPagination } from './AdminPagination';
 import { AdminDateFilter } from './AdminDateFilter';
 import LogoLoader from '../../../components/common/LogoLoader';
@@ -7,7 +7,8 @@ import LogoLoader from '../../../components/common/LogoLoader';
 export const CateringInquiriesTable = ({
   inquiries,
   isLoading,
-  onUpdateStatus
+  onUpdateStatus,
+  onExportCSV
 }) => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -129,6 +130,17 @@ export const CateringInquiriesTable = ({
             onDateChange={setDateFilter}
             totalCount={filtered.length}
           />
+
+          {onExportCSV && (
+            <button
+              onClick={() => onExportCSV(filtered)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1B4332] hover:bg-[#112A1F] text-[#FFF8EC] text-xs font-bold transition-all shadow-2xs cursor-pointer"
+              title={`Export only these ${filtered.length} catering event inquiries to CSV`}
+            >
+              <Download size={13} className="text-[#E0B030]" />
+              <span>Export Catering CSV</span>
+            </button>
+          )}
         </div>
       </div>
 

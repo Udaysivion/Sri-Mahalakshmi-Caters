@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Printer, ChefHat } from 'lucide-react';
 import { parseOrderItems } from './KitchenTicketPrint';
+import { printThermalReceipt } from '../../../utils/printReceiptService';
 
 export const DailyKitchenSummaryModal = ({ orders, onClose }) => {
   // Aggregate items across all selected/today's orders
@@ -24,7 +25,10 @@ export const DailyKitchenSummaryModal = ({ orders, onClose }) => {
   const sortedItems = Array.from(itemSummaryMap.entries()).sort((a, b) => b[1] - a[1]);
 
   const handlePrint = () => {
-    window.print();
+    printThermalReceipt('daily-kitchen-sheet', {
+      paperWidth: 'full',
+      title: 'Daily_Kitchen_Production_Sheet'
+    });
   };
 
   const todayStr = new Date().toLocaleDateString('en-IN', {

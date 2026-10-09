@@ -1,5 +1,4 @@
-import React from 'react';
-import { X, Phone, MessageSquare, Printer, CheckCircle, Clock, MapPin, Receipt, Utensils, ChefHat } from 'lucide-react';
+import { X, Phone, MessageSquare, Printer, CheckCircle, Clock, MapPin, Receipt, Utensils, ChefHat, Layers, Navigation, ExternalLink } from 'lucide-react';
 import { OrderStatusBadge } from './OrderStatusBadge';
 
 export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
@@ -18,6 +17,18 @@ export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
   const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(
     `Namaste ${order.customerName || 'Customer'}! Greetings from Sri Mahalakshmi Caters.\n\n📦 Order #${order.orderId} Details:\n🍲 Items: ${order.items || 'Food Items'}\n💰 Total Amount: ₹${Number(order.totalAmount || 0).toLocaleString('en-IN')}\n\nThank you for choosing Sri Mahalakshmi Caters! 🙏`
   )}`;
+
+  const cleanDisplayAddr = (order.address || '')
+    .replace(/📍\s*Map Pin:\s*https?:\/\/[^\s]+/gi, '')
+    .replace(/https?:\/\/[^\s]+/gi, '')
+    .trim();
+
+  const googleMapsUrl = order.mapsUrl ||
+    (order.coordinates?.latitude && order.coordinates?.longitude
+      ? `https://www.google.com/maps?q=${order.coordinates.latitude},${order.coordinates.longitude}`
+      : cleanDisplayAddr && !cleanDisplayAddr.toLowerCase().includes('table')
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanDisplayAddr)}`
+      : null);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
@@ -120,13 +131,44 @@ export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
               </p>
             </div>
 
-            <div className="bg-white p-4 rounded-xl border border-[#C4960A]/20 shadow-xs">
-              <h4 className="text-xs font-bold text-[#6B4423] uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <MapPin size={14} className="text-[#D4731A]" /> Delivery Address
-              </h4>
-              <p className="text-sm text-[#2C1A00] leading-relaxed">
-                {order.address || 'Takeaway / Pickup at Restaurant'}
-              </p>
+            <div className="bg-white p-4 rounded-xl border border-[#C4960A]/20 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-bold text-[#6B4423] uppercase tracking-wider flex items-center gap-1.5">
+                    <MapPin size={14} className="text-[#D4731A]" /> Delivery Address
+                  </h4>
+                  {googleMapsUrl && (
+                    <a
+                      href={googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-[#1B4332] hover:text-[#D4731A] transition-colors"
+                      title="Open pinned location in Google Maps"
+                    >
+                      <span>Google Maps</span>
+                      <ExternalLink size={11} />
+                    </a>
+                  )}
+                </div>
+                <p className="text-sm text-[#2C1A00] leading-relaxed">
+                  {cleanDisplayAddr || 'Takeaway / Pickup at Restaurant'}
+                </p>
+              </div>
+
+              {googleMapsUrl && (
+                <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center gap-2">
+                  <a
+                    href={googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1B4332] hover:bg-[#112A1F] text-white text-xs font-bold transition-all shadow-2xs"
+                  >
+                    <Navigation size={13} className="text-[#E0B030]" />
+                    <span>View Location on Google Maps</span>
+                    <ExternalLink size={12} />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
@@ -163,23 +205,23 @@ export const OrderDetailsModal = ({ order, onClose, onPrintKOT }) => {
             </div>
           </div>
 
-          {/* Payment & Audit Info */}
+          {/* Payment Information */}
           <div className="bg-white p-4 rounded-xl border border-[#C4960A]/20 shadow-xs text-xs space-y-2">
             <h4 className="font-bold text-[#6B4423] uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Receipt size={14} className="text-[#D4731A]" /> Payment & Audit Metadata
+              <Receipt size={14} className="text-[#D4731A]" /> Payment Information
             </h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-stone-700">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-stone-700">
               <div>
                 <span className="text-stone-400 block">Payment Method:</span>
                 <span className="font-semibold text-stone-800">{order.paymentMethod || 'Online'}</span>
               </div>
               <div>
-                <span className="text-stone-400 block">Gateway / Ref ID:</span>
+                <span className="text-stone-400 block">Transaction / Ref ID:</span>
                 <span className="font-mono font-semibold text-stone-800 break-all">{order.paymentId || 'N/A'}</span>
               </div>
               <div>
-                <span className="text-stone-400 block">Sync Source:</span>
-                <span className="font-semibold text-[#1B4332] uppercase">{order.source || 'Cloud Webhook'}</span>
+                <span className="text-stone-400 block">Payment Status:</span>
+                <span className="font-semibold text-emerald-800">{order.paymentStatus || 'Completed'}</span>
               </div>
             </div>
 
