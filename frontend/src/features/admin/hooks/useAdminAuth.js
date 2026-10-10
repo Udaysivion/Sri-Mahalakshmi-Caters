@@ -69,11 +69,96 @@ export const useAdminAuth = () => {
     setIsAuthenticated(false);
   }, []);
 
+  const requestPasswordReset = useCallback(async (email) => {
+    setAuthError(null);
+    const cleanEmail = (email || '').trim();
+
+    if (!cleanEmail) {
+      setAuthError('Please enter your administrator email address.');
+      return { success: false, message: 'Email address is required.' };
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/admin/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.success) {
+        return {
+          success: true,
+          message: data.message,
+          resetToken: data.resetToken,
+          previewOtp: data.previewOtp
+        };
+      } else {
+        const errorMsg = data.message || 'Unable to request password reset. Please try again.';
+        setAuthError(errorMsg);
+        return { success: false, message: errorMsg };
+      }
+    } catch (err) {
+      console.error('Password reset request error:', err);
+      const errorMsg = 'Server unreachable. Please check backend connection.';
+      setAuthError(errorMsg);
+      return { success: false, message: errorMsg };
+    }
+  }, []);
+
+  const resetPassword = useCallback(async ({ email, otpCode, resetToken, newPassword }) => {
+    setAuthError(null);
+
+    if (!email || !otpCode || !resetToken || !newPassword) {
+      setAuthError('Please fill in all recovery details.');
+      return { success: false, message: 'All fields are required.' };
+    }
+
+    if (newPassword.length < 6) {
+      setAuthError('New password must contain at least 6 characters.');
+      return { success: false, message: 'Password too short.' };
+    }
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/admin/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          otpCode: otpCode.trim(),
+          resetToken,
+          newPassword
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.success) {
+        return {
+          success: true,
+          message: data.message || 'Password reset successfully!'
+        };
+      } else {
+        const errorMsg = data.message || 'Verification failed. Please check the code.';
+        setAuthError(errorMsg);
+        return { success: false, message: errorMsg };
+      }
+    } catch (err) {
+      console.error('Password reset confirmation error:', err);
+      const errorMsg = 'Server unreachable. Please check backend connection.';
+      setAuthError(errorMsg);
+      return { success: false, message: errorMsg };
+    }
+  }, []);
+
   return {
     isAuthenticated,
     authError,
     setAuthError,
     login,
-    logout
+    logout,
+    requestPasswordReset,
+    resetPassword
   };
 };

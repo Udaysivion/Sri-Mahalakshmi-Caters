@@ -13,8 +13,11 @@ const Catering = () => {
   return (
     <div className="min-h-screen bg-[#FFF8EC]">
       <Helmet>
-        <title>Premium Catering | Sri Mahalakshmi Kitchen & Caterers</title>
-        <meta name="description" content="Professional Indian catering services for weddings, corporate events, and intimate gatherings." />
+        <title>Grand Wedding &amp; Event Catering | Sri Mahalakshmi Caters Hyderabad</title>
+        <meta name="description" content="Premium catering for weddings, corporate functions, birthdays, and traditional celebrations by Sri Mahalakshmi Caters (smahalakshmikitchen.com) in Hyderabad." />
+        <link rel="canonical" href="https://smahalakshmikitchen.com/catering" />
+        <meta property="og:title" content="Grand Wedding &amp; Event Catering | Sri Mahalakshmi Caters" />
+        <meta property="og:url" content="https://smahalakshmikitchen.com/catering" />
       </Helmet>
 
       {/* 1. HIGHLIGHT HEADER (Matching Figma Mockup) */}

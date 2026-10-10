@@ -15,8 +15,11 @@ const ChefsSpecial = () => {
       className="bg-gray-50 min-h-screen pt-24 pb-20"
     >
       <Helmet>
-        <title>Specials | Taste of Home | Authentic authentic style</title>
-        <meta name="description" content="Discover our authentic village specials, crafted with love." />
+        <title>Chef's Specials &amp; Signature Dishes | Sri Mahalakshmi Kitchen</title>
+        <meta name="description" content="Discover our chef's signature South Indian dishes and authentic delicacies at Sri Mahalakshmi Kitchen (smahalakshmikitchen.com)." />
+        <link rel="canonical" href="https://smahalakshmikitchen.com/chefs-special" />
+        <meta property="og:title" content="Chef's Specials | Sri Mahalakshmi Kitchen" />
+        <meta property="og:url" content="https://smahalakshmikitchen.com/chefs-special" />
       </Helmet>
 
       {/* Hero */}

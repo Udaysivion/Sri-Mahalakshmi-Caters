@@ -155,8 +155,11 @@ const Menu = () => {
   return (
     <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="bg-[#FFF8EC] min-h-screen pb-24 pt-28">
       <Helmet>
-        <title>Menu | Sri Mahalakshmi Kitchen & Caterers</title>
-        <meta name="description" content="Explore our premium authentic South Indian menu." />
+        <title>Menu &amp; Online Food Order | Sri Mahalakshmi Kitchen Hyderabad</title>
+        <meta name="description" content="Explore delicious authentic South Indian dishes, Biryanis, starters, and specials at Sri Mahalakshmi Kitchen (smahalakshmikitchen.com). Order online in Bahadurpally, Hyderabad." />
+        <link rel="canonical" href="https://smahalakshmikitchen.com/menu" />
+        <meta property="og:title" content="Menu &amp; Online Order | Sri Mahalakshmi Kitchen" />
+        <meta property="og:url" content="https://smahalakshmikitchen.com/menu" />
       </Helmet>
 
       {/* Header Area (No huge image hero) */}

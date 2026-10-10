@@ -307,73 +307,7 @@ const MenuSection = () => {
 
 /* ══════════════════════════════════════════════
    4. EXPERIENCES (Expanding Hover Cards)
-══════════════════════════════════════════════ */
-const Experiences = () => {
-  const [r, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  
-  const cards = [
-    { title: "Authentic Dining Ambience", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800", desc: "Experience our warm hospitality and freshly prepared meals in a comfortable setting.", link: "BOOK A TABLE", linkSmall: "Book" },
-    { title: "Dine-In", img: "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=800", desc: "Comfortable ambience for a perfect everyday meal with loved ones.", link: "BOOK A TABLE", linkSmall: "Book" },
-    { title: "Family Celebrations", img: "https://images.unsplash.com/photo-1530103862676-de8892bf30d9?auto=format&fit=crop&q=80&w=800", desc: "Birthdays, anniversaries & special moments catered with perfection.", link: "PLAN EVENT", linkSmall: "Explore" },
-    { title: "Weddings", img: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800", desc: "Grand traditional menus for your once-in-a-lifetime celebration.", link: "INQUIRE NOW", linkSmall: "Inquire" }
-  ];
 
-  return (
-    <section className="py-24 bg-[#FAFAFA]" ref={r}>
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-16">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4731A] mb-2">Our Spaces</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#112A1F]" style={{ fontFamily:"'Playfair Display',serif" }}>Unforgettable Experiences</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {cards.map((card, i) => (
-            <motion.div 
-              key={i} 
-              initial={{opacity:0, y:30}} animate={inView?{opacity:1,y:0}:{}} transition={{duration:0.6, delay:i*0.1}}
-              className="group relative h-[420px] rounded-3xl overflow-hidden bg-white shadow-sm border border-gray-100 cursor-pointer"
-            >
-              {/* IMAGE (Expands on hover) */}
-              <div className="absolute top-0 left-0 w-full h-[200px] group-hover:h-full transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)]">
-                <img src={card.img} alt={card.title} className="w-full h-full object-cover" />
-                {/* Dark overlay that appears on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              </div>
-
-              {/* FLOATING BADGE (Moves and changes color on hover) */}
-              <div className="absolute left-6 top-[180px] group-hover:top-6 transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] z-30">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-500 bg-[#F4F4F4] text-[#112A1F] group-hover:bg-[#D4731A] group-hover:text-white border border-white/50 group-hover:border-transparent">
-                  <Utensils size={16} />
-                </div>
-              </div>
-
-              {/* UNHOVERED CONTENT (Fades out and moves down) */}
-              <div className="absolute top-[200px] inset-x-0 bottom-0 bg-white p-6 pt-12 flex flex-col justify-between transition-all duration-500 group-hover:opacity-0 group-hover:translate-y-8 z-20">
-                <div>
-                  <h3 className="font-bold text-[#112A1F] text-xl mb-3" style={{ fontFamily:"'Playfair Display',serif" }}>{card.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{card.desc}</p>
-                </div>
-                <div className="flex justify-end items-center text-[#112A1F] text-sm font-bold gap-2">
-                  {card.linkSmall} <ArrowRight size={16} />
-                </div>
-              </div>
-
-              {/* HOVERED CONTENT (Fades in from bottom) */}
-              <div className="absolute inset-0 p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] translate-y-8 group-hover:translate-y-0 z-30 pointer-events-none group-hover:pointer-events-auto">
-                <h3 className="font-bold text-white text-2xl mb-3" style={{ fontFamily:"'Playfair Display',serif" }}>{card.title}</h3>
-                <p className="text-gray-300 text-sm leading-relaxed mb-6">{card.desc}</p>
-                <div className="text-white text-[11px] font-bold uppercase tracking-widest inline-block border-b-2 border-[#D4731A] pb-1 w-fit">
-                  {card.link}
-                </div>
-              </div>
-
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
 
 /* ══════════════════════════════════════════════
    5. OUR STORY (Cream Background)
@@ -424,56 +358,172 @@ const Story = () => {
 /* ══════════════════════════════════════════════
    5. DINING & CATERING OPTIONS (White)
 ══════════════════════════════════════════════ */
-const Options = () => (
-  <section className="py-24 bg-white">
-    <div className="max-w-7xl mx-auto px-4">
-      <div className="text-center mb-16">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4731A] mb-2">SERVICES</p>
-        <h2 className="text-4xl md:text-5xl font-bold text-[#112A1F]" style={{ fontFamily:"'Playfair Display',serif" }}>More Than Just a Meal</h2>
-      </div>
+/* ══════════════════════════════════════════════
+   5. DINING & CATERING OPTIONS (Interactive Animated)
+══════════════════════════════════════════════ */
+const Options = () => {
+  const [hoveredIdx, setHoveredIdx] = useState(0);
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Large Card */}
-        <div className="w-full lg:w-5/12 relative rounded-2xl overflow-hidden group h-[400px]">
-          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800" alt="Dining" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-8">
-            <div className="w-10 h-10 bg-[#D4731A] rounded-full flex items-center justify-center text-white mb-4"><Utensils size={18}/></div>
-            <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily:"'Playfair Display',serif" }}>Authentic Dining Ambience</h3>
-            <p className="text-gray-300 text-sm mb-6">Experience our warm hospitality and freshly prepared meals in a comfortable setting.</p>
-            <Link to="/contact" className="text-white text-xs font-bold uppercase tracking-widest border-b border-white pb-1 inline-block self-start">Book a Table</Link>
-          </div>
+  const services = [
+    {
+      title: 'Authentic Dining Ambience',
+      desc: 'Experience our warm hospitality and freshly prepared meals in a comfortable setting.',
+      img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800',
+      actionText: 'BOOK A TABLE',
+      linkText: 'Book',
+      linkTo: '/contact'
+    },
+    {
+      title: 'Dine-In',
+      desc: 'Comfortable ambience for a perfect everyday meal with loved ones.',
+      img: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=800',
+      actionText: 'BOOK A TABLE',
+      linkText: 'Book',
+      linkTo: '/contact'
+    },
+    {
+      title: 'Family Celebrations',
+      desc: 'Birthdays, anniversaries & special moments catered with perfection.',
+      img: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=800',
+      actionText: 'PLAN EVENT',
+      linkText: 'Explore',
+      linkTo: '/catering'
+    },
+    {
+      title: 'Weddings',
+      desc: 'Grand traditional menus for your once-in-a-lifetime celebration.',
+      img: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&q=80&w=800',
+      actionText: 'INQUIRE NOW',
+      linkText: 'Inquire',
+      linkTo: '/catering'
+    }
+  ];
+
+  return (
+    <section className="py-24 bg-white select-none">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-16">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4731A] mb-2">SERVICES</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#112A1F]" style={{ fontFamily: "'Playfair Display',serif" }}>
+            More Than Just a Meal
+          </h2>
         </div>
-        
-        {/* Small Cards */}
-        <div className="w-full lg:w-7/12 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[
-            { title:'Dine-In', desc:'Comfortable ambience for a perfect everyday meal with loved ones.', img:'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=400', linkText: 'Book', linkTo: '/contact' },
-            { title:'Family Celebrations', desc:'Birthdays, anniversaries & special moments catered with perfection.', img:'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=400', linkText: 'Explore', linkTo: '/catering' },
-            { title:'Weddings', desc:'Grand traditional menus for your once-in-a-lifetime celebration.', img:'https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&q=80&w=400', linkText: 'Inquire', linkTo: '/catering' }
-          ].map((item, i) => (
-            <div key={i} className="bg-white rounded-2xl shadow-[0_2px_15px_rgba(0,0,0,0.04)] border border-gray-100 hover:shadow-xl transition-all flex flex-col overflow-hidden pb-5">
-              <div className="p-4 pb-0 relative">
-                <img src={item.img} alt={item.title} className="w-full h-36 object-cover rounded-xl" />
-                <div className="absolute -bottom-4 left-6 w-8 h-8 bg-[#F5F2ED] rounded-full flex items-center justify-center text-[#112A1F] border-2 border-white shadow-sm z-10">
-                  <Utensils size={14} />
+
+        {/* Desktop: Dynamic Flex Accordion | Mobile: Smooth Grid */}
+        <div 
+          className="flex flex-col lg:flex-row gap-5 lg:gap-6 min-h-[430px]"
+          onMouseLeave={() => setHoveredIdx(0)}
+        >
+          {services.map((item, i) => {
+            const isHovered = hoveredIdx === i;
+
+            return (
+              <div
+                key={i}
+                onMouseEnter={() => setHoveredIdx(i)}
+                onClick={() => setHoveredIdx(i)}
+                className={`relative h-[430px] rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+                  isHovered 
+                    ? 'lg:flex-[1.55] shadow-2xl ring-1 ring-black/5 bg-[#112A1F]' 
+                    : 'lg:flex-1 shadow-[0_2px_15px_rgba(0,0,0,0.04)] border border-stone-200/80 hover:shadow-lg bg-white'
+                }`}
+              >
+                {/* ── STATE A: HOVERED (Full Background Image, Dark Vignette, Orange Badge, White Bold Text) ── */}
+                <div 
+                  className={`absolute inset-0 w-full h-full bg-[#112A1F] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+                    isHovered ? 'opacity-100 z-10 visible' : 'opacity-0 pointer-events-none z-0 invisible'
+                  }`}
+                >
+                  <img 
+                    src={item.img} 
+                    alt={item.title} 
+                    className="w-full h-full object-cover transition-transform duration-1000 ease-out scale-105" 
+                  />
+                  {/* Cinematic gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/15" />
+
+                  {/* Hovered Content Container */}
+                  <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end z-20">
+                    {/* Orange Badge */}
+                    <div className="w-10 h-10 bg-[#D4731A] rounded-full flex items-center justify-center text-white mb-4 shadow-lg border border-white/20 transition-transform duration-500 scale-100">
+                      <Utensils size={18} />
+                    </div>
+
+                    <h3 
+                      className="text-2xl sm:text-3xl font-bold text-white mb-2 leading-tight" 
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      {item.title}
+                    </h3>
+
+                    <p className="text-gray-200 text-xs sm:text-sm mb-6 leading-relaxed max-w-sm">
+                      {item.desc}
+                    </p>
+
+                    <Link 
+                      to={item.linkTo} 
+                      className="text-white text-xs font-bold uppercase tracking-widest border-b-2 border-white hover:border-[#D4731A] pb-1 inline-block self-start transition-all hover:translate-x-1"
+                    >
+                      {item.actionText}
+                    </Link>
+                  </div>
                 </div>
-              </div>
-              <div className="px-6 pt-8 flex flex-col flex-grow">
-                <h3 className="font-bold text-[#112A1F] text-lg mb-2" style={{ fontFamily:"'Playfair Display',serif" }}>{item.title}</h3>
-                <p className="text-[13px] text-gray-500 mb-6 flex-grow leading-relaxed">{item.desc}</p>
-                <div className="flex justify-end">
-                  <Link to={item.linkTo} className="text-[#112A1F] text-sm font-semibold flex items-center gap-1 hover:text-[#D4731A] transition-colors">
-                    {item.linkText} <ArrowRight size={16}/>
-                  </Link>
+
+                {/* ── STATE B: UNHOVERED (White Card, Top Rounded Image Thumbnail, Light Badge, Dark Text) ── */}
+                <div 
+                  className={`absolute inset-0 bg-white flex flex-col justify-between transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+                    isHovered 
+                      ? 'opacity-0 pointer-events-none invisible z-0' 
+                      : 'opacity-100 pointer-events-auto visible z-10'
+                  }`}
+                >
+                  {/* Top Thumbnail Image */}
+                  <div className="p-3.5 pb-0 relative">
+                    <img 
+                      src={item.img} 
+                      alt={item.title} 
+                      className="w-full h-40 object-cover rounded-xl sm:rounded-2xl" 
+                    />
+                    {/* Circular Light Badge Overlapping Bottom Edge */}
+                    <div className="absolute -bottom-3.5 left-6 w-8 h-8 bg-[#F5F2ED] rounded-full flex items-center justify-center text-[#112A1F] border-2 border-white shadow-sm z-20">
+                      <Utensils size={14} />
+                    </div>
+                  </div>
+
+                  {/* Body Content */}
+                  <div className="px-6 pt-7 pb-5 flex flex-col flex-grow justify-between">
+                    <div>
+                      <h3 
+                        className="font-bold text-[#112A1F] text-lg sm:text-xl mb-2 leading-snug" 
+                        style={{ fontFamily: "'Playfair Display', serif" }}
+                      >
+                        {item.title}
+                      </h3>
+                      <p className="text-[13px] text-gray-500 leading-relaxed mb-4 line-clamp-3">
+                        {item.desc}
+                      </p>
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <Link 
+                        to={item.linkTo} 
+                        className="text-[#112A1F] text-xs sm:text-sm font-semibold flex items-center gap-1 hover:text-[#D4731A] transition-colors"
+                      >
+                        <span>{item.linkText}</span>
+                        <ArrowRight size={15} />
+                      </Link>
+                    </div>
+                  </div>
                 </div>
+
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 /* ══════════════════════════════════════════════
    6. CATERING PROCESS (Cream)
@@ -662,9 +712,13 @@ const Home = () => {
   return (
     <div className="w-full min-h-screen">
       <Helmet>
-        <title>Home | Sri Mahalakshmi Kitchen & Caterers</title>
-        <meta name="description" content="Authentic South Indian Cuisine & Premium Catering Services." />
+        <title>Sri Mahalakshmi Kitchen &amp; Caterers | Best Tiffins, Nearby Restaurant &amp; Catering Services</title>
+        <meta name="description" content="Looking for the best tiffins, top nearby restaurant, or premier wedding &amp; event catering in Hyderabad? Sri Mahalakshmi Kitchen (smahalakshmikitchen.com) serves authentic South Indian breakfast tiffins, biryanis, meals &amp; catering in Bahadurpally, Kompally, and Hyderabad." />
+        <link rel="canonical" href="https://smahalakshmikitchen.com/" />
         <meta name="google-site-verification" content="_9X0vCz6HBQ7r_dZ8P6aYRkbXpcq-HqXfN3NcA3DaRw" />
+        <meta property="og:title" content="Best Tiffins, Nearby Restaurant &amp; Catering Services | Sri Mahalakshmi Kitchen" />
+        <meta property="og:description" content="Authentic South Indian breakfast tiffins, nearby restaurant dining, and premier wedding catering in Hyderabad at smahalakshmikitchen.com." />
+        <meta property="og:url" content="https://smahalakshmikitchen.com/" />
       </Helmet>
       
       <Hero />

@@ -1,0 +1,8 @@
+# robots.txt for https://smahalakshmikitchen.com
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://smahalakshmikitchen.com/sitemap.xml

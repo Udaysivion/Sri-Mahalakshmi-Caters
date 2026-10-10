@@ -9,8 +9,12 @@ const { initDatabase, pool } = require('./config/database');
 
 const startServer = async () => {
   try {
-    // 1. Verify / migrate database tables
-    await initDatabase();
+    // 1. Verify / migrate database tables (resilient startup)
+    try {
+      await initDatabase();
+    } catch (dbErr) {
+      console.warn('⚠️ Initial database sync deferred (transient connection timeout):', dbErr.message);
+    }
 
     // 2. Start HTTP server
     const server = app.listen(env.port, () => {

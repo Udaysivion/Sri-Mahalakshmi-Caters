@@ -33,8 +33,11 @@ const Testimonials = () => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-gray-50 min-h-screen pt-24 pb-20">
       <Helmet>
-        <title>Testimonials | Taste of Home</title>
-        <meta name="description" content="Read what our guests have to say about their dining experience." />
+        <title>Customer Reviews &amp; Testimonials | Sri Mahalakshmi Kitchen &amp; Caterers</title>
+        <meta name="description" content="Read reviews and testimonials from our delighted guests and catering clients across Hyderabad (smahalakshmikitchen.com)." />
+        <link rel="canonical" href="https://smahalakshmikitchen.com/testimonials" />
+        <meta property="og:title" content="Customer Reviews &amp; Testimonials | Sri Mahalakshmi Kitchen" />
+        <meta property="og:url" content="https://smahalakshmikitchen.com/testimonials" />
       </Helmet>
 
       {/* Hero */}

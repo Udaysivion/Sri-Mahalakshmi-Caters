@@ -56,8 +56,11 @@ const Contact = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       style={{ background: '#FFF8EC', minHeight: '100vh' }}>
       <Helmet>
-        <title>Contact Us | Sri Mahalakshmi Kitchen & Caterers</title>
-        <meta name="description" content="Get in touch with Sri Mahalakshmi Kitchen & Caterers for table reservations, catering orders and queries." />
+        <title>Contact &amp; Table Booking | Sri Mahalakshmi Kitchen Bahadurpally Hyderabad</title>
+        <meta name="description" content="Contact Sri Mahalakshmi Kitchen &amp; Caterers in Bahadurpally, Hyderabad (smahalakshmikitchen.com). Call +91 77948 00042 or book tables &amp; catering inquiries online." />
+        <link rel="canonical" href="https://smahalakshmikitchen.com/contact" />
+        <meta property="og:title" content="Contact &amp; Reservations | Sri Mahalakshmi Kitchen" />
+        <meta property="og:url" content="https://smahalakshmikitchen.com/contact" />
       </Helmet>
 
       {/* Hero */}

@@ -136,8 +136,11 @@ const About = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Our Story | Sri Mahalakshmi Kitchen & Caterers</title>
-        <meta name="description" content="Discover the legacy of Sri Mahalakshmi Kitchen & Caterers. From our daily hearth to grand feasts, learn about our commitment to authentic South Indian culinary tradition." />
+        <title>Our Story &amp; Heritage | Sri Mahalakshmi Kitchen &amp; Caterers</title>
+        <meta name="description" content="Discover the culinary legacy of Sri Mahalakshmi Kitchen &amp; Caterers (smahalakshmikitchen.com). Traditional South Indian recipes, fresh ingredients, and exceptional catering in Hyderabad." />
+        <link rel="canonical" href="https://smahalakshmikitchen.com/about" />
+        <meta property="og:title" content="Our Story &amp; Heritage | Sri Mahalakshmi Kitchen" />
+        <meta property="og:url" content="https://smahalakshmikitchen.com/about" />
       </Helmet>
       
       <AboutHero />

@@ -84,6 +84,26 @@ const initDatabase = async () => {
       CREATE INDEX IF NOT EXISTS idx_catering_inquiry_id ON catering_inquiries(inquiry_id);
     `);
 
+    // 4. Admin Credentials & Resets Table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS admin_credentials (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(100) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS admin_password_resets (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        otp_code VARCHAR(10) NOT NULL,
+        reset_token VARCHAR(100) NOT NULL,
+        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        is_used BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     console.log('✅ PostgreSQL database tables verified and active on Neon.');
   } catch (err) {
     console.error('❌ Database schema initialization error:', err.message);

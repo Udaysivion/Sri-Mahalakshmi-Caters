@@ -42,6 +42,37 @@ class AdminController {
       next(err);
     }
   }
+
+  async forgotPassword(req, res, next) {
+    try {
+      const { email } = req.body;
+      const result = await adminService.requestPasswordReset(email);
+      if (!result.success) {
+        return res.status(400).json(result);
+      }
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async resetPassword(req, res, next) {
+    try {
+      const { email, otpCode, resetToken, newPassword } = req.body;
+      const result = await adminService.resetPassword({
+        email,
+        otpCode,
+        resetToken,
+        newPassword
+      });
+      if (!result.success) {
+        return res.status(400).json(result);
+      }
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = new AdminController();

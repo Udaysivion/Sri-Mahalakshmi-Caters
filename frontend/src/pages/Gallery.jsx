@@ -31,8 +31,11 @@ const Gallery = () => {
       style={{ background: '#FDF6E3', minHeight: '100vh' }}
     >
       <Helmet>
-        <title>Gallery | Sri Mahalakshmi Kitchen & Caterers</title>
-        <meta name="description" content="Moments from Sri Mahalakshmi Kitchen & Caterers — our beautiful ambience and delicious food." />
+        <title>Food &amp; Catering Gallery | Sri Mahalakshmi Kitchen Hyderabad</title>
+        <meta name="description" content="View photos of authentic dishes, wedding catering setups, and dining ambience at Sri Mahalakshmi Kitchen &amp; Caterers (smahalakshmikitchen.com)." />
+        <link rel="canonical" href="https://smahalakshmikitchen.com/gallery" />
+        <meta property="og:title" content="Food &amp; Catering Gallery | Sri Mahalakshmi Kitchen" />
+        <meta property="og:url" content="https://smahalakshmikitchen.com/gallery" />
       </Helmet>
 
       {/* Hero */}
